@@ -1,0 +1,89 @@
+.body {
+  padding: 2rem;
+  overflow: hidden;
+}
+
+.item-row {
+  width: 40vw;
+  /* max-height: 80vh; */
+  min-width: 700px;
+  margin-bottom: 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  border-bottom: 2px solid black;
+}
+
+.item-row p {
+  font-family: "Inter", sans-serif;
+}
+
+.images-container {
+  display: flex;
+
+  width: 40vw;
+  /* max-height: 80vh; */
+  min-width: 700px;
+
+  overflow-x: auto;
+  gap: 10px;
+  padding-bottom: 20px;
+  margin-top: 20px;
+  max-width: 100%;
+  white-space: nowrap;
+
+  border-top: 1px solid darkgray;
+  border-bottom: 1px solid darkgray;
+}
+
+/* Scrollbar styling for Webkit browsers (Chrome, Safari) */
+.images-container::-webkit-scrollbar {
+  height: 10px; /* Set the height of the scrollbar */
+}
+
+.images-container::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Background of the scrollbar track */
+}
+
+.images-container::-webkit-scrollbar-thumb {
+  background: #888; /* Background of the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners for the scrollbar thumb */
+}
+
+.images-container::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Background of the scrollbar thumb on hover */
+}
+
+/* Scrollbar styling for Firefox */
+.images-container {
+  scrollbar-width: thin; /* Thin scrollbar */
+  scrollbar-color: #888 #f1f1f1; /* Thumb and track colors */
+}
+
+.item-image {
+  max-height: 400px;
+  flex-shrink: 0; /* Prevent images from shrinking */
+}
+
+.view-more-link {
+  color: blue;
+  text-decoration: underline;
+  margin-bottom: 30px;
+}
+
+.tags-container {
+  margin-top: 10px;
+}
+
+.tag {
+  display: inline-block;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 4px;
+  padding: 5px 10px;
+  margin: 2px;
+  font-size: 0.65rem;
+  font-weight: bold;
+}

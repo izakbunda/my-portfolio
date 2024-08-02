@@ -1,0 +1,86 @@
+.window-container {
+  position: absolute;
+
+  background-color: #ffffff;
+  width: 50vw;
+  max-height: 80vh;
+  min-width: 770px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid black;
+}
+
+.header {
+  /* background-color: rgb(164, 164, 164); */
+  background: repeating-linear-gradient(
+    0deg,
+    grey,
+    grey 1px,
+    lightgrey 1px,
+    lightgrey 4px
+  );
+  width: 100%;
+  min-height: 1.5rem;
+  border: 1px solid black;
+
+  position: relative;
+  font-size: 0.75rem;
+
+  cursor: pointer;
+}
+
+.sub-header {
+  background-color: #ffffff;
+  width: 100%;
+  min-height: 1.5rem;
+  border-bottom: 1px solid black;
+
+  font-size: 0.5rem;
+
+  position: relative;
+}
+
+.window-name {
+  background-color: rgb(213, 213, 213);
+  padding: 2px 10px 2px 10px;
+
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 1px;
+}
+
+.close-button-temp {
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: #ff0000;
+
+  position: absolute;
+  left: 10px;
+  top: 5px;
+  cursor: pointer;
+
+  border-radius: 100px;
+}
+
+.minimize-button-temp {
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: #ffd466;
+
+  position: absolute;
+  left: 30px;
+  top: 5px;
+  cursor: pointer;
+
+  border-radius: 100px;
+}
+
+.body {
+  padding: 1rem;
+  overflow: scroll;
+}

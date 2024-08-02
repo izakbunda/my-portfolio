@@ -1,0 +1,15 @@
+.resume-container {
+  width: 50vw;
+  height: 100%;
+  /* padding: 20px; */
+  box-sizing: border-box;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.resume-iframe {
+  width: 90%;
+  height: 70vh;
+  border: none;
+}

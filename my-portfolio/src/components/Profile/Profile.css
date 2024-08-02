@@ -1,0 +1,86 @@
+.profile-container {
+  display: flex;
+  flex-direction: column;
+  /* align-items: flex-start; */
+  padding: 20px;
+  /* background-color: red; */
+}
+
+.row1 {
+  display: flex;
+  margin-bottom: 40px;
+  /* background-color: blue; */
+}
+
+.profile-image {
+  width: 10vw;
+  margin-right: 40px;
+  min-height: 163px;
+  min-width: 163px;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: end;
+}
+
+.profile-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.profile-title,
+.profile-education {
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.profile-location {
+  font-size: 1rem;
+  margin-top: 5px;
+}
+
+.row2 {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.profile-section {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  text-align: left; /* Align text to the left */
+}
+
+.profile-section h3 {
+  font-size: 1.25rem;
+  margin-bottom: 10px;
+}
+
+.profile-section p {
+  align-self: flex-start;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  font-family: "Inter", sans-serif;
+}
+
+.view-resume-link {
+  color: blue;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-left: auto;
+}
+
+.header-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}

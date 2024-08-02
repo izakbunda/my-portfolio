@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "react-pdf-viewer": "^0.1.0"
+  }
+}
