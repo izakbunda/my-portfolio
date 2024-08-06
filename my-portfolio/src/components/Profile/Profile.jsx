@@ -9,6 +9,20 @@ const Profile = () => {
   const bio3 =
     "If I'm not coding on my computer, you can probably find me reading a book, at the gym, or cooking. 💪";
 
+  const tags = ["frontend", "backend", "database", "machine learning"];
+
+  const renderTags = (tags) => {
+    return (
+      <div className="tags-container">
+        {tags.map((tag, index) => (
+          <span key={index} className="tag-profile">
+            {tag}
+          </span>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="profile-container">
       <div className="row1">
@@ -25,7 +39,8 @@ const Profile = () => {
       <div className="row2">
         <div className="profile-section">
           <h3>Interests</h3>
-          <p>frontend, backend, database, and machine learning</p>
+
+          {renderTags(tags)}
         </div>
         <div className="profile-section">
           <div className="header-link">

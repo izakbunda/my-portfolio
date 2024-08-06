@@ -84,3 +84,18 @@
   align-items: center;
   width: 100%;
 }
+
+.tags-container {
+  margin-top: 10px;
+}
+
+.tag-profile {
+  display: inline-block;
+  background-color: #f0f0f0;
+  color: #333;
+  border-radius: 4px;
+  padding: 5px 10px;
+  margin-right: 5px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
