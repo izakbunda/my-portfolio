@@ -12,11 +12,7 @@ const Profile = () => {
   return (
     <div className="profile-container">
       <div className="row1">
-        <img
-          src="/public/headshot.jpg"
-          className="profile-image"
-          alt="Izak Bunda"
-        />
+        <img src="/headshot.jpg" className="profile-image" alt="Izak Bunda" />
         <div className="profile-info">
           <div className="profile-name">Izak Bunda</div>
           <div className="profile-title">Software Engineer + Creative</div>

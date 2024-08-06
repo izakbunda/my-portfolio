@@ -7,7 +7,7 @@ const File = ({ name, style, onClick }) => {
   };
   return (
     <div className="file-container" style={style} onClick={handleClick}>
-      <img src="/public/file.png" className="icon" alt={name} />
+      <img src="/file.png" className="icon" alt={name} />
       <div className="filename">{name}</div>
     </div>
   );

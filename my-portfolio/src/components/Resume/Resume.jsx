@@ -5,7 +5,7 @@ const Resume = () => {
   return (
     <div className="resume-container">
       <iframe
-        src="/public/izak_bunda_resume.pdf"
+        src="/izak_bunda_resume.pdf"
         className="resume-iframe"
         title="Resume"
       />
