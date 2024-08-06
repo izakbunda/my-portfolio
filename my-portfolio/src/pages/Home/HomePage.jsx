@@ -123,12 +123,12 @@ function HomePage() {
   const addWindow = (name) => {
     if (windows.some((window) => window.name === name)) {
       console.log("A window with this name is already open.");
-      // const clickSound = new Audio("../../src/assets/open.mov");
+      // const clickSound = new Audio("/src/assets/open.mov");
       // clickSound.play();
       return;
     }
 
-    const clickSound = new Audio("../../src/assets/click.mp3");
+    const clickSound = new Audio("/src/assets/click.mp3");
     clickSound.play();
 
     const getRandomPosition = (minX, maxX, minY, maxY) => {

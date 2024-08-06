@@ -13,7 +13,7 @@ const Profile = () => {
     <div className="profile-container">
       <div className="row1">
         <img
-          src="../../src/assets/headshot.jpg"
+          src="/src/assets/headshot.jpg"
           className="profile-image"
           alt="Izak Bunda"
         />

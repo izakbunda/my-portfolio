@@ -28,7 +28,7 @@ const MenuBar = () => {
   }, []);
 
   const handleClick = () => {
-    const clickSound = new Audio("../../src/assets/click.mp3");
+    const clickSound = new Audio("/src/assets/click.mp3");
     clickSound.play();
   };
 
@@ -36,7 +36,7 @@ const MenuBar = () => {
     <div className="container">
       <div className="left-menu">
         <img
-          src="../../src/assets/logo.png"
+          src="/src/assets/logo.png"
           alt="logo"
           style={{
             padding: "4px 7px 4px 7px",

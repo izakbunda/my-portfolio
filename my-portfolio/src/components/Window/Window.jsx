@@ -8,13 +8,13 @@ import "./Window.css";
 
 const Window = forwardRef(({ name, onClose, onMin }, ref) => {
   const handleClick = () => {
-    // const clickSound = new Audio("../../src/assets/click.mp3");
+    // const clickSound = new Audio("/src/assets/click.mp3");
     // clickSound.play();
     onClose();
   };
 
   const handleMinimize = () => {
-    const clickSound = new Audio("../../src/assets/click.mp3");
+    const clickSound = new Audio("/src/assets/click.mp3");
     clickSound.play();
     onMin();
   };

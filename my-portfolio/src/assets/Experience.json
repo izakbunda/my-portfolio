@@ -6,11 +6,11 @@
       "tags": ["React Native", "Node", "Firebase", "Mobile"],
       "link": "https://github.com/izakbunda/ReUCLA",
       "images": [
-        "../../src/assets/ReUCLA/r1.png",
-        "../../src/assets/ReUCLA/r2.png",
-        "../../src/assets/ReUCLA/r3.png",
-        "../../src/assets/ReUCLA/r4.png",
-        "../../src/assets/ReUCLA/r5.png"
+        "/src/assets/ReUCLA/r1.png",
+        "/src/assets/ReUCLA/r2.png",
+        "/src/assets/ReUCLA/r3.png",
+        "/src/assets/ReUCLA/r4.png",
+        "/src/assets/ReUCLA/r5.png"
       ],
       "info": "Recognizing the lack of a modern platform for UCLA students to buy and sell used clothing, we developed ReUCLA to centralize the second-hand resale market at UCLA, moving beyond an archaic 10+ year-old Facebook group. Leading a team of 5 developers, we created over 10 pages using custom components in React Native, focusing on an accessible and easy-to-navigate UI. We established the app's backend infrastructure with Node.js and Firebase, enabling secure data storage, instant CRUD updates, and streamlined user authorization and authentication. Additionally, we designed an efficient search algorithm to ensure fast and precise discovery of listings and usernames."
     },
@@ -20,10 +20,10 @@
       "tags": ["MongoDB", "Express.js", "React", "Node", "Dark Mode"],
       "link": "",
       "images": [
-        "../../src/assets/Social/i1.png",
-        "../../src/assets/Social/i2.png",
-        "../../src/assets/Social/i3.png",
-        "../../src/assets/Social/i4.png"
+        "/src/assets/Social/i1.png",
+        "/src/assets/Social/i2.png",
+        "/src/assets/Social/i3.png",
+        "/src/assets/Social/i4.png"
       ],
       "info": "I developed a full-stack social media application using the MERN stack (MongoDB, Express.js, React, Node.js) with a focus on scalability and performance. This application features file uploads, posting, friends, likes, and a feed. I implemented user authentication and authorization using JSON Web Tokens (JWT) and persistent local storage with Redux Toolkit, ensuring secure and seamless user access and data protection. Additionally, I designed and developed a RESTful API with Node.js and Express.js to handle client requests and perform CRUD operations on a MongoDB database, enabling efficient data management and server communication. The user interface was created to be responsive and dynamic using React, HTML, and CSS, and includes features like React Router for navigation, state management with Redux, a robust light/dark mode option, and a mobile browser version."
     },
@@ -41,10 +41,10 @@
       "tags": ["Next.js", "React", "Spotify API"],
       "link": "https://github.com/izakbunda/Spotify-Stats-Hub",
       "images": [
-        "../../src/assets/Spotify/s2.png",
-        "../../src/assets/Spotify/s4.png",
-        "../../src/assets/Spotify/s3.png",
-        "../../src/assets/Spotify/s5.png"
+        "/src/assets/Spotify/s2.png",
+        "/src/assets/Spotify/s4.png",
+        "/src/assets/Spotify/s3.png",
+        "/src/assets/Spotify/s5.png"
       ],
       "info": "To help users discover and organize their listening habits, I developed a website that uses the Spotify API to organize users' top tracks and artists by user-input time intervals and includes a simple guessing game. This project arose from a desire to create a fun and interactive way for users to engage with their music preferences. Built using Next.js, HTML, CSS, and JavaScript, I also utilized libraries like Redux Toolkit to persist the API access token. The website employs secure client authorization through the implicit grant OAuth flow to gather users' top tracks and artists. This project not only enhances the user experience by allowing them to explore their listening habits but also ensures secure and efficient data handling."
     },
@@ -69,11 +69,11 @@
     "1": {
       "name": "Software Development Intern at Hunter Industries",
       "date": "Irrigation My Design - Web Tool",
-      "link": "",
+      "link": "https://irrigation-my-design.vercel.app/",
       "images": [
-        "../../src/assets/Hunter/imd3.png",
-        "../../src/assets/Hunter/imd2.jpeg",
-        "../../src/assets/Hunter/imd1.jpeg"
+        "/src/assets/Hunter/imd3.png",
+        "/src/assets/Hunter/imd2.jpeg",
+        "/src/assets/Hunter/imd1.jpeg"
       ],
       "info": "Recognizing the potential to innovate irrigation planning, I led the development of 'Irrigation My Design,' an MVP for an interactive sprinkler system mapping tool. This tool, designed to serve 15,000 users and projected to add $80 million in value to the company, utilized a diverse tech stack, including JavaScript, HTML, CSS, React, and Fabric.js. To enhance functionality, I integrated APIs such as Google Maps and Google Earth, enabling advanced data import and imagery features. Throughout the project, I adhered to agile software development practices, incorporating the Scrum framework, iterative design, and Test-Driven Development (TDD) methodologies. My motivation for this project stemmed from the desire to create a user-friendly tool that could significantly improve efficiency in irrigation planning. By collaborating with cross-functional teams, I ensured that the tool met user needs and industry standards. The project involved extensive user research and feedback loops to refine features and usability. Ultimately, 'Irrigation My Design' not only showcased my technical skills but also my ability to lead a project from conception to delivery, resulting in a valuable solution for the landscaping industry."
     },
@@ -82,11 +82,11 @@
       "date": "",
       "link": "https://apps.apple.com/us/app/hussle-local-college-gigs/id1573358782",
       "images": [
-        "../../src/assets/Hussle/h1.jpeg",
-        "../../src/assets/Hussle/h2.jpeg",
-        "../../src/assets/Hussle/h3.png",
-        "../../src/assets/Hussle/h4.png",
-        "../../src/assets/Hussle/h5.PNG"
+        "/src/assets/Hussle/h1.jpeg",
+        "/src/assets/Hussle/h2.jpeg",
+        "/src/assets/Hussle/h3.png",
+        "/src/assets/Hussle/h4.png",
+        "/src/assets/Hussle/h5.PNG"
       ],
       "info": "As a Front End Development Intern for Hussle App from June 2022 to December 2022, I developed responsive page layouts using React Native, Animated, Navigation, and other frontend libraries. I optimized the frontend codebase by creating reusable UI components and over 10 screens, including Explore, Profile, and Referral screens. My contributions ensured a seamless user experience and consistent design throughout the app. The app was successfully published in the iOS App Store in Spring 2022 and deployed on Heroku for both development and production environments, demonstrating my ability to deliver production-ready code and maintain efficient deployment workflows."
     }
