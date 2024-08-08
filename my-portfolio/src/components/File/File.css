@@ -5,15 +5,36 @@
   cursor: pointer;
 }
 
+@media screen and (max-width: 500px) {
+  .file-container {
+    position: absolute;
+    width: 60px;
+    height: 80px;
+    cursor: pointer;
+  }
+}
+
 .file-container:active {
   border: 1px solid lightblue;
 }
 
-.icon {
+.desktop-icon {
   height: 70px;
+}
+
+@media screen and (max-width: 500px) {
+  .desktop-icon {
+    height: 60px;
+  }
 }
 
 .filename {
   margin-top: 10px;
   font-size: 0.6rem;
+}
+
+@media screen and (max-width: 500px) {
+  .filename {
+    font-size: 0.5rem;
+  }
 }

@@ -87,3 +87,40 @@
   font-size: 0.65rem;
   font-weight: bold;
 }
+
+@media screen and (max-width: 500px) {
+  .body {
+    padding: 1rem;
+  }
+
+  .item-row {
+    width: 70vw;
+    min-width: auto;
+    margin-bottom: 2rem;
+  }
+
+  .images-container {
+    width: 375px;
+    min-width: auto;
+    padding-bottom: 15px;
+    margin-top: 15px;
+  }
+
+  .item-image {
+    max-height: 200px;
+  }
+
+  .view-more-link {
+    font-size: 0.75rem;
+    margin-bottom: 20px;
+  }
+
+  .tags-container {
+    text-align: center;
+  }
+
+  .tag {
+    font-size: 0.55rem;
+    padding: 4px 8px;
+  }
+}

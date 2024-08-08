@@ -12,6 +12,12 @@
   font-size: 0.6rem;
 }
 
+@media screen and (max-width: 500px) {
+  .container {
+    font-size: 0.5rem;
+  }
+}
+
 .left-menu {
   display: flex;
   flex-direction: row;
@@ -31,4 +37,10 @@
 
 .right-menu {
   margin-right: 20px;
+}
+
+@media screen and (max-width: 500px) {
+  .right-menu {
+    display: none;
+  }
 }

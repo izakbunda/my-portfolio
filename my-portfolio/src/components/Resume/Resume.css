@@ -1,15 +1,43 @@
 .resume-container {
   width: 50vw;
   height: 100%;
-  /* padding: 20px; */
   box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
 .resume-iframe {
-  width: 90%;
-  height: 70vh;
+  width: 100%;
+  height: 60vh;
   border: none;
+}
+
+.download-link-container {
+  margin-bottom: 10px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.download-link {
+  color: blue;
+  text-decoration: underline;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+@media screen and (max-width: 500px) {
+  .resume-container {
+    width: 400px;
+  }
+
+  .resume-iframe {
+    width: 100%;
+  }
+
+  .download-link {
+    font-size: 0.75rem;
+  }
 }

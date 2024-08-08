@@ -31,8 +31,8 @@ function DraggableWindow({
 
     const onMouseDown = (e) => {
       isClicked.current = true;
-      coords.current.startX = e.clientX;
-      coords.current.startY = e.clientY;
+      coords.current.startX = e.clientX || e.touches[0].clientX;
+      coords.current.startY = e.clientY || e.touches[0].clientY;
       onSelect(id); // Mark this window as active
     };
 
@@ -49,23 +49,45 @@ function DraggableWindow({
     const onMouseMove = (e) => {
       if (!isClicked.current) return;
 
-      const nextX = e.clientX - coords.current.startX + coords.current.lastX;
-      const nextY = e.clientY - coords.current.startY + coords.current.lastY;
+      const nextX =
+        (e.clientX || e.touches[0].clientX) -
+        coords.current.startX +
+        coords.current.lastX;
+      const nextY =
+        (e.clientY || e.touches[0].clientY) -
+        coords.current.startY +
+        coords.current.lastY;
 
       windowElement.style.top = `${nextY}px`;
       windowElement.style.left = `${nextX}px`;
     };
 
+    // Add event listeners for both mouse and touch events
     windowElement.addEventListener("mousedown", onMouseDown);
+    windowElement.addEventListener("touchstart", onMouseDown);
+
     windowElement.addEventListener("mouseup", onMouseUp);
+    windowElement.addEventListener("touchend", onMouseUp);
+
     document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("touchmove", onMouseMove);
+
     document.addEventListener("mouseleave", onMouseUp);
+    document.addEventListener("touchcancel", onMouseUp);
 
     return () => {
+      // Remove event listeners for both mouse and touch events
       windowElement.removeEventListener("mousedown", onMouseDown);
+      windowElement.removeEventListener("touchstart", onMouseDown);
+
       windowElement.removeEventListener("mouseup", onMouseUp);
+      windowElement.removeEventListener("touchend", onMouseUp);
+
       document.removeEventListener("mousemove", onMouseMove);
+      document.removeEventListener("touchmove", onMouseMove);
+
       document.removeEventListener("mouseleave", onMouseUp);
+      document.removeEventListener("touchcancel", onMouseUp);
     };
   }, [id, onUpdatePosition, onSelect]);
 
@@ -96,24 +118,14 @@ function HomePage() {
   const [windows, setWindows] = useState([
     {
       id: Date.now() + 1,
-      position: { x: 300, y: 30 },
+      position: { x: 150, y: 40 },
       name: "Resumé",
     },
     {
       id: Date.now(),
-      position: { x: 200, y: 70 },
+      position: { x: 170, y: 80 },
       name: "Izak Bunda",
     },
-    // {
-    //   id: Date.now() + 1,
-    //   position: { x: 300, y: 30 },
-    //   name: "Projects",
-    // },
-    // {
-    //   id: Date.now(),
-    //   position: { x: 200, y: 70 },
-    //   name: "Internships",
-    // },
   ]);
   const [activeWindow, setActiveWindow] = useState(null);
   const [minimizedWindows, setMinimizedWindows] = useState([]);
@@ -137,11 +149,21 @@ function HomePage() {
       return { x, y };
     };
 
+    let newPosition;
+    if (window.innerWidth <= 500) {
+      // Smaller area for phone screens
+      newPosition = getRandomPosition(10, 100, 10, 100);
+    } else {
+      // Default area for larger screens
+      newPosition = getRandomPosition(200, 400, 50, 100);
+    }
+
     const newWindow = {
       id: Date.now(),
-      position: getRandomPosition(200, 400, 50, 100),
+      position: newPosition,
       name,
     };
+
     setWindows((prevWindows) => [...prevWindows, newWindow]);
     setActiveWindow(newWindow.id);
   };
