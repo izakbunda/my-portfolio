@@ -6,7 +6,7 @@ import Body from "../Body/Body";
 
 import "./Window.css";
 
-const Window = forwardRef(({ name, onClose, onMin }, ref) => {
+const Window = forwardRef(({ name, onClose, ref }) => {
   const handleClick = () => {
     // const clickSound = new Audio("/click.mp3");
     // clickSound.play();
@@ -20,9 +20,9 @@ const Window = forwardRef(({ name, onClose, onMin }, ref) => {
   };
 
   return (
-    <div ref={ref} style={{ position: "absolute" }}>
+    <div style={{ position: "absolute" }}>
       <div className="window-container">
-        <div className="header">
+        <div className="header" ref={ref}>
           <div className="window-name">{name}</div>
           <div className="close-button-temp" onClick={handleClick}></div>
           <div className="minimize-button-temp" onClick={handleMinimize}></div>

@@ -30,6 +30,7 @@ function DraggableWindow({
     const windowElement = windowRef.current;
 
     const onMouseDown = (e) => {
+      // e.preventDefault();
       isClicked.current = true;
       coords.current.startX = e.clientX || e.touches[0].clientX;
       coords.current.startY = e.clientY || e.touches[0].clientY;
@@ -37,6 +38,7 @@ function DraggableWindow({
     };
 
     const onMouseUp = (e) => {
+      // e.preventDefault();
       isClicked.current = false;
       coords.current.lastX = windowElement.offsetLeft;
       coords.current.lastY = windowElement.offsetTop;
@@ -49,6 +51,7 @@ function DraggableWindow({
     const onMouseMove = (e) => {
       if (!isClicked.current) return;
 
+      // e.preventDefault();
       const nextX =
         (e.clientX || e.touches[0].clientX) -
         coords.current.startX +
@@ -213,14 +216,9 @@ function HomePage() {
   return (
     <div>
       <MenuBar style={{ zIndex: "1001" }} />
-      <div style={{ position: "relative", zIndex: 1, left: "40px" }}>
+      <div className="files-container">
         {files.map((file, index) => (
-          <File
-            key={file}
-            name={file}
-            style={{ top: `${40 + index * 140}px` }}
-            onClick={addWindow}
-          />
+          <File key={file} name={file} onClick={addWindow} />
         ))}
       </div>
       <Dock windows={windows} onClick={restoreWindow} />
