@@ -1,13 +1,5 @@
 function ContextMenu() {
-  return (
-    <div className="context-menu-container">
-      <ul>
-        <p>bruh</p>
-        <p>bruh</p>
-        <p>bruh</p>
-      </ul>
-    </div>
-  );
+  return <div className="context-menu-container">shhhh in progress....</div>;
 }
 
 export default ContextMenu;

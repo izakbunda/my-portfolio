@@ -61,7 +61,7 @@ const MenuBar = () => {
         </div>
       </div>
 
-      {/* {aboutContext && <ContextMenu />} */}
+      {aboutContext && <ContextMenu />}
 
       <div className="right-menu">{currentTime}</div>
     </div>
