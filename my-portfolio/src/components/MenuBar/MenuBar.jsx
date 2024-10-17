@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./MenuBar.css";
+
+import ContextMenu from "./ContextMenu";
 
 const MenuBar = () => {
   const [currentTime, setCurrentTime] = useState("");
+
+  const [aboutContext, setAboutContext] = useState(false);
 
   useEffect(() => {
     const updateClock = () => {
@@ -27,9 +31,13 @@ const MenuBar = () => {
     return () => clearInterval(timerId);
   }, []);
 
-  const handleClick = () => {
+  const handleClick = (name) => {
     const clickSound = new Audio("/click.mp3");
     clickSound.play();
+
+    if (name === "About") {
+      setAboutContext((prev) => !prev);
+    }
   };
 
   return (
@@ -45,22 +53,16 @@ const MenuBar = () => {
           }}
           onClick={handleClick}
         />
-        <div className="left-icons" onClick={handleClick}>
-          File
+        <div className="left-icons" onClick={() => handleClick("About")}>
+          About
         </div>
-        <div className="left-icons" onClick={handleClick}>
-          Edit
-        </div>
-        <div className="left-icons" onClick={handleClick}>
-          View
-        </div>
-        <div className="left-icons" onClick={handleClick}>
-          Go
-        </div>
-        <div className="left-icons" onClick={handleClick}>
-          Help
+        <div className="left-icons" onClick={() => handleClick("About")}>
+          Settings
         </div>
       </div>
+
+      {/* {aboutContext && <ContextMenu />} */}
+
       <div className="right-menu">{currentTime}</div>
     </div>
   );

@@ -17,7 +17,7 @@
     "1": {
       "name": "Fullstack Social Media Site",
       "date": "May 2024",
-      "tags": ["MongoDB", "Express.js", "React", "Node", "Dark Mode"],
+      "tags": ["MongoDB", "Express.js", "React", "Node"],
       "link": "",
       "images": [
         "/Social/i1.png",
@@ -30,7 +30,7 @@
     "3": {
       "name": "PIGZJ - Parallel Implementation of GZIP using Java",
       "date": "February 2024",
-      "tags": ["Java"],
+      "tags": ["Java", "Command Line"],
       "link": "https://github.com/izakbunda/CS-131/tree/main/3",
       "images": [],
       "info": "I developed PIGZJ, a multithreaded gzip compression filter using Java, designed to parallelize compression tasks and enhance performance on multiprocessor servers, inspired by the pigz program. I implemented efficient data compression by partitioning input streams into fixed-size blocks and utilizing a sliding dictionary for improved compression. Additionally, I coordinated multiple threads to handle dynamic data streams in real-time. By leveraging Java's concurrency libraries and optimizing for various hardware architectures, including x86-64, ARM, and RISC-V-based systems, I achieved significant performance gains over traditional gzip"
@@ -68,7 +68,7 @@
   "internships": {
     "1": {
       "name": "Software Development Intern at Hunter Industries",
-      "date": "Irrigation My Design - Web Tool",
+      "date": "",
       "link": "https://irrigation-my-design.vercel.app/",
       "images": ["/Hunter/imd3.png", "/Hunter/imd2.jpeg", "/Hunter/imd1.jpeg"],
       "info": "Recognizing the potential to innovate irrigation planning, I led the development of 'Irrigation My Design,' an MVP for an interactive sprinkler system mapping tool. This tool, designed to serve 15,000 users and projected to add $80 million in value to the company, utilized a diverse tech stack, including JavaScript, HTML, CSS, React, and Fabric.js. To enhance functionality, I integrated APIs such as Google Maps and Google Earth, enabling advanced data import and imagery features. Throughout the project, I adhered to agile software development practices, incorporating the Scrum framework, iterative design, and Test-Driven Development (TDD) methodologies. My motivation for this project stemmed from the desire to create a user-friendly tool that could significantly improve efficiency in irrigation planning. By collaborating with cross-functional teams, I ensured that the tool met user needs and industry standards. The project involved extensive user research and feedback loops to refine features and usability. Ultimately, 'Irrigation My Design' not only showcased my technical skills but also my ability to lead a project from conception to delivery, resulting in a valuable solution for the landscaping industry."

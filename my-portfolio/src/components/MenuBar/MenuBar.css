@@ -1,6 +1,8 @@
 .container {
-  margin-left: auto;
-  margin-right: auto;
+  position: absolute;
+  z-index: 20000;
+  width: 100vw;
+
   background-color: white;
 
   display: flex;
@@ -10,6 +12,22 @@
   height: 30px;
 
   font-size: 0.6rem;
+}
+
+.context-menu-container {
+  background-color: white;
+  border: solid black;
+  border-width: 0px 2px 2px 2px;
+
+  /* height: 20px; */
+  width: 200px;
+  /* margin-bottom: 5px; */
+
+  position: absolute;
+  top: 30px;
+  left: 40px;
+
+  z-index: 20000;
 }
 
 @media screen and (max-width: 500px) {

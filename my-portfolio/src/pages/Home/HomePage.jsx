@@ -15,7 +15,29 @@ function DraggableWindow({
   isActive,
   isMinimized,
 }) {
+  /**
+   * we need to set windowRef to null at first because it is not mounted to anything
+   * after this component mounts - React will automatically set windowRef to the
+   * DOM elements of the window
+   *
+   * This is why we can call windowRef.current later - to access the current DOM elements
+   * of the window and add and remove event listeners to and from it
+   */
   const windowRef = useRef(null);
+
+  /**
+   * isClicked and coords are not targetting DOM elements, but it is still good practice
+   * to use them in this way since using useState or another hook to persist these variables
+   * will cause them to re-render at every update.
+   *
+   * The nature of coords especially would be horrible if we use useState because the values
+   * of this state could changes hundreds of times in just one dragging motion of the window.
+   *
+   * In terms of isClicked -- sure, we could store this in a useState, however, we are also constantly
+   * changing the value of this variable with the onMouseDown and onMouseUp functions.
+   * If isClicked is using useState - it would trigger a re-render and that would be bad
+   * Imagine if the window re-rendered every time we clicked it. Bad.
+   */
   const isClicked = useRef(false);
   const coords = useRef({
     startX: 0,
@@ -138,8 +160,6 @@ function HomePage() {
   const addWindow = (name) => {
     if (windows.some((window) => window.name === name)) {
       console.log("A window with this name is already open.");
-      // const clickSound = new Audio("/open.mov");
-      // clickSound.play();
       return;
     }
 
@@ -167,13 +187,13 @@ function HomePage() {
       name,
     };
 
-    setWindows((prevWindows) => [...prevWindows, newWindow]);
+    setWindows((prevWindows) => [...prevWindows, newWindow]); // this is just you append to a state that is an array
     setActiveWindow(newWindow.id);
   };
 
   const removeWindow = (id) => {
-    setWindows((prevWindows) =>
-      prevWindows.filter((window) => window.id !== id)
+    setWindows(
+      (prevWindows) => prevWindows.filter((window) => window.id !== id) // and this is how you remove an item from a state that is an arary
     );
     setMinimizedWindows((prevMinimized) =>
       prevMinimized.filter((window) => window.id !== id)
@@ -181,6 +201,13 @@ function HomePage() {
   };
 
   const updateWindowPosition = (id, position) => {
+    /**
+     * this is how you update a state that is an array
+     * the format might be making it more confusing but basically the inside returns an array
+     * 
+     * const newArray = prevWindows.map((window) =>
+      window.id === id ? { ...window, position } : window)
+     */
     setWindows((prevWindows) =>
       prevWindows.map((window) =>
         window.id === id ? { ...window, position } : window
@@ -199,10 +226,10 @@ function HomePage() {
   };
 
   const restoreWindow = (id) => {
-    setMinimizedWindows((prevMinimized) =>
-      prevMinimized.filter((windowId) => windowId !== id)
+    setMinimizedWindows(
+      (prevMinimized) => prevMinimized.filter((windowId) => windowId !== id) // keep everything but the matching id
     );
-    setActiveWindow(id);
+    setActiveWindow(id); // then set that one as the active
   };
 
   const files = [
@@ -216,12 +243,15 @@ function HomePage() {
   return (
     <div>
       <MenuBar style={{ zIndex: "1001" }} />
+
       <div className="files-container">
         {files.map((file, index) => (
           <File key={file} name={file} onClick={addWindow} />
         ))}
       </div>
+
       <Dock windows={windows} onClick={restoreWindow} />
+
       <div
         ref={containerRef}
         style={{

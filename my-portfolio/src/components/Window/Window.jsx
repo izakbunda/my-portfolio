@@ -1,5 +1,4 @@
 import React, { forwardRef } from "react";
-import ListContent from "../ListContent/ListContent";
 import Profile from "../Profile/Profile";
 import Resume from "../Resume/Resume";
 import Body from "../Body/Body";

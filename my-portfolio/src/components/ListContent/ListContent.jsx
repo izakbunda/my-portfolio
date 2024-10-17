@@ -1,30 +1,14 @@
-const projects = {
-  project1: {
-    name: "project1",
-    desc: "this is proj 1",
-  },
-};
+import ListItem from "./ListItem";
 
-const internships = {
-  internship1: {
-    name: "internship1",
-    desc: "this is internship 1",
-  },
-};
+const ListContent = (props) => {
+  const items = props.data;
 
-const clubwork = {
-  clubwork1: {
-    name: "clubwork1",
-    desc: "this is clubwork 1",
-  },
-};
-
-const ListContent = ({ pageName }) => {
   return (
-    <>
-      <div>ListContent Header</div>
-      <div>{pageName}</div>
-    </>
+    <div>
+      {Object.values(items).map((item, index) => (
+        <ListItem index={index} item={item} />
+      ))}
+    </div>
   );
 };
 
