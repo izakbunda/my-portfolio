@@ -6,7 +6,7 @@ const Resume = () => {
     <div className="resume-container">
       <div className="download-link-container">
         <a
-          href="https://drive.google.com/uc?export=download&id=1yUD54t4HnGwMsjMdNWnev3nZCsW8w3t4"
+          href="https://drive.google.com/file/d/110NCCYUz4tEqggGPKPVwG2oogLQVeb97"
           className="download-link"
           download
         >
@@ -15,7 +15,7 @@ const Resume = () => {
       </div>
 
       <iframe
-        src="https://drive.google.com/file/d/1yUD54t4HnGwMsjMdNWnev3nZCsW8w3t4/preview?usp=sharing"
+        src="https://drive.google.com/file/d/110NCCYUz4tEqggGPKPVwG2oogLQVeb97"
         className="resume-iframe"
         title="Resume"
       />
