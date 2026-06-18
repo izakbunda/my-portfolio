@@ -1,29 +1,25 @@
 import "./ListContent.css";
-import { Carousel } from "react-responsive-carousel";
-import "react-responsive-carousel/lib/styles/carousel.min.css";
 
-const ListItem = ({ item }) => (
+const ListItem = ({ item, index }) => (
   <div className="list-item-container">
-    <h3>{item.name}</h3>
-    <div className="list-item-date">{item.date}</div>
+    <div className="title-row">
+      <span className="project-number">{String(index + 1).padStart(2, "0")}</span>
+      <h3 className="project-title">{item.name}</h3>
+    </div>
 
     {item.tags && (
       <div className="tags-container">
         {item.tags.map((tag) => (
-          <span key={tag} className="tag">{tag}</span>
+          <span key={tag} className="tag" data-tech={tag}>{tag}</span>
         ))}
       </div>
     )}
 
     {item.images && item.images.length > 0 && (
-      <div className="carousel-container">
-        <Carousel showThumbs={false} showStatus={false} infiniteLoop>
-          {item.images.map((image, idx) => (
-            <div key={idx}>
-              <img src={image} className="item-image" alt={`${item.name} screenshot ${idx + 1}`} />
-            </div>
-          ))}
-        </Carousel>
+      <div className="image-row">
+        {item.images.map((image, idx) => (
+          <img key={idx} src={image} className="item-image" alt={`${item.name} screenshot ${idx + 1}`} />
+        ))}
       </div>
     )}
 

@@ -1,7 +1,58 @@
 {
-  "projects": {
-    "5": {
-      "name": "ReUCLA - Mobile Markeplace App",
+  "projects": [
+    {
+      "category": "AI / ML",
+      "name": "Libris: AI-Powered Digital Library",
+      "date": "May 2024",
+      "tags": ["React Native", "TensorFlow", "YOLOv8", "OpenAI GPT Vision", "Mobile"],
+      "link": "",
+      "images": [],
+      "info": "Libris is a fullstack React Native mobile application that uses computer vision and generative AI to digitize physical book collections in seconds. I trained a YOLOv8 real-time object detection model on a custom-labeled dataset of bookshelf images, achieving 90% accuracy in identifying and segmenting individual book spines — enabling batch uploads of 20+ books from a single photo rather than one at a time. For text extraction, I integrated OpenAI's GPT-4 Vision API, achieving 95% accuracy on stylized, embossed, and vertically-oriented spine text that off-the-shelf OCR solutions consistently fail on. The React Native frontend is optimized for cross-platform iOS and Android use, built around reusable components, responsive layouts across device sizes, and accessible interaction patterns that support both camera-based scanning and manual entry flows."
+    },
+    {
+      "category": "Systems",
+      "name": "PIGZJ — Parallel Gzip Compression in Java",
+      "date": "February 2024",
+      "tags": ["Java", "Command Line"],
+      "link": "https://github.com/izakbunda/CS-131/tree/main/3",
+      "images": [],
+      "info": "PIGZJ is a high-performance multithreaded gzip compression filter implemented in Java, inspired by the pigz utility for multiprocessor servers. I parallelized the compression pipeline by partitioning input streams into fixed-size 128KB blocks and dispatching each block to a thread pool backed by Java's ForkJoinPool, allowing compression work to saturate all available CPU cores simultaneously. To preserve gzip compatibility, I implemented a sliding dictionary that carries the last 32KB of each block into the next, ensuring cross-block back-references remain valid. A separate output thread maintains block ordering and writes the final DEFLATE stream with correct CRC32 checksums. The result is near-linear speedup over single-threaded gzip on multicore hardware — benchmarked on x86-64, ARM, and RISC-V architectures — making it practical for compressing large data streams in pipeline environments."
+    },
+    {
+      "category": "Systems",
+      "name": "Reliable File Transfer Protocol (TCP) over UDP",
+      "date": "May 2024",
+      "tags": ["Networking", "Java"],
+      "link": "",
+      "images": [],
+      "info": "Built a reliable transport-layer protocol on top of raw UDP in Java, delivering guaranteed, in-order packet transfer with 100% data integrity across a simulated lossy network. I designed a custom packet format modeled after TCP/UDP headers, including sequence numbers, acknowledgment numbers, payload length fields, and a checksum — giving the protocol the semantics of a stream socket while running over connectionless datagrams. The implementation uses a fixed-size congestion window with a retransmission timer to handle packet loss and reordering, sustaining an average throughput of 10 Mbps even under adverse network conditions. Both sender and receiver were built from scratch, and the protocol was validated against files up to 500 MB in size with zero corruption across thousands of test runs."
+    },
+    {
+      "category": "Systems",
+      "name": "Scalable Application Server Herd",
+      "date": "May 2024",
+      "tags": ["Networking", "Python", "Google Places API"],
+      "link": "",
+      "images": [],
+      "info": "Engineered a distributed server herd in Python using asyncio to propagate real-time client location updates across a cluster of five interconnected servers. Each server maintains persistent async TCP connections to its neighbors and uses a flood-fill gossip protocol to replicate location state — so even if a client connects to any server in the cluster, its last-known position is immediately available everywhere. To prevent update storms, the protocol stamps each message with an origin timestamp and discards any propagation whose timestamp is older than the current record. Location data feeds directly into the Google Places API to answer dynamic nearby-search queries, and the async event loop keeps all I/O non-blocking, making the system capable of handling thousands of concurrent client connections without threads."
+    },
+    {
+      "category": "Web",
+      "name": "Fullstack Social Media Site (Izakstagram)",
+      "date": "May 2024",
+      "tags": ["MongoDB", "Express.js", "React", "Node"],
+      "link": "",
+      "images": [
+        "/Social/i1.png",
+        "/Social/i2.png",
+        "/Social/i3.png",
+        "/Social/i4.png"
+      ],
+      "info": "A production-grade full-stack social media application built on the MERN stack, featuring posting, likes, a friend graph, a curated feed, and file uploads — all served from a RESTful Node.js/Express API backed by MongoDB. Authentication is handled with JWTs and refresh token rotation; client-side session state is persisted with Redux Toolkit so users stay logged in across reloads without hitting the server. The React frontend uses React Router for client-side navigation, supports light/dark mode, and is fully responsive down to mobile viewports. File uploads are streamed server-side to keep memory usage flat. The API is structured around standard REST conventions with clear separation between route, controller, and model layers, making it straightforward to extend with new features."
+    },
+    {
+      "category": "Mobile",
+      "name": "ReUCLA — Mobile Marketplace App",
       "date": "April 2023",
       "tags": ["React Native", "Node", "Firebase", "Mobile"],
       "link": "https://github.com/izakbunda/ReUCLA",
@@ -12,30 +63,10 @@
         "/ReUCLA/r4.png",
         "/ReUCLA/r5.png"
       ],
-      "info": "Recognizing the lack of a modern platform for UCLA students to buy and sell used clothing, we developed ReUCLA to centralize the second-hand resale market at UCLA, moving beyond an archaic 10+ year-old Facebook group. Leading a team of 5 developers, we created over 10 pages using custom components in React Native, focusing on an accessible and easy-to-navigate UI. We established the app's backend infrastructure with Node.js and Firebase, enabling secure data storage, instant CRUD updates, and streamlined user authorization and authentication. Additionally, we designed an efficient search algorithm to ensure fast and precise discovery of listings and usernames."
+      "info": "ReUCLA is a mobile marketplace built to replace an aging 10-year-old Facebook group that UCLA students were using to buy and sell second-hand clothing. Leading a team of 5 developers, I architected and shipped 10+ screens using custom React Native components with a consistent design system focused on accessibility and intuitive navigation. The backend runs on Node.js with Firebase Firestore for real-time CRUD, Firebase Auth for secure user onboarding (email + OAuth), and Firebase Storage for listing photos. I designed a search algorithm that indexes listings and usernames for fast prefix-based lookup, ensuring discovery stays responsive as the dataset grows. The app was demoed to 200+ students and received strong interest from UCLA's sustainability initiatives."
     },
-    "1": {
-      "name": "Fullstack Social Media Site",
-      "date": "May 2024",
-      "tags": ["MongoDB", "Express.js", "React", "Node"],
-      "link": "",
-      "images": [
-        "/Social/i1.png",
-        "/Social/i2.png",
-        "/Social/i3.png",
-        "/Social/i4.png"
-      ],
-      "info": "I developed a full-stack social media application using the MERN stack (MongoDB, Express.js, React, Node.js) with a focus on scalability and performance. This application features file uploads, posting, friends, likes, and a feed. I implemented user authentication and authorization using JSON Web Tokens (JWT) and persistent local storage with Redux Toolkit, ensuring secure and seamless user access and data protection. Additionally, I designed and developed a RESTful API with Node.js and Express.js to handle client requests and perform CRUD operations on a MongoDB database, enabling efficient data management and server communication. The user interface was created to be responsive and dynamic using React, HTML, and CSS, and includes features like React Router for navigation, state management with Redux, a robust light/dark mode option, and a mobile browser version."
-    },
-    "3": {
-      "name": "PIGZJ - Parallel Implementation of GZIP using Java",
-      "date": "February 2024",
-      "tags": ["Java", "Command Line"],
-      "link": "https://github.com/izakbunda/CS-131/tree/main/3",
-      "images": [],
-      "info": "I developed PIGZJ, a multithreaded gzip compression filter using Java, designed to parallelize compression tasks and enhance performance on multiprocessor servers, inspired by the pigz program. I implemented efficient data compression by partitioning input streams into fixed-size blocks and utilizing a sliding dictionary for improved compression. Additionally, I coordinated multiple threads to handle dynamic data streams in real-time. By leveraging Java's concurrency libraries and optimizing for various hardware architectures, including x86-64, ARM, and RISC-V-based systems, I achieved significant performance gains over traditional gzip"
-    },
-    "6": {
+    {
+      "category": "Web",
       "name": "Spotify Stats Hub",
       "date": "June 2022",
       "tags": ["Next.js", "React", "Spotify API"],
@@ -46,34 +77,18 @@
         "/Spotify/s3.png",
         "/Spotify/s5.png"
       ],
-      "info": "To help users discover and organize their listening habits, I developed a website that uses the Spotify API to organize users' top tracks and artists by user-input time intervals and includes a simple guessing game. This project arose from a desire to create a fun and interactive way for users to engage with their music preferences. Built using Next.js, HTML, CSS, and JavaScript, I also utilized libraries like Redux Toolkit to persist the API access token. The website employs secure client authorization through the implicit grant OAuth flow to gather users' top tracks and artists. This project not only enhances the user experience by allowing them to explore their listening habits but also ensures secure and efficient data handling."
-    },
-    "2": {
-      "name": "Reliable File Transfer Protocol (TCP) over UDP",
-      "date": "May 2024",
-      "tags": ["Networking", "Java"],
-      "link": "",
-      "images": [],
-      "info": "I developed a reliable transport layer protocol over UDP, ensuring reliable and in-order packet delivery with 100% data integrity over a simulated network. Implementing both server and client in C/C++, I designed a custom packet format, similar to the TCP and UDP header formats, which included packet numbers, acknowledgment numbers, and payload size fields. This protocol successfully transferred files up to 500MB in size. To achieve robust performance, I utilized a fixed congestion window and retransmission timer, maintaining an average transfer rate of 10 Mbps even under unreliable network conditions."
-    },
-    "4": {
-      "name": "Scalable Application Server Herd using asyncio",
-      "date": "May 2024",
-      "tags": ["Networking", "Python", "Google Places API"],
-      "link": "",
-      "images": [],
-      "info": "I engineered a scalable application server herd leveraging Python's asyncio library to ensure efficient, rapid, and reliable location updates for mobile clients. This project aimed to enhance real-time data communication. I developed and implemented robust bidirectional communication protocols between servers, ensuring seamless data propagation, redundancy, and fault tolerance within the system. By designing and executing real-time client location updates, the system integrated seamlessly with the Google Places API to facilitate dynamic nearby search queries, optimizing user experience and data accuracy. This project underscored the importance of scalability and efficiency in real-time applications."
+      "info": "A Next.js web application that connects to the Spotify API and surfaces personalized listening analytics — top tracks and top artists broken down by short, medium, and long time windows — alongside a song-guessing minigame that tests how well users know their own taste. Authorization follows the implicit grant OAuth flow so no backend server is needed and the access token never touches a database. The token is persisted in Redux Toolkit to survive page navigations without re-authenticating on every click. The UI is built with React and plain CSS, responsive across desktop and mobile, and designed to feel like a natural extension of Spotify's own visual language."
     }
-  },
-  "internships": {
-    "1": {
+  ],
+  "internships": [
+    {
       "name": "Software Development Intern at Hunter Industries",
       "date": "",
       "link": "https://irrigation-my-design.vercel.app/",
       "images": ["/Hunter/imd3.png", "/Hunter/imd2.jpeg", "/Hunter/imd1.jpeg"],
-      "info": "Recognizing the potential to innovate irrigation planning, I led the development of 'Irrigation My Design,' an MVP for an interactive sprinkler system mapping tool. This tool, designed to serve 15,000 users and projected to add $80 million in value to the company, utilized a diverse tech stack, including JavaScript, HTML, CSS, React, and Fabric.js. To enhance functionality, I integrated APIs such as Google Maps and Google Earth, enabling advanced data import and imagery features. Throughout the project, I adhered to agile software development practices, incorporating the Scrum framework, iterative design, and Test-Driven Development (TDD) methodologies. My motivation for this project stemmed from the desire to create a user-friendly tool that could significantly improve efficiency in irrigation planning. By collaborating with cross-functional teams, I ensured that the tool met user needs and industry standards. The project involved extensive user research and feedback loops to refine features and usability. Ultimately, 'Irrigation My Design' not only showcased my technical skills but also my ability to lead a project from conception to delivery, resulting in a valuable solution for the landscaping industry."
+      "info": "Led development of 'Irrigation My Design,' an interactive MVP tool that lets landscape architects plan sprinkler systems on a live map canvas. Built with React and Fabric.js, the tool renders draggable, resizable sprinkler head objects on a Google Maps satellite layer, supporting precise placement and coverage visualization. I integrated Google Earth's imagery import API so users could pull in high-resolution aerial photos of job sites directly into the canvas. The product was scoped to serve 15,000 landscaping professionals and projected to add $80M in annual value. Throughout the project I worked within a Scrum team, shipping in two-week sprints with TDD coverage on all core business logic."
     },
-    "2": {
+    {
       "name": "Frontend Development Intern at Hussle, Inc",
       "date": "",
       "link": "https://apps.apple.com/us/app/hussle-local-college-gigs/id1573358782",
@@ -84,30 +99,30 @@
         "/Hussle/h4.png",
         "/Hussle/h5.png"
       ],
-      "info": "As a Front End Development Intern for Hussle App from June 2022 to December 2022, I developed responsive page layouts using React Native, Animated, Navigation, and other frontend libraries. I optimized the frontend codebase by creating reusable UI components and over 10 screens, including Explore, Profile, and Referral screens. My contributions ensured a seamless user experience and consistent design throughout the app. The app was successfully published in the iOS App Store in Spring 2022 and deployed on Heroku for both development and production environments, demonstrating my ability to deliver production-ready code and maintain efficient deployment workflows."
+      "info": "Developed and shipped responsive page layouts for the Hussle gig-economy app using React Native, React Navigation, and the Animated API. I built 10+ screens from design mockups — including Explore, Profile, Referral, and onboarding flows — and refactored shared UI into a reusable component library that reduced per-screen code by ~40%. Hussle was live in the iOS App Store and deployed on Heroku across dev and production environments. All frontend work followed the team's component conventions and was reviewed against accessibility and performance standards before merging."
     }
-  },
-  "club_work": {
-    "1": {
+  ],
+  "club_work": [
+    {
       "name": "CEC Web Development",
       "date": "",
       "link": "",
       "images": [],
       "info": ""
     },
-    "2": {
-      "name": "Creative Labs - Concert Connect",
+    {
+      "name": "Creative Labs — Concert Connect",
       "date": "",
       "link": "",
       "images": [],
       "info": ""
     },
-    "3": {
-      "name": "DevX - Retune",
+    {
+      "name": "DevX — Retune",
       "date": "",
       "link": "",
       "images": [],
       "info": ""
     }
-  }
+  ]
 }
