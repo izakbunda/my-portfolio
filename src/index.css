@@ -5,19 +5,9 @@
 }
 
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
-
-  color-scheme: light dark;
   color: #121212;
-  background-color: #f2f2f2;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
   height: 100%;
 }
 
@@ -27,11 +17,11 @@ body {
   padding: 0;
   height: 100%;
   overflow: hidden;
+  user-select: none;
 
-  -webkit-user-select: none; /* Safari */
-  -moz-user-select: none; /* Firefox */
-  -ms-user-select: none; /* Internet Explorer/Edge */
-  user-select: none; /* Standard */
+  /* Classic Mac OS System 7/9 desktop */
+  background-color: #d4d4d4;
+  background-image: url("data:image/svg+xml,%3Csvg width='4' height='4' viewBox='0 0 4 4' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23888'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23888'/%3E%3C/svg%3E");
 }
 
 #root {

@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Outer box with stepped corners (matches person icon style) -->
+  <polygon points="8,4 56,4 60,8 60,56 56,60 8,60 4,56 4,8"
+           fill="white" stroke="black" stroke-width="5" stroke-linejoin="miter"/>
+  <!-- "i" dot -->
+  <rect x="10" y="14" width="8" height="8" fill="black"/>
+  <!-- "i" stem -->
+  <rect x="10" y="26" width="8" height="24" fill="black"/>
+  <!-- "n" left post -->
+  <rect x="24" y="26" width="8" height="24" fill="black"/>
+  <!-- "n" top arch -->
+  <rect x="24" y="26" width="22" height="8" fill="black"/>
+  <!-- "n" right post -->
+  <rect x="38" y="26" width="8" height="24" fill="black"/>
+</svg>

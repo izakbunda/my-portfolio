@@ -1,17 +1,19 @@
 .window-container {
   position: absolute;
-
   background-color: #ffffff;
   width: 50vw;
   max-height: 80vh;
   min-width: 770px;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  border: 1px solid black;
+  border-top: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-right: 3px solid #000000;
+  border-bottom: 3px solid #000000;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 @media screen and (max-width: 500px) {
@@ -23,7 +25,6 @@
 }
 
 .header {
-  /* background-color: rgb(164, 164, 164); */
   background: repeating-linear-gradient(
     0deg,
     grey,
@@ -33,12 +34,14 @@
   );
   width: 100%;
   min-height: 1.5rem;
-  border: 1px solid black;
-
+  border-bottom: 1px solid black;
   position: relative;
   font-size: 0.75rem;
+  cursor: grab;
+}
 
-  cursor: pointer;
+.header:active {
+  cursor: grabbing;
 }
 
 .sub-header {
@@ -46,16 +49,12 @@
   width: 100%;
   min-height: 1.5rem;
   border-bottom: 1px solid black;
-
-  font-size: 0.5rem;
-
   position: relative;
 }
 
 .window-name {
   background-color: rgb(213, 213, 213);
-  padding: 2px 10px 2px 10px;
-
+  padding: 2px 10px;
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
@@ -66,12 +65,10 @@
   width: 0.75rem;
   height: 0.75rem;
   background-color: #ff0000;
-
   position: absolute;
   left: 10px;
   top: 5px;
   cursor: pointer;
-
   border-radius: 100px;
 }
 
@@ -79,16 +76,19 @@
   width: 0.75rem;
   height: 0.75rem;
   background-color: #ffd466;
-
   position: absolute;
   left: 30px;
   top: 5px;
   cursor: pointer;
-
   border-radius: 100px;
 }
 
 .body {
   padding: 1rem;
-  overflow: scroll;
+  overflow-y: auto;
+  overflow-x: hidden;
+  flex: 1;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 0.5rem;
 }

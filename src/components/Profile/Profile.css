@@ -67,7 +67,6 @@
   align-self: flex-start;
   font-size: 1rem;
   margin-bottom: 10px;
-  font-family: "Inter", sans-serif;
 }
 
 .view-resume-link {
@@ -91,9 +90,10 @@
 
 .tag-profile {
   display: inline-block;
-  background-color: #f0f0f0;
-  color: #333;
-  border-radius: 4px;
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #000000;
+  border-radius: 0;
   padding: 5px 10px;
   margin-right: 5px;
   font-size: 0.75rem;
