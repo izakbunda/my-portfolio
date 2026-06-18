@@ -83,6 +83,29 @@
   border-radius: 100px;
 }
 
+.fullscreen-button-temp {
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: #00ca4e;
+  position: absolute;
+  left: 50px;
+  top: 5px;
+  cursor: pointer;
+  border-radius: 100px;
+}
+
+.button-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.window-fullscreen {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  min-width: unset !important;
+}
+
 .body {
   padding: 1rem;
   overflow-y: auto;

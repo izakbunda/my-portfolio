@@ -4,7 +4,7 @@ import Resume from "../Resume/Resume";
 import Body from "../Body/Body";
 import "./Window.css";
 
-const Window = forwardRef(({ name, onClose, onMin }, ref) => {
+const Window = forwardRef(({ name, onClose, onMin, onFullscreen, isFullscreen }, ref) => {
   const handleMinimize = () => {
     const clickSound = new Audio("/click.mp3");
     clickSound.play();
@@ -12,11 +12,12 @@ const Window = forwardRef(({ name, onClose, onMin }, ref) => {
   };
 
   return (
-    <div className="window-container">
+    <div className={`window-container${isFullscreen ? " window-fullscreen" : ""}`}>
       <div className="header" ref={ref}>
         <div className="window-name">{name}</div>
         <div className="close-button-temp" onClick={onClose}></div>
-        <div className="minimize-button-temp" onClick={handleMinimize}></div>
+        <div className={`minimize-button-temp${isFullscreen ? " button-disabled" : ""}`} onClick={isFullscreen ? undefined : handleMinimize}></div>
+        <div className="fullscreen-button-temp" onClick={onFullscreen}></div>
       </div>
       <div className="sub-header"></div>
       <div className="body">
