@@ -9,6 +9,16 @@ function DraggableWindow({ id, position, name, onRemove, onUpdatePosition, onSel
   const headerRef = useRef(null);
   const isClicked = useRef(false);
   const coords = useRef({ startX: 0, startY: 0, lastX: position.x, lastY: position.y });
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const isFullscreenRef = useRef(false);
+
+  const toggleFullscreen = () => {
+    setIsFullscreen((prev) => {
+      isFullscreenRef.current = !prev;
+      return !prev;
+    });
+    onSelect(id);
+  };
 
   useEffect(() => {
     const headerEl = headerRef.current;
@@ -16,6 +26,7 @@ function DraggableWindow({ id, position, name, onRemove, onUpdatePosition, onSel
     if (!headerEl || !windowEl) return;
 
     const onMouseDown = (e) => {
+      if (isFullscreenRef.current) return;
       isClicked.current = true;
       coords.current.startX = e.clientX ?? e.touches?.[0].clientX;
       coords.current.startY = e.clientY ?? e.touches?.[0].clientY;
@@ -63,13 +74,20 @@ function DraggableWindow({ id, position, name, onRemove, onUpdatePosition, onSel
 
   if (isMinimized) return null;
 
+  const wrapperStyle = isFullscreen
+    ? { position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", zIndex: 99999 }
+    : { top: `${position.y}px`, left: `${position.x}px`, position: "absolute", zIndex };
+
   return (
-    <div
-      ref={windowRef}
-      onMouseDown={() => onSelect(id)}
-      style={{ top: `${position.y}px`, left: `${position.x}px`, position: "absolute", zIndex }}
-    >
-      <Window ref={headerRef} name={name} onClose={() => onRemove(id)} onMin={() => onMinimize(id)} />
+    <div ref={windowRef} onMouseDown={() => !isFullscreen && onSelect(id)} style={wrapperStyle}>
+      <Window
+        ref={headerRef}
+        name={name}
+        onClose={() => onRemove(id)}
+        onMin={() => onMinimize(id)}
+        onFullscreen={toggleFullscreen}
+        isFullscreen={isFullscreen}
+      />
     </div>
   );
 }
