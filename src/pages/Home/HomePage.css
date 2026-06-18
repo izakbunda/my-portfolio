@@ -6,7 +6,7 @@
 
 .mobile-content {
   position: absolute;
-  top: calc(30px + 1rem);
+  top: calc(30px + 48px + 1rem);
   bottom: calc(72px + 1rem);
   left: 1rem;
   right: 1rem;
@@ -14,4 +14,8 @@
   flex-direction: column;
   overflow: hidden;
   font-size: 0.5rem;
+}
+
+.mobile-content.banner-dismissed {
+  top: calc(30px + 1rem);
 }
