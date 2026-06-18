@@ -12,7 +12,30 @@
 
 @media screen and (max-width: 500px) {
   .icon {
-    height: 40px;
+    height: 36px;
+  }
+
+  .dockfile-label {
+    display: block;
+    position: static;
+    transform: none;
+    font-size: 0.45rem;
+    padding: 2px 0 0;
+    border: none;
+    background: transparent;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+
+  .dockfile-container:hover .dockfile-label {
+    position: static;
+    bottom: auto;
+    left: auto;
+    transform: none;
+    border: none;
+    background: transparent;
+    padding: 2px 0 0;
+    font-size: 0.45rem;
   }
 }
 

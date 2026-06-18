@@ -5,7 +5,7 @@ import data from "../../assets/Experience.json";
 
 const Body = ({ name }) => {
   return (
-    <div className="body">
+    <div className="body-content">
       {name === "Projects" && <ListContent name={name} data={data.projects} />}
       {name === "Internships" && (
         <ListContent name={name} data={data.internships} />

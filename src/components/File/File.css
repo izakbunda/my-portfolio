@@ -3,7 +3,7 @@
   flex-direction: column;
   gap: 8px;
   justify-content: flex-start;
-  padding: 10px 10px;
+  padding: 15px 15px;
   position: absolute;
   top: 30px;
   left: 0;
@@ -19,12 +19,6 @@
   justify-content: center;
 }
 
-@media screen and (max-width: 500px) {
-  .file-container {
-    width: 60px;
-    height: 80px;
-  }
-}
 
 .file-container:active .filename {
   background-color: #0057d8;
@@ -38,7 +32,7 @@
 
 @media screen and (max-width: 500px) {
   .desktop-icon {
-    height: 60px;
+    height: 38px;
   }
 }
 
@@ -50,6 +44,7 @@
 
 @media screen and (max-width: 500px) {
   .filename {
-    font-size: 0.5rem;
+    font-size: 0.45rem;
+    margin-top: 4px;
   }
 }

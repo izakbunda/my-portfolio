@@ -7,8 +7,8 @@ const ICON_MAP = {
   "Internships": "/icons/internships.svg",
 };
 
-const File = ({ name, style, onClick }) => (
-  <div className="file-container" style={style} onClick={() => onClick(name)}>
+const File = ({ name, style, onClick, isActive }) => (
+  <div className={`file-container${isActive ? " file-active" : ""}`} style={style} onClick={() => onClick(name)}>
     <img src={ICON_MAP[name] ?? "/file.png"} className="desktop-icon" alt={name} />
     <div className="filename">{name}</div>
   </div>
