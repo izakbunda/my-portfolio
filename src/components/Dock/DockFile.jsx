@@ -1,19 +1,27 @@
-import React from "react";
 import "./DockFile.css";
+
+const ICON_MAP = {
+  "Izak Bunda": "/icons/person.svg",
+  "Resumé": "/icons/resume.svg",
+  "Projects": "/icons/projects.svg",
+  "Internships": "/icons/internships.svg",
+  "Github": "/icons/github.svg",
+  "Linkedin": "/icons/linkedin.svg",
+};
 
 const DockFile = ({ name, onClick, link }) => {
   const handleClick = () => {
     const clickSound = new Audio("/click.mp3");
     clickSound.play();
-
-    onClick();
+    onClick?.();
   };
+
   return (
     <div className="dockfile-container" onClick={handleClick}>
       <a target="_blank" rel="noopener noreferrer" href={link}>
-        <img src="/file.png" className="icon" alt={name} />
+        <img src={ICON_MAP[name] ?? "/file.png"} className="icon" alt={name} />
       </a>
-      <p style={{ fontSize: "0.5rem", marginTop: "5px" }}>{name}</p>
+      <p className="dockfile-label">{name}</p>
     </div>
   );
 };

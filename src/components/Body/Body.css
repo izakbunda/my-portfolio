@@ -16,9 +16,6 @@
   border-bottom: 2px solid black;
 }
 
-.item-row p {
-  font-family: "Inter", sans-serif;
-}
 
 .images-container {
   display: flex;

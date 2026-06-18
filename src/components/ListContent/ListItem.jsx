@@ -1,83 +1,40 @@
 import "./ListContent.css";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 
-import Slider from "react-slick";
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
+const ListItem = ({ item }) => (
+  <div className="list-item-container">
+    <h3>{item.name}</h3>
+    <div className="list-item-date">{item.date}</div>
 
-import { useMediaQuery } from "react-responsive";
-
-const ListItem = (props) => {
-  const item = props.item;
-  const index = props.index;
-
-  const isMobile = useMediaQuery({ maxWidth: 500 });
-
-  const renderTags = (tags) => {
-    return (
+    {item.tags && (
       <div className="tags-container">
-        {tags.map((tag, index) => (
-          <span key={index} className="tag">
-            {tag}
-          </span>
+        {item.tags.map((tag) => (
+          <span key={tag} className="tag">{tag}</span>
         ))}
       </div>
-    );
-  };
+    )}
 
-  var settings = {
-    dots: true,
-    infinite: true,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    slidesToShow: isMobile ? 1 : 2,
-  };
+    {item.images && item.images.length > 0 && (
+      <div className="carousel-container">
+        <Carousel showThumbs={false} showStatus={false} infiniteLoop>
+          {item.images.map((image, idx) => (
+            <div key={idx}>
+              <img src={image} className="item-image" alt={`${item.name} screenshot ${idx + 1}`} />
+            </div>
+          ))}
+        </Carousel>
+      </div>
+    )}
 
-  return (
-    <div className="list-item-container">
-      <h3>{item.name}</h3>
-      <div style={{ marginTop: "10px", fontSize: "0.75rem" }}>{item.date}</div>
+    <p className="list-item-info">{item.info}</p>
 
-      {item.tags && renderTags(item.tags)}
-
-      {item.images && item.images.length > 0 && (
-        <div className="carousel-container">
-          <Slider
-            {...settings}
-            style={{
-              marginTop: "30px",
-              marginBottom: "30px",
-            }}
-          >
-            {item.images.map((image, idx) => (
-              <div key={idx}>
-                <img src={image} className="item-image" />
-              </div>
-            ))}
-          </Slider>
-        </div>
-      )}
-
-      <p
-        style={{
-          fontSize: 16,
-          fontFamily: "Helvetica",
-        }}
-      >
-        {item.info}
-      </p>
-
-      {item.link && (
-        <a
-          href={item.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="view-more-link"
-        >
-          View more here
-        </a>
-      )}
-    </div>
-  );
-};
+    {item.link && (
+      <a href={item.link} target="_blank" rel="noopener noreferrer" className="view-more-link">
+        View more here
+      </a>
+    )}
+  </div>
+);
 
 export default ListItem;

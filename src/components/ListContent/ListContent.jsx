@@ -1,15 +1,11 @@
 import ListItem from "./ListItem";
 
-const ListContent = (props) => {
-  const items = props.data;
-
-  return (
-    <div>
-      {Object.values(items).map((item, index) => (
-        <ListItem index={index} item={item} />
-      ))}
-    </div>
-  );
-};
+const ListContent = ({ data }) => (
+  <div>
+    {Object.values(data).map((item, index) => (
+      <ListItem key={index} index={index} item={item} />
+    ))}
+  </div>
+);
 
 export default ListContent;

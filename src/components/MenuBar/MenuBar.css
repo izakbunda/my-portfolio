@@ -2,33 +2,26 @@
   position: absolute;
   z-index: 20000;
   width: 100vw;
-
   background-color: white;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   height: 30px;
-
   font-size: 0.6rem;
+  font-family: "pixChicago", monospace;
 }
 
 .context-menu-container {
   background-color: white;
   border: solid black;
   border-width: 0px 2px 2px 2px;
-
-  /* height: 20px; */
   width: 200px;
-  height: 20px;
-  /* margin-bottom: 5px; */
-
+  padding: 4px 8px;
   position: absolute;
   top: 30px;
   left: 40px;
-
   z-index: 20000;
+  font-size: 0.6rem;
 }
 
 @media screen and (max-width: 500px) {
@@ -40,7 +33,15 @@
 .left-menu {
   display: flex;
   flex-direction: row;
+  align-items: center;
   margin-left: 10px;
+}
+
+.menu-logo {
+  padding: 4px 7px;
+  margin-right: 5px;
+  cursor: pointer;
+  height: 22px;
 }
 
 .left-icons {
