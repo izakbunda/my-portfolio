@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./MenuBar.css";
 import ContextMenu from "./ContextMenu";
 
-const MenuBar = () => {
+const MenuBar = ({ onShowBanner }) => {
   const [currentTime, setCurrentTime] = useState("");
   const [aboutContext, setAboutContext] = useState(false);
 
@@ -40,6 +40,11 @@ const MenuBar = () => {
           onClick={handleAbout}
         />
         <div className="left-icons" onClick={handleAbout}>About</div>
+        {onShowBanner && (
+          <div className="left-icons" onClick={onShowBanner}>
+            Desktop version
+          </div>
+        )}
       </div>
       {aboutContext && <ContextMenu />}
       <div className="right-menu">{currentTime}</div>

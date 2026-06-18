@@ -8,7 +8,7 @@ const Profile = () => {
   const bio3 =
     "I enjoy working at the intersection of engineering and product: building tools, thinking through how people actually use them, and shaping solutions that deliver real value for the teams and organizations using them.";
 
-  const tags = ["AI / LLM", "full-stack", "product", "engineering"];
+  const tags = ["AI", "LLM", "full-stack", "product"];
 
   return (
     <div className="profile-container">
@@ -19,14 +19,14 @@ const Profile = () => {
           <div className="profile-title">AI Software Engineer @ KPMG</div>
           <div className="profile-education">Computer Science, BS. UCLA</div>
           <div className="profile-location">
-            <span>📍 Denver, CO</span>
+            <span>📍 Denver, CO - 🏠 San Diego, CA</span>
           </div>
         </div>
       </div>
       <div className="row2">
         <div className="profile-section">
           <h3>Interests</h3>
-          <div className="tags-container">
+          <div className="profile-tags-container">
             {tags.map((tag) => (
               <span key={tag} className="tag-profile">{tag}</span>
             ))}

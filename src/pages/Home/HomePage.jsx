@@ -3,6 +3,7 @@ import Window from "../../components/Window/Window";
 import File from "../../components/File/File";
 import MenuBar from "../../components/MenuBar/MenuBar";
 import Dock from "../../components/Dock/Dock";
+import MobileBanner from "../../components/MobileBanner/MobileBanner";
 import "./HomePage.css";
 
 const useIsMobile = () => {
@@ -110,6 +111,7 @@ function DraggableWindow({ id, position, name, onRemove, onUpdatePosition, onSel
 function HomePage() {
   const isMobile = useIsMobile();
   const [activeApp, setActiveApp] = useState("Izak Bunda");
+  const [bannerDismissed, setBannerDismissed] = useState(false);
   const mobileWindowRef = useRef(null);
 
   const [windows, setWindows] = useState([
@@ -178,8 +180,9 @@ function HomePage() {
   if (isMobile) {
     return (
       <div className="mobile-layout">
-        <MenuBar />
-        <div className="mobile-content">
+        <MenuBar onShowBanner={() => setBannerDismissed(false)} />
+        {!bannerDismissed && <MobileBanner onDismiss={() => setBannerDismissed(true)} />}
+        <div className={`mobile-content${bannerDismissed ? " banner-dismissed" : ""}`}>
           {activeApp && (
             <Window
               ref={mobileWindowRef}
