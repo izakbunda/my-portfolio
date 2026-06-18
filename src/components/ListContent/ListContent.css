@@ -79,100 +79,70 @@
   margin: 5px 3px 5px 0;
   font-size: 0.65rem;
   font-weight: 600;
-  background-color: #1a1a1a;
-  color: #e0e0e0;
-  border: 1px solid #444;
+  background-color: #f1f1f1;
+  color: #000;
+  border: 1px solid #999;
 }
 
 [data-tech="React Native"],
 [data-tech="React"] {
-  background: #20232a;
-  color: #61dafb;
   border-color: #61dafb;
 }
 
 [data-tech="Node"] {
-  background: #1a1a1a;
-  color: #4caf50;
   border-color: #4caf50;
 }
 
 [data-tech="Firebase"] {
-  background: #1a1200;
-  color: #ffca28;
   border-color: #ffca28;
 }
 
 [data-tech="MongoDB"] {
-  background: #0d1a0d;
-  color: #47a248;
   border-color: #47a248;
 }
 
 [data-tech="Express.js"] {
-  background: #111;
-  color: #ccc;
-  border-color: #555;
+  border-color: #888;
 }
 
 [data-tech="Python"] {
-  background: #1a2a3a;
-  color: #4fc3f7;
   border-color: #4fc3f7;
 }
 
 [data-tech="Java"],
 [data-tech="Command Line"] {
-  background: #1a0d00;
-  color: #ff9800;
   border-color: #ff9800;
 }
 
 [data-tech="TensorFlow"] {
-  background: #1a0f00;
-  color: #ff6f00;
   border-color: #ff6f00;
 }
 
 [data-tech="YOLOv8"] {
-  background: #1a0020;
-  color: #ce93d8;
   border-color: #ce93d8;
 }
 
 [data-tech="OpenAI GPT Vision"] {
-  background: #0d0d1a;
-  color: #a78bfa;
   border-color: #a78bfa;
 }
 
 [data-tech="Next.js"] {
-  background: #111;
-  color: #fff;
-  border-color: #555;
+  border-color: #888;
 }
 
 [data-tech="Spotify API"] {
-  background: #001a08;
-  color: #1db954;
   border-color: #1db954;
 }
 
 [data-tech="Networking"] {
-  background: #0d0d1a;
-  color: #818cf8;
   border-color: #818cf8;
 }
 
 [data-tech="Google Places API"] {
-  background: #001229;
-  color: #4285f4;
   border-color: #4285f4;
 }
 
 [data-tech="Mobile"] {
-  background: #1a1a2e;
-  color: #7986cb;
   border-color: #7986cb;
 }
 
@@ -204,16 +174,39 @@
 }
 
 .view-more-link {
-  font-size: 0.75rem;
+  display: inline-block;
   margin-top: 1em;
-  color: blue;
+  padding: 6px 16px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: #000;
+  background: #f1f1f1;
+  border-top: 1px solid #000000;
+  border-left: 1px solid #000000;
+  border-right: 3px solid #000000;
+  border-bottom: 3px solid #000000;
+  border-radius: 0;
+  text-decoration: none;
 }
 
 @media screen and (max-width: 500px) {
   .list-item-container {
-    width: 80vw;
-    padding: 2em 1.8em;
+    width: 100%;
+    padding: 1.2em 1.6em;
+    margin-bottom: 1.2em;
     overflow: hidden;
+    gap: 1em;
+    padding-bottom: 2em;
+  }
+
+  .title-row {
+    padding-top: 2em;
+  }
+
+  .list-item-info {
+    font-size: 0.85rem;
+    margin: 0 1em 0 1em;
   }
 
   .image-row {
@@ -224,12 +217,23 @@
     height: 130px;
   }
 
+  .tags-container {
+    justify-content: flex-start;
+    text-align: left;
+    margin: 0 1em 0 1em;
+  }
+
   .tag {
     font-size: 0.55rem;
-    padding: 3px 7px;
+    padding: 2px 6px;
+    margin: 0;
   }
 
   .project-title {
     font-size: 1.05rem;
+  }
+
+  .view-more-link {
+    margin: 0 1em;
   }
 }

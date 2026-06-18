@@ -3,8 +3,19 @@ import Window from "../../components/Window/Window";
 import File from "../../components/File/File";
 import MenuBar from "../../components/MenuBar/MenuBar";
 import Dock from "../../components/Dock/Dock";
+import "./HomePage.css";
 
-function DraggableWindow({ id, position, name, onRemove, onUpdatePosition, onSelect, onMinimize, zIndex, isMinimized }) {
+const useIsMobile = () => {
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth <= 500);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth <= 500);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return isMobile;
+};
+
+function DraggableWindow({ id, position, name, onRemove, onUpdatePosition, onSelect, onMinimize, zIndex, isMinimized, isMobile }) {
   const windowRef = useRef(null);
   const headerRef = useRef(null);
   const isClicked = useRef(false);
@@ -21,6 +32,8 @@ function DraggableWindow({ id, position, name, onRemove, onUpdatePosition, onSel
   };
 
   useEffect(() => {
+    if (isMobile) return;
+
     const headerEl = headerRef.current;
     const windowEl = windowRef.current;
     if (!headerEl || !windowEl) return;
@@ -70,7 +83,7 @@ function DraggableWindow({ id, position, name, onRemove, onUpdatePosition, onSel
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("touchmove", onMouseMove);
     };
-  }, [id, onUpdatePosition, onSelect]);
+  }, [id, isMobile, onUpdatePosition, onSelect]);
 
   if (isMinimized) return null;
 
@@ -87,12 +100,18 @@ function DraggableWindow({ id, position, name, onRemove, onUpdatePosition, onSel
         onMin={() => onMinimize(id)}
         onFullscreen={toggleFullscreen}
         isFullscreen={isFullscreen}
+        isMobile={false}
       />
     </div>
   );
 }
 
+
 function HomePage() {
+  const isMobile = useIsMobile();
+  const [activeApp, setActiveApp] = useState("Izak Bunda");
+  const mobileWindowRef = useRef(null);
+
   const [windows, setWindows] = useState([
     { id: Date.now() + 1, position: { x: 150, y: 40 }, name: "Resumé" },
     { id: Date.now(), position: { x: 170, y: 80 }, name: "Izak Bunda" },
@@ -100,6 +119,8 @@ function HomePage() {
   const [minimizedWindows, setMinimizedWindows] = useState([]);
   const [zMap, setZMap] = useState({});
   const zCounter = useRef(10);
+
+  const files = ["Izak Bunda", "Resumé", "Projects", "Internships"];
 
   const addWindow = (name) => {
     if (windows.some((w) => w.name === name)) return;
@@ -112,11 +133,11 @@ function HomePage() {
       y: Math.floor(Math.random() * (maxY - minY + 1)) + minY,
     });
 
-    const newPosition = window.innerWidth <= 500
-      ? getRandomPosition(10, 100, 10, 100)
-      : getRandomPosition(200, 400, 50, 100);
-
-    const newWindow = { id: Date.now(), position: newPosition, name };
+    const newWindow = {
+      id: Date.now(),
+      position: getRandomPosition(200, 400, 50, 100),
+      name,
+    };
     setWindows((prev) => [...prev, newWindow]);
     setZMap((prev) => ({ ...prev, [newWindow.id]: ++zCounter.current }));
   };
@@ -145,7 +166,36 @@ function HomePage() {
     setZMap((prev) => ({ ...prev, [id]: ++zCounter.current }));
   };
 
-  const files = ["Izak Bunda", "Resumé", "Projects", "Internships"];
+  const mobileDock = [
+    { name: "Izak Bunda", onClick: () => setActiveApp("Izak Bunda") },
+    { name: "Resumé", onClick: () => setActiveApp("Resumé") },
+    { name: "Projects", onClick: () => setActiveApp("Projects") },
+    { name: "Internships", onClick: () => setActiveApp("Internships") },
+    { name: "Github", link: "https://www.github.com/izakbunda" },
+    { name: "Linkedin", link: "https://www.linkedin.com/in/izakbunda" },
+  ];
+
+  if (isMobile) {
+    return (
+      <div className="mobile-layout">
+        <MenuBar />
+        <div className="mobile-content">
+          {activeApp && (
+            <Window
+              ref={mobileWindowRef}
+              name={activeApp}
+              onClose={() => {}}
+              onMin={() => {}}
+              onFullscreen={() => {}}
+              isFullscreen={true}
+              isMobile={true}
+            />
+          )}
+        </div>
+        <Dock mobileDock={mobileDock} />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -169,6 +219,7 @@ function HomePage() {
             onMinimize={minimizeWindow}
             zIndex={zMap[w.id] ?? 1}
             isMinimized={minimizedWindows.includes(w.id)}
+            isMobile={false}
           />
         ))}
       </div>

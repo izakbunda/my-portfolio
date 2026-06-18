@@ -19,7 +19,15 @@
 
 @media screen and (max-width: 500px) {
   .dock-container {
-    height: 80px;
+    position: fixed;
+    height: 72px;
+    width: fit-content;
+    padding: 0 10px;
+  }
+
+  .applications {
+    width: auto;
+    gap: 6px;
   }
 }
 
