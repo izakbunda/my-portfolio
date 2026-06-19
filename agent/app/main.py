@@ -44,7 +44,7 @@ ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:5174",
     "http://localhost:5175",
-    # TODO: add your Vercel production URL here, e.g. "https://your-portfolio.vercel.app"
+    "https://my-portfolio-production-e477.up.railway.app",
 ]
 
 app.add_middleware(
