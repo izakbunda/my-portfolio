@@ -268,7 +268,7 @@ function HomePage() {
   const zCounter = useRef(10);
   const cascadeIndex = useRef(0);
 
-  const files = ["Izak Bunda", "Resumé", "Projects", "Internships"];
+  const files = ["Izak Bunda", "Resumé", "Projects", "Internships", "Chat"];
 
   const addWindow = (name, initialSize, resizable = true) => {
     if (windows.some((w) => w.name === name)) return;
