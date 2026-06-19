@@ -1,11 +1,44 @@
 import json
-from fastapi import FastAPI
+import re
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 from app.agent import agent
 
+limiter = Limiter(key_func=get_remote_address)
+
+# Patterns that indicate prompt injection / jailbreak attempts.
+# Checked against the latest user message before hitting the LLM.
+_JAILBREAK_PATTERNS = re.compile(
+    r"ignore (your |all )?(previous |prior |above |system )?instructions?"
+    r"|you are now"
+    r"|act as (a |an )?(different|new|unrestricted|free|unfiltered|jailbroken|evil|dan\b)"
+    r"|\bdan\b.*mode"
+    r"|pretend (you are|to be) (a )?(different|general|unrestricted)"
+    r"|forget (your |all )?(previous |prior )?instructions?"
+    r"|reveal (your |the )?(system )?prompt"
+    r"|what (are|were) your instructions"
+    r"|override (your )?(safety|content|system)"
+    r"|disregard (your |all )?",
+    re.IGNORECASE,
+)
+
+_JAILBREAK_REPLY = (
+    "I'm just here to answer questions about Izak. What would you like to know about him?"
+)
+
+
+async def _canned_stream(text: str):
+    yield f"data: {json.dumps({'type': 'text', 'content': text})}\n\n"
+    yield "data: [DONE]\n\n"
+
 app = FastAPI()
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,7 +58,15 @@ class ChatRequest(BaseModel):
 
 
 @app.post("/chat")
-async def chat(req: ChatRequest):
+@limiter.limit("10/minute")
+async def chat(request: Request, req: ChatRequest):
+    # Pre-flight: catch obvious jailbreak attempts before touching the LLM.
+    user_messages = [m for m in req.messages if m.role == "user"]
+    if user_messages:
+        last_user_text = user_messages[-1].content
+        if _JAILBREAK_PATTERNS.search(last_user_text):
+            return StreamingResponse(_canned_stream(_JAILBREAK_REPLY), media_type="text/event-stream")
+
     async def event_stream():
         async for event in agent.astream_events(
             {"messages": [m.model_dump() for m in req.messages]},
