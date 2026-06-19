@@ -75,6 +75,7 @@ async def chat(request: Request, req: ChatRequest):
             return StreamingResponse(_canned_stream(_JAILBREAK_REPLY), media_type="text/event-stream")
 
     async def event_stream():
+        assistant_buffer = ""
         async for event in agent.astream_events(
             {"messages": [m.model_dump() for m in req.messages]},
             version="v2",
@@ -83,8 +84,11 @@ async def chat(request: Request, req: ChatRequest):
             if kind == "on_chat_model_stream":
                 chunk = event["data"]["chunk"]
                 if chunk.content:
+                    assistant_buffer += chunk.content
                     yield f"data: {json.dumps({'type': 'text', 'content': chunk.content})}\n\n"
             elif kind == "on_tool_start":
+                if assistant_buffer:
+                    yield f"data: {json.dumps({'type': 'text', 'content': '\n\n'})}\n\n"
                 yield f"data: {json.dumps({'type': 'tool_start', 'name': event['name']})}\n\n"
         yield "data: [DONE]\n\n"
 
