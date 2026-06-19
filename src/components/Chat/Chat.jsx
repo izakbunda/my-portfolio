@@ -1,7 +1,13 @@
 import { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import "./Chat.css";
 
 const AGENT_URL = import.meta.env.VITE_AGENT_URL ?? "http://localhost:8000";
+
+const STARTERS = [
+  "What does Izak do?",
+  "How can I reach him?",
+];
 
 const Chat = () => {
   const [messages, setMessages] = useState([
@@ -15,8 +21,9 @@ const Chat = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const send = async () => {
-    const text = input.trim();
+  const hasStarted = messages.some((m) => m.role === "user");
+
+  const send = async (text = input.trim()) => {
     if (!text || streaming) return;
 
     const next = [...messages, { role: "user", content: text }];
@@ -66,24 +73,33 @@ const Chat = () => {
       <div className="chat-messages">
         {messages.map((m, i) => (
           <div key={i} className={`chat-msg chat-msg-${m.role}`}>
-            <span className="chat-msg-label">{m.role === "user" ? "you" : "izak.ai"}</span>
-            <p className="chat-msg-content">{m.content}</p>
+            <span className="chat-msg-label">{m.role === "user" ? "you" : "Izak AI"}</span>
+            {m.role === "assistant" && streaming && m.content === "" ? (
+              <p className="chat-msg-content chat-thinking"><span>.</span><span>.</span><span>.</span></p>
+            ) : (
+              <div className="chat-msg-content">
+                <ReactMarkdown>{m.content}</ReactMarkdown>
+              </div>
+            )}
           </div>
         ))}
-        {streaming && (
-          <div className="chat-msg chat-msg-assistant">
-            <span className="chat-msg-label">izak.ai</span>
-            <p className="chat-msg-content chat-thinking">thinking…</p>
-          </div>
-        )}
         <div ref={bottomRef} />
       </div>
+      {!hasStarted && (
+        <div className="chat-starters">
+          {STARTERS.map((s) => (
+            <button key={s} className="chat-starter-chip" onClick={() => send(s)} disabled={streaming}>
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
       <div className="chat-composer">
         <input
           className="chat-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && !streaming && send()}
+          onKeyDown={(e) => e.key === "Enter" && !streaming && send(input.trim())}
           placeholder="Ask me anything about Izak…"
           disabled={streaming}
         />

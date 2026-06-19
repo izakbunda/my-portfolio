@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  font-size: 0.6rem;
+  font-size: 0.75rem;
 }
 
 .chat-messages {
@@ -43,8 +43,27 @@
   margin: 0;
   padding: 5px 10px;
   line-height: 1.6;
-  white-space: pre-wrap;
   word-break: break-word;
+}
+
+.chat-msg-content p,
+.chat-msg-content ol,
+.chat-msg-content ul,
+.chat-msg-content li {
+  margin: 0;
+  padding: 0;
+}
+
+.chat-msg-content ol,
+.chat-msg-content ul {
+  padding-left: 1.2em;
+}
+
+.chat-msg-content p + p,
+.chat-msg-content p + ol,
+.chat-msg-content p + ul,
+.chat-msg-content li + li {
+  margin-top: 0.5em;
 }
 
 .chat-msg-user .chat-msg-content {
@@ -62,7 +81,42 @@
 
 .chat-thinking {
   color: #999;
-  font-style: italic;
+  letter-spacing: 0.1em;
+}
+
+.chat-thinking span {
+  animation: dot-pulse 1.4s infinite;
+  opacity: 0;
+}
+
+.chat-thinking span:nth-child(2) { animation-delay: 0.2s; }
+.chat-thinking span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dot-pulse {
+  0%, 80%, 100% { opacity: 0; }
+  40%            { opacity: 1; }
+}
+
+.chat-starters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 6px 10px;
+  border-top: 1px solid #000;
+}
+
+.chat-starter-chip {
+  font-family: inherit;
+  font-size: 0.75rem;
+  padding: 5px 12px;
+  background: #fff;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+
+.chat-starter-chip:hover {
+  background: #000;
+  color: #fff;
 }
 
 .chat-composer {
@@ -73,18 +127,18 @@
 
 .chat-input {
   flex: 1;
-  padding: 6px 10px;
+  padding: 10px 12px;
   font-family: inherit;
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   border: none;
   outline: none;
   background: #fff;
 }
 
 .chat-send {
-  padding: 6px 14px;
+  padding: 10px 18px;
   font-family: inherit;
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   background: #fff;
   border: none;
   border-left: 1px solid #000;
