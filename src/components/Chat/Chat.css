@@ -5,6 +5,18 @@
   font-size: 0.75rem;
 }
 
+.chat-disclaimer {
+  padding: 6px 10px;
+  font-size: 0.55rem;
+  color: #666;
+  border-bottom: 1px solid #ddd;
+  flex-shrink: 0;
+}
+
+.chat-disclaimer a {
+  color: #666;
+}
+
 .chat-messages {
   flex: 1;
   min-height: 0;
@@ -78,6 +90,7 @@
   border-bottom: 3px solid #000;
   background: #fff;
 }
+
 
 .chat-thinking {
   color: #999;

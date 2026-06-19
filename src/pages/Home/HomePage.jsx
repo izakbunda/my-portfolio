@@ -268,7 +268,7 @@ function HomePage() {
   const zCounter = useRef(10);
   const cascadeIndex = useRef(0);
 
-  const files = ["Izak Bunda", "Resumé", "Projects", "Internships", "Chat"];
+  const files = ["Izak Bunda", "Resumé", "Projects", "Internships", "Izak AI"];
 
   const addWindow = (name, initialSize, resizable = true) => {
     if (windows.some((w) => w.name === name)) return;
@@ -310,6 +310,18 @@ function HomePage() {
     setZMap((prev) => ({ ...prev, [id]: ++zCounter.current }));
   };
 
+  const addWindowRef = useRef(addWindow);
+  useEffect(() => { addWindowRef.current = addWindow; });
+
+  useEffect(() => {
+    const handler = (e) => {
+      if (isMobile) setActiveApp(e.detail);
+      else addWindowRef.current(e.detail);
+    };
+    window.addEventListener("open-window", handler);
+    return () => window.removeEventListener("open-window", handler);
+  }, [isMobile]);
+
   const minimizeWindow = (id) => {
     if (!minimizedWindows.includes(id)) {
       setMinimizedWindows((prev) => [...prev, id]);
@@ -326,9 +338,37 @@ function HomePage() {
     { name: "Resumé", onClick: () => setActiveApp("Resumé") },
     { name: "Projects", onClick: () => setActiveApp("Projects") },
     { name: "Internships", onClick: () => setActiveApp("Internships") },
+    { name: "Izak AI", onClick: () => setActiveApp("Izak AI") },
     { name: "Github", link: "https://www.github.com/izakbunda" },
     { name: "Linkedin", link: "https://www.linkedin.com/in/izakbunda" },
   ];
+
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const setVH = () => {
+      const h = window.visualViewport?.height ?? window.innerHeight;
+      document.documentElement.style.setProperty("--vh", `${h}px`);
+      setKeyboardOpen(h < window.innerHeight * 0.75);
+    };
+    setVH();
+    window.visualViewport?.addEventListener("resize", setVH);
+    window.addEventListener("resize", setVH);
+
+    const onFocusIn  = (e) => { if (e.target.matches("input, textarea")) setKeyboardOpen(true); };
+    const onFocusOut = (e) => { if (e.target.matches("input, textarea")) setKeyboardOpen(false); };
+    document.addEventListener("focusin",  onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", setVH);
+      window.removeEventListener("resize", setVH);
+      document.removeEventListener("focusin",  onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
+    };
+  }, [isMobile]);
 
   if (isMobile) {
     return (
@@ -348,7 +388,7 @@ function HomePage() {
             />
           )}
         </div>
-        <Dock mobileDock={mobileDock} />
+        {!keyboardOpen && <Dock mobileDock={mobileDock} />}
       </div>
     );
   }
