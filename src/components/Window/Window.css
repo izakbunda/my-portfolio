@@ -1,9 +1,7 @@
 .window-container {
-  position: absolute;
+  width: 100%;
+  height: 100%;
   background-color: #ffffff;
-  width: 50vw;
-  max-height: 80vh;
-  min-width: 770px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -124,6 +122,8 @@
   font-size: 0.5rem;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
 }
 
 .mobile-close-btn {

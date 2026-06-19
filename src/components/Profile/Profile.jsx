@@ -2,9 +2,9 @@ import "./Profile.css";
 
 const Profile = () => {
   const bio1 =
-    "Hi, my name is Izak 😄 I'm a software engineer at KPMG, where I architect and develop advanced AI-driven solutions that empower teams to automate complex workflows, extract meaningful insights from data, and make more strategic decisions. My work centers on translating cutting-edge AI capabilities into scalable, high-impact products that transform and optimize day-to-day operations.";
+    "Hi, my name is Izak. I'm an AI software engineer at KPMG, where I architect and develop enterprise-ready AI solutions that empower teams to automate complex workflows, extract meaningful insights from data, and make more strategic decisions. My work centers on translating cutting-edge AI capabilities into scalable, high-impact products that transform and optimize day-to-day operations.";
   const bio2 =
-    "I studied Computer Science at UCLA, where I became interested in how technology can be designed and applied to solve real-world problems and create intuitive user experiences.";
+    "I studied Computer Science at UCLA, where I became interested in how technology can be designed and applied to solve real-world problems.";
   const bio3 =
     "I enjoy working at the intersection of engineering and product: building tools, thinking through how people actually use them, and shaping solutions that deliver real value for the teams and organizations using them.";
 
@@ -17,7 +17,7 @@ const Profile = () => {
         <div className="profile-info">
           <div className="profile-name">Izak Bunda</div>
           <div className="profile-title">AI Software Engineer @ KPMG</div>
-          <div className="profile-education">Computer Science, BS. UCLA</div>
+          <div className="profile-education">Computer Science, BS. UCLA 2025</div>
           <div className="profile-location">
             <span>📍 Denver, CO - 🏠 San Diego, CA</span>
           </div>
@@ -37,6 +37,13 @@ const Profile = () => {
           <p>{bio1}</p>
           <p>{bio2}</p>
           <p>{bio3}</p>
+        </div>
+        <div className="profile-section">
+          <h3>Contact me</h3>
+          <div className="contact-btns">
+            <a href="mailto:izakbunda@gmail.com" className="contact-btn">Email</a>
+            <a href="https://www.linkedin.com/in/izakbunda" target="_blank" rel="noopener noreferrer" className="contact-btn">LinkedIn</a>
+          </div>
         </div>
       </div>
     </div>

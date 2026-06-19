@@ -1,0 +1,30 @@
+.easter-eggs {
+  padding: 0.5rem 0;
+  font-size: 0.6rem;
+}
+
+.easter-eggs-intro {
+  margin: 0 0 0.75rem 0;
+  color: #555;
+}
+
+.easter-eggs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.easter-egg-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  line-height: 1.5;
+}
+
+.easter-egg-emoji {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+}

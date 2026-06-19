@@ -30,6 +30,18 @@
   }
 }
 
+.context-menu-item {
+  cursor: pointer;
+  padding: 2px 0;
+}
+
+.context-menu-item:hover {
+  background-color: #000;
+  color: #fff;
+  padding: 2px 4px;
+  margin: 0 -4px;
+}
+
 .left-menu {
   display: flex;
   flex-direction: row;

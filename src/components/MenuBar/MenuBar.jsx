@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./MenuBar.css";
 import ContextMenu from "./ContextMenu";
 
-const MenuBar = ({ onShowBanner }) => {
+const MenuBar = ({ onShowBanner, onOpenEasterEggs }) => {
   const [currentTime, setCurrentTime] = useState("");
   const [aboutContext, setAboutContext] = useState(false);
 
@@ -30,6 +30,11 @@ const MenuBar = ({ onShowBanner }) => {
     setAboutContext((prev) => !prev);
   };
 
+  const handleOpenEasterEggs = () => {
+    setAboutContext(false);
+    onOpenEasterEggs?.();
+  };
+
   return (
     <div className="container">
       <div className="left-menu">
@@ -46,7 +51,7 @@ const MenuBar = ({ onShowBanner }) => {
           </div>
         )}
       </div>
-      {aboutContext && <ContextMenu />}
+      {aboutContext && <ContextMenu onOpenEasterEggs={handleOpenEasterEggs} />}
       <div className="right-menu">{currentTime}</div>
     </div>
   );

@@ -1,10 +1,10 @@
 import "./File.css";
 
 const ICON_MAP = {
-  "Izak Bunda": "/icons/person.svg",
-  "Resumé": "/icons/resume.svg",
-  "Projects": "/icons/projects.svg",
-  "Internships": "/icons/internships.svg",
+  "Izak Bunda": "/icons/profile.png",
+  "Resumé": "/icons/resume.png",
+  "Projects": "/icons/projects.png",
+  "Internships": "/icons/internships.png",
 };
 
 const File = ({ name, style, onClick, isActive }) => (
