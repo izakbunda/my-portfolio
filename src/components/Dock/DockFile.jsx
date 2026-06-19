@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import "./DockFile.css";
 
 const ICON_MAP = {
@@ -10,6 +11,28 @@ const ICON_MAP = {
 };
 
 const DockFile = ({ name, onClick, link }) => {
+  const [blinking, setBlinking] = useState(false);
+
+  useEffect(() => {
+    if (name !== "Izak AI") return;
+    let timeout;
+    const schedule = () => {
+      timeout = setTimeout(() => {
+        setBlinking(true);
+        timeout = setTimeout(() => {
+          setBlinking(false);
+          schedule();
+        }, 150);
+      }, 3000);
+    };
+    schedule();
+    return () => clearTimeout(timeout);
+  }, [name]);
+
+  const src = name === "Izak AI"
+    ? (blinking ? "/icons/blink.png" : "/icons/smile.png")
+    : (ICON_MAP[name] ?? "/file.png");
+
   const handleClick = () => {
     const clickSound = new Audio("/click.mp3");
     clickSound.play();
@@ -19,7 +42,7 @@ const DockFile = ({ name, onClick, link }) => {
   return (
     <div className="dockfile-container" onClick={handleClick}>
       <a target="_blank" rel="noopener noreferrer" href={link}>
-        <img src={ICON_MAP[name] ?? "/file.png"} className="icon" alt={name} style={name === "Github" ? { height: "34px" } : undefined} />
+        <img src={src} className="icon" alt={name} style={name === "Github" ? { height: "34px" } : undefined} />
       </a>
       <p className="dockfile-label">{name}</p>
     </div>

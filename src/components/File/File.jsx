@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import "./File.css";
 
 const ICON_MAP = {
@@ -7,11 +8,35 @@ const ICON_MAP = {
   "Internships": "/icons/internships.png",
 };
 
-const File = ({ name, style, onClick, isActive }) => (
-  <div className={`file-container${isActive ? " file-active" : ""}`} style={style} onClick={() => onClick(name)}>
-    <img src={ICON_MAP[name] ?? "/file.png"} className="desktop-icon" alt={name} />
-    <div className="filename">{name}</div>
-  </div>
-);
+const File = ({ name, style, onClick, isActive }) => {
+  const [blinking, setBlinking] = useState(false);
+
+  useEffect(() => {
+    if (name !== "Izak AI") return;
+    let timeout;
+    const schedule = () => {
+      timeout = setTimeout(() => {
+        setBlinking(true);
+        timeout = setTimeout(() => {
+          setBlinking(false);
+          schedule();
+        }, 150);
+      }, 3000);
+    };
+    schedule();
+    return () => clearTimeout(timeout);
+  }, [name]);
+
+  const src = name === "Izak AI"
+    ? (blinking ? "/icons/blink.png" : "/icons/smile.png")
+    : (ICON_MAP[name] ?? "/file.png");
+
+  return (
+    <div className={`file-container${isActive ? " file-active" : ""}`} style={style} onClick={() => onClick(name)}>
+      <img src={src} className="desktop-icon" alt={name} />
+      <div className="filename">{name}</div>
+    </div>
+  );
+};
 
 export default File;
