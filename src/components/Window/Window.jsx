@@ -31,7 +31,7 @@ const Window = forwardRef(({ name, onClose, onMin, onFullscreen, isFullscreen, i
           <Profile />
         ) : name === "Resumé" ? (
           <Resume />
-        ) : name === "Chat" ? (
+        ) : name === "Izak AI" ? (
           <Chat />
         ) : name === "Easter Eggs" ? (
           <EasterEggs />

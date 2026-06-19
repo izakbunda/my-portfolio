@@ -85,7 +85,7 @@
 }
 
 .mobile-layout {
-  height: 100vh;
+  height: var(--vh, 100dvh);
   overflow: hidden;
   position: relative;
 }
