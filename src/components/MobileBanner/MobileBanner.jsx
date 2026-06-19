@@ -2,10 +2,10 @@ import { useState } from "react";
 import emailjs from "@emailjs/browser";
 import "./MobileBanner.css";
 
-const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
-const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
-const EMAILJS_PUBLIC_KEY = "YOUR_PUBLIC_KEY";
-const SITE_URL = "https://izakbunda.com";
+const EMAILJS_SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+const EMAILJS_TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+const EMAILJS_PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+const SITE_URL = import.meta.env.VITE_SITE_URL ?? "https://izakbunda.vercel.app";
 
 const MobileBanner = ({ onDismiss }) => {
   const [showInput, setShowInput] = useState(false);
@@ -19,7 +19,12 @@ const MobileBanner = ({ onDismiss }) => {
       await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
-        { to_email: email, site_url: SITE_URL },
+        { 
+          email: email, 
+          site_url: SITE_URL, 
+          title: "Portfolio Link",
+          easter_egg_count: "6",
+        },
         EMAILJS_PUBLIC_KEY
       );
       setStatus("sent");
