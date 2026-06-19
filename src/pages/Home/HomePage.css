@@ -88,6 +88,10 @@
   height: var(--vh, 100dvh);
   overflow: hidden;
   position: relative;
+  /* Follow the visual viewport when iOS pans it open for the keyboard.
+     Uses top (not transform) so fixed descendants like the Dock stay
+     anchored to the viewport rather than to this element. */
+  top: var(--vv-top, 0px);
 }
 
 .mobile-content {

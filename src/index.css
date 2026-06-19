@@ -16,7 +16,11 @@ body {
   margin: 0;
   padding: 0;
   height: 100%;
+  width: 100%;
   overflow: hidden;
+  /* Pin to the viewport so iOS can't scroll the document when an input is
+     focused (Safari's focus auto-scroll ignores overflow:hidden otherwise). */
+  position: fixed;
   user-select: none;
 
   /* Classic Mac OS System 7/9 desktop */
