@@ -8,7 +8,8 @@ const Resume = () => {
         <a
           href="https://drive.google.com/file/d/110NCCYUz4tEqggGPKPVwG2oogLQVeb97/view?usp=sharing"
           className="download-link"
-          download
+          target="_blank"
+          rel="noopener noreferrer"
         >
           Download Resume
         </a>
