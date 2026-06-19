@@ -109,3 +109,22 @@
 .mobile-content.keyboard-open {
   bottom: 0;
 }
+
+.rotation-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #fff;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.875rem;
+  padding: 2rem;
+}
+
+@media screen and (orientation: landscape) and (max-height: 500px) {
+  .rotation-overlay {
+    display: flex;
+  }
+}

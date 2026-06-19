@@ -381,6 +381,7 @@ function HomePage() {
   if (isMobile) {
     return (
       <div className="mobile-layout">
+        <div className="rotation-overlay">Please rotate your device to portrait mode.</div>
         <MenuBar onShowBanner={() => setBannerDismissed(false)} />
         {!bannerDismissed && <MobileBanner onDismiss={() => setBannerDismissed(true)} />}
         <div className={`mobile-content${bannerDismissed ? " banner-dismissed" : ""}${keyboardOpen ? " keyboard-open" : ""}`}>
