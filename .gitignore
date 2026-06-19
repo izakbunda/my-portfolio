@@ -1,1 +1,9 @@
 node_modules
+
+# Python agent
+agent/.env
+agent/venv/
+agent/__pycache__/
+agent/**/__pycache__/
+agent/**/*.pyc
+.env
