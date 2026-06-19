@@ -356,17 +356,24 @@ function HomePage() {
   useEffect(() => {
     if (!isMobile) return;
 
-    // Only track the visible viewport height here — keyboard open/close is
-    // driven solely by focus events below. The old height heuristic was
-    // unreliable on iOS (innerHeight shrinks with the keyboard) and would
-    // override the focus state, leaving the dock's reserved space as a gap.
-    const setVH = () => {
-      const h = window.visualViewport?.height ?? window.innerHeight;
+    // Make the layout track the visual viewport on both axes. On iOS the
+    // keyboard doesn't resize the layout viewport — it shrinks the *visual*
+    // viewport and, when the page can't scroll, pans it (offsetTop > 0) to
+    // keep the focused input visible. We mirror that pan with a translate and
+    // size to the visible height so the window always fills the area above the
+    // keyboard with no ghost gap and no apparent scroll. Keyboard open/close is
+    // driven solely by the focus events below.
+    const syncViewport = () => {
+      const vv = window.visualViewport;
+      const h = vv?.height ?? window.innerHeight;
+      const top = vv?.offsetTop ?? 0;
       document.documentElement.style.setProperty("--vh", `${h}px`);
+      document.documentElement.style.setProperty("--vv-top", `${top}px`);
     };
-    setVH();
-    window.visualViewport?.addEventListener("resize", setVH);
-    window.addEventListener("resize", setVH);
+    syncViewport();
+    window.visualViewport?.addEventListener("resize", syncViewport);
+    window.visualViewport?.addEventListener("scroll", syncViewport);
+    window.addEventListener("resize", syncViewport);
 
     const onFocusIn  = (e) => { if (e.target.matches("input, textarea")) setKeyboardOpen(true); };
     const onFocusOut = (e) => { if (e.target.matches("input, textarea")) setKeyboardOpen(false); };
@@ -374,8 +381,9 @@ function HomePage() {
     document.addEventListener("focusout", onFocusOut);
 
     return () => {
-      window.visualViewport?.removeEventListener("resize", setVH);
-      window.removeEventListener("resize", setVH);
+      window.visualViewport?.removeEventListener("resize", syncViewport);
+      window.visualViewport?.removeEventListener("scroll", syncViewport);
+      window.removeEventListener("resize", syncViewport);
       document.removeEventListener("focusin",  onFocusIn);
       document.removeEventListener("focusout", onFocusOut);
     };
