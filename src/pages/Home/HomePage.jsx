@@ -383,7 +383,7 @@ function HomePage() {
       <div className="mobile-layout">
         <MenuBar onShowBanner={() => setBannerDismissed(false)} />
         {!bannerDismissed && <MobileBanner onDismiss={() => setBannerDismissed(true)} />}
-        <div className={`mobile-content${bannerDismissed ? " banner-dismissed" : ""}`}>
+        <div className={`mobile-content${bannerDismissed ? " banner-dismissed" : ""}${keyboardOpen ? " keyboard-open" : ""}`}>
           {activeApp && (
             <Window
               ref={mobileWindowRef}
