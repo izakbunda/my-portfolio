@@ -1,1 +1,186 @@
-# my-portfolio
+# Izak Bunda — Portfolio
+
+A personal portfolio reimagined as a **classic Mac OS desktop**, complete with draggable windows, a dock, a menu-bar clock, customizable wallpaper — and **Izak AI**, a retrieval-augmented chatbot that answers questions about Izak from his own knowledge base.
+
+🔗 **Live:** [izakbunda.vercel.app](https://izakbunda.vercel.app)
+
+![Desktop hero](docs/screenshots/desktop-hero.png)
+
+---
+
+## Overview
+
+The site is a single-page React app that emulates a vintage desktop operating system. Each "app" (Profile, Resumé, Projects, Internships, Izak AI) opens in its own window you can drag, resize, minimize, and maximize. On mobile it gracefully collapses into a single full-screen app switched via a bottom dock.
+
+The standout feature is **Izak AI** — a RAG (Retrieval-Augmented Generation) assistant backed by a Python agent. It retrieves relevant chunks from a curated knowledge base (résumé, projects, Q&A, writing) and answers in Izak's voice, with guardrails that keep it strictly on-topic.
+
+---
+
+## Features
+
+| | |
+|---|---|
+| 🪟 **Windowing system** | Draggable, resizable windows with minimize / fullscreen, z-index focus stacking, and a cascade-spawn layout that clamps to the viewport. |
+| 🤖 **Izak AI (RAG chatbot)** | Streaming answers over SSE, markdown rendering, conversation starters, and a prompt-injection / jailbreak filter. |
+| 📱 **Mobile-first fallback** | Full-screen app view with a bottom dock, visual-viewport keyboard handling, and landscape lock. |
+| 🎨 **Customizable wallpaper** | Right-click the desktop to set a custom background (persisted to `localStorage`). |
+| 🕹️ **Retro details** | Animated blinking app icon, window click sounds, a live menu-bar clock, and an "Easter Eggs" panel. |
+
+### Desktop — windowing system
+
+Open multiple apps at once; windows cascade, stack, and focus like a real OS.
+
+![Desktop windows](docs/screenshots/desktop-windows.png)
+
+### Desktop — Izak AI chat
+
+The RAG assistant with a disclaimer banner, conversation starters, and streaming markdown responses.
+
+![Desktop chat](docs/screenshots/desktop-chat.png)
+
+### Mobile
+
+The desktop collapses into a single full-screen app with a bottom dock. The profile surfaces a "Chat with Izak AI" call-to-action.
+
+| Profile | Izak AI |
+|---|---|
+| ![Mobile profile](docs/screenshots/mobile-profile.png) | ![Mobile chat](docs/screenshots/mobile-chat.png) |
+
+---
+
+## Tech stack
+
+**Frontend**
+- [React 19](https://react.dev/) + [Vite 8](https://vitejs.dev/)
+- [React Router 7](https://reactrouter.com/)
+- [react-markdown](https://github.com/remarkjs/react-markdown) for chat formatting
+- [react-slick](https://react-slick.neostack.com/) for project image carousels
+- Plain CSS modules per component (no UI framework) with custom retro fonts
+
+**Backend — `agent/` (Python)**
+- [FastAPI](https://fastapi.tiangolo.com/) with Server-Sent Events streaming
+- [LangGraph](https://langchain-ai.github.io/langgraph/) `create_react_agent` (ReAct loop)
+- [DeepSeek](https://www.deepseek.com/) (`deepseek-chat`) as the LLM, via the OpenAI-compatible API
+- [OpenAI embeddings](https://platform.openai.com/docs/guides/embeddings) (`text-embedding-3-small`) for retrieval
+- [Supabase](https://supabase.com/) + [pgvector](https://github.com/pgvector/pgvector) as the vector store
+- [slowapi](https://github.com/laurentS/slowapi) rate limiting (10 req/min per IP)
+
+**Infrastructure**
+- **Vercel** — frontend hosting
+- **Railway** — Python agent hosting
+- **Supabase** — managed Postgres + pgvector
+
+---
+
+## Architecture
+
+```
+┌─────────────────┐    POST /chat (SSE)    ┌──────────────────────┐
+│  React frontend │ ─────────────────────► │  FastAPI (Railway)   │
+│   (Vercel)      │ ◄───────────────────── │  - jailbreak filter  │
+└─────────────────┘   streamed tokens      │  - rate limiter      │
+                                           │  - LangGraph agent   │
+                                           └──────────┬───────────┘
+                                                      │ retrieve_context tool
+                                          ┌───────────▼────────────┐
+                                          │ OpenAI embeddings      │
+                                          │ → Supabase pgvector    │
+                                          │   match_documents()    │
+                                          └────────────────────────┘
+```
+
+**Request flow for a chat message:**
+1. The frontend POSTs the message history to `/chat` and reads the SSE stream.
+2. FastAPI runs a regex **pre-flight filter** for prompt-injection / jailbreak attempts and short-circuits with a canned reply if matched.
+3. The **LangGraph ReAct agent** (DeepSeek) decides to call the `retrieve_context` tool.
+4. The tool embeds the query with OpenAI and calls Supabase's `match_documents` RPC for the top-k similar chunks (cosine similarity over pgvector).
+5. The agent composes an answer grounded in those chunks and streams tokens back to the client.
+
+**Knowledge base** lives in `agent/ingest/sources/` as markdown (`resume.md`, `projects.md`, `qa.md`, `substack.md`). Running the ingest script chunks, embeds, and upserts them into Supabase (idempotently).
+
+---
+
+## Project structure
+
+```
+.
+├── index.html
+├── src/                         # React frontend
+│   ├── pages/Home/              # Desktop + mobile layout, window manager, keyboard handling
+│   └── components/
+│       ├── Window/              # Window chrome + app router
+│       ├── Chat/                # Izak AI chat UI (SSE streaming, markdown)
+│       ├── Profile/ Resume/ …   # Individual "apps"
+│       ├── Dock/ MenuBar/       # OS chrome
+│       └── MobileBanner/ WallpaperMenu/ EasterEggs/
+└── agent/                       # Python RAG backend
+    ├── app/
+    │   ├── main.py              # FastAPI app, SSE endpoint, rate limit, jailbreak filter
+    │   ├── agent.py             # LangGraph agent + system prompt / guardrails
+    │   ├── retriever.py         # retrieve_context tool (embeddings + Supabase RPC)
+    │   └── config.py            # env var loading
+    ├── ingest/
+    │   ├── ingest.py            # chunk → embed → upsert pipeline
+    │   └── sources/*.md         # the knowledge base
+    └── supabase/schema.sql      # documents table + match_documents RPC
+```
+
+---
+
+## Local development
+
+### Frontend
+
+```bash
+npm install
+npm run dev          # http://localhost:5173
+```
+
+Create a `.env` (see `.env.example`):
+
+```
+VITE_AGENT_URL=http://localhost:8000   # or your deployed Railway URL
+```
+
+The Vite dev server also proxies `/agent` → `http://localhost:8000`.
+
+### Backend (`agent/`)
+
+```bash
+cd agent
+python -m venv venv && source venv/bin/activate
+pip install -r requirements.txt
+```
+
+Create `agent/.env` (see `agent/.env.example`):
+
+```
+OPENAI_API_KEY=sk-...
+DEEPSEEK_API_KEY=sk-...
+SUPABASE_URL=https://xxx.supabase.co
+SUPABASE_SERVICE_KEY=eyJ...
+```
+
+One-time vector store setup:
+
+```bash
+# 1. Run agent/supabase/schema.sql in the Supabase SQL editor
+# 2. Populate the knowledge base
+python ingest/ingest.py
+# 3. Start the API
+uvicorn app.main:app --reload   # http://localhost:8000
+```
+
+---
+
+## Deployment
+
+- **Frontend** auto-deploys to Vercel on push to `main`. Set `VITE_AGENT_URL` in the Vercel project to the Railway URL.
+- **Backend** deploys to Railway with the project root set to `agent/`. The `Procfile` binds uvicorn to Railway's `$PORT`. Set the four env vars above plus add the production frontend origin to `ALLOWED_ORIGINS` in `app/main.py`.
+- **Database** is a Supabase project with the `vector` extension enabled.
+
+---
+
+## License
+
+Personal project — all rights reserved. Feel free to draw inspiration, but please don't clone it wholesale as your own portfolio.
