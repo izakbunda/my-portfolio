@@ -118,9 +118,9 @@ function DraggableWindow({ id, position, name, initialSize, resizable = true, on
         const rawX = (e.clientX ?? e.touches?.[0].clientX) - coords.current.startX + coords.current.lastX;
         const rawY = (e.clientY ?? e.touches?.[0].clientY) - coords.current.startY + coords.current.lastY;
         const MENU_BAR_H = 30;
-        const DOCK_H = 72;
+        const HEADER_H = 32; // keep header reachable so user can always drag back up
         const maxX = window.innerWidth - windowEl.offsetWidth;
-        const maxY = window.innerHeight - DOCK_H - windowEl.offsetHeight;
+        const maxY = window.innerHeight - HEADER_H;
         const nextX = Math.max(0, Math.min(rawX, maxX));
         const nextY = Math.max(MENU_BAR_H, Math.min(rawY, maxY));
         windowEl.style.left = `${nextX}px`;
@@ -286,9 +286,17 @@ function HomePage() {
     const finalOffset = cascadeIndex.current * CASCADE_STEP;
     cascadeIndex.current++;
 
+    // Clamp spawn position so the window never starts off-screen
+    const winW = initialSize?.width ?? Math.max(770, Math.floor(window.innerWidth * 0.5));
+    const winH = initialSize?.height ?? Math.floor(window.innerHeight * 0.8);
+    const MENU_BAR_H = 30;
+    const DOCK_H = 72;
+    const spawnX = Math.min(cascadeBaseX + finalOffset, Math.max(0, window.innerWidth - winW));
+    const spawnY = Math.min(CASCADE_BASE_Y + finalOffset, Math.max(MENU_BAR_H, window.innerHeight - DOCK_H - winH));
+
     const newWindow = {
       id: Date.now(),
-      position: { x: cascadeBaseX + finalOffset, y: CASCADE_BASE_Y + finalOffset },
+      position: { x: spawnX, y: spawnY },
       name,
       initialSize,
       resizable,
