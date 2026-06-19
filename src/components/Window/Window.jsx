@@ -3,6 +3,7 @@ import Profile from "../Profile/Profile";
 import Resume from "../Resume/Resume";
 import Body from "../Body/Body";
 import EasterEggs from "../EasterEggs/EasterEggs";
+import Chat from "../Chat/Chat";
 import "./Window.css";
 
 const Window = forwardRef(({ name, onClose, onMin, onFullscreen, isFullscreen, isMobile }, ref) => {
@@ -30,6 +31,8 @@ const Window = forwardRef(({ name, onClose, onMin, onFullscreen, isFullscreen, i
           <Profile />
         ) : name === "Resumé" ? (
           <Resume />
+        ) : name === "Chat" ? (
+          <Chat />
         ) : name === "Easter Eggs" ? (
           <EasterEggs />
         ) : (
