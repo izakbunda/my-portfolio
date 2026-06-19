@@ -1,6 +1,7 @@
 import "./Profile.css";
 
 const Profile = () => {
+  const openChat = () => window.dispatchEvent(new CustomEvent("open-window", { detail: "Izak AI" }));
   const bio1 =
     "Hi, my name is Izak. I'm an AI software engineer at KPMG, where I architect and develop enterprise-ready AI solutions that empower teams to automate complex workflows, extract meaningful insights from data, and make more strategic decisions. My work centers on translating cutting-edge AI capabilities into scalable, high-impact products that transform and optimize day-to-day operations.";
   const bio2 =
@@ -22,6 +23,11 @@ const Profile = () => {
             <span>📍 Denver, CO - 🏠 San Diego, CA</span>
           </div>
         </div>
+      </div>
+      <div className="chat-ai-btn-wrapper">
+        <button className="chat-ai-btn" onClick={openChat}>
+          <span>Chat with Izak AI</span>
+        </button>
       </div>
       <div className="row2">
         <div className="profile-section">

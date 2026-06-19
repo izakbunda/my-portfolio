@@ -120,6 +120,50 @@
   font-weight: bold;
 }
 
+.chat-ai-btn-wrapper {
+  width: 100%;
+  margin-top: 8px;
+  margin-bottom: 24px;
+}
+
+.chat-ai-btn {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  padding: 12px;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #fff;
+  background: #000;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+/* Breathing dot field */
+.chat-ai-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(circle, rgba(255,255,255,0.25) 1.5px, transparent 1.5px);
+  background-size: 8px 8px;
+  animation: btn-breathe 5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.chat-ai-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+
+@keyframes btn-breathe {
+  0%, 100% { opacity: 0.2; }
+  50%       { opacity: 0.7; }
+}
+
+
 /* Media query for screens with a maximum width of 500px */
 @media screen and (max-width: 500px) {
   .profile-container {
@@ -191,4 +235,5 @@
   .tag-profile {
     font-size: 0.625rem;
   }
+
 }
