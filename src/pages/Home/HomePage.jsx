@@ -5,6 +5,7 @@ import MenuBar from "../../components/MenuBar/MenuBar";
 import Dock from "../../components/Dock/Dock";
 import MobileBanner from "../../components/MobileBanner/MobileBanner";
 import WallpaperMenu from "../../components/WallpaperMenu/WallpaperMenu";
+import { applyRetroEffect } from "../../utils/retroEffect.js";
 import "./HomePage.css";
 
 const useIsMobile = () => {
@@ -245,12 +246,13 @@ function HomePage() {
     setWallpaperLoading(true);
     setContextMenu(null);
     const reader = new FileReader();
-    reader.onload = (ev) => {
+    reader.onload = async (ev) => {
       try {
-        localStorage.setItem("wallpaper", ev.target.result);
-        setWallpaper(ev.target.result);
+        const processed = await applyRetroEffect(ev.target.result);
+        localStorage.setItem("wallpaper", processed);
+        setWallpaper(processed);
       } catch {
-        alert("Image too large to save. Try a smaller file.");
+        alert("Image too large to process. Try a smaller file.");
       } finally {
         setWallpaperLoading(false);
         e.target.value = "";
@@ -362,6 +364,7 @@ function HomePage() {
     <div className="desktop" onContextMenu={handleDesktopContextMenu}>
       <input
         ref={fileInputRef}
+        id="wallpaper-file-input"
         type="file"
         accept="image/*"
         style={{ display: "none" }}
