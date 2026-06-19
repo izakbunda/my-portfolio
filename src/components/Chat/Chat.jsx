@@ -70,6 +70,9 @@ const Chat = () => {
 
   return (
     <div className="chat-container">
+      <div className="chat-disclaimer">
+        ⚠ This is an AI and may make mistakes. For anything important, contact Izak directly at <a href="mailto:izakbunda@gmail.com">izakbunda@gmail.com</a>.
+      </div>
       <div className="chat-messages">
         {messages.map((m, i) => (
           <div key={i} className={`chat-msg chat-msg-${m.role}`}>
