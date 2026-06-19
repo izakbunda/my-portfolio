@@ -23,7 +23,8 @@ const Chat = () => {
 
   const hasStarted = messages.some((m) => m.role === "user");
 
-  const send = async (text = input.trim()) => {
+  const send = async (text) => {
+    if (typeof text !== "string") text = input.trim();
     if (!text || streaming) return;
 
     const next = [...messages, { role: "user", content: text }];
