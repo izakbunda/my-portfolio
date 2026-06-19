@@ -356,10 +356,13 @@ function HomePage() {
   useEffect(() => {
     if (!isMobile) return;
 
+    // Only track the visible viewport height here — keyboard open/close is
+    // driven solely by focus events below. The old height heuristic was
+    // unreliable on iOS (innerHeight shrinks with the keyboard) and would
+    // override the focus state, leaving the dock's reserved space as a gap.
     const setVH = () => {
       const h = window.visualViewport?.height ?? window.innerHeight;
       document.documentElement.style.setProperty("--vh", `${h}px`);
-      setKeyboardOpen(h < window.innerHeight * 0.75);
     };
     setVH();
     window.visualViewport?.addEventListener("resize", setVH);
