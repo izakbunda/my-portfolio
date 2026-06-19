@@ -38,7 +38,7 @@ const MobileBanner = ({ onDismiss }) => {
           <p className="mobile-banner-text">Best experienced on desktop.</p>
           {!showInput ? (
             <button className="mobile-banner-btn" onClick={() => setShowInput(true)}>
-              Email me
+              Email me the link
             </button>
           ) : (
             <div className="mobile-banner-form">
