@@ -1,0 +1,266 @@
+.manage-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.manage-new-category {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.manage-new-category input {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  min-width: 220px;
+}
+
+.manage-new-category button {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 14px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+.manage-category-block {
+  margin-bottom: 24px;
+}
+
+.manage-category-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 4px;
+  cursor: grab;
+}
+
+.manage-category-name {
+  font-size: 15px;
+  font-weight: 700;
+  flex: 1;
+  margin: 0;
+}
+
+.manage-category-name-uncategorized {
+  color: #777;
+  font-weight: 600;
+}
+
+.manage-category-name-input {
+  flex: 1;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 6px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+.manage-edit-btn {
+  font-family: inherit;
+  font-size: 13px;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.manage-category-select {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  flex-shrink: 0;
+  max-width: 140px;
+}
+
+.manage-date-input {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 5px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.manage-album-name-input {
+  flex: 1;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: bold;
+  padding: 4px 6px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+.manage-loading,
+.manage-empty {
+  font-size: 13px;
+  color: #555;
+  padding: 16px 0;
+}
+
+.manage-album-block {
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.manage-album-row,
+.manage-photo-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 8px 10px;
+  cursor: grab;
+}
+
+.manage-photo-row {
+  border-top: 1px solid #eee;
+  cursor: default;
+}
+
+.manage-drag-handle {
+  cursor: grab;
+  color: #999;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.manage-album-thumb,
+.manage-photo-thumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #eee;
+  flex-shrink: 0;
+}
+
+.manage-album-thumb-empty {
+  border: 1px dashed #bbb;
+}
+
+.manage-album-name {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: bold;
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex: 1;
+  text-align: left;
+  padding: 0;
+}
+
+.manage-photo-caption {
+  flex: 1;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.manage-cover-btn {
+  font-family: inherit;
+  font-size: 18px;
+  line-height: 1;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #999;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.manage-cover-btn.active {
+  border-color: #b8860b;
+  color: #b8860b;
+}
+
+.manage-publish-checkbox {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.manage-publish-album-btn {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 12px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.manage-publish-album-btn.active {
+  background: #fff;
+  color: #333;
+}
+
+.manage-delete-btn {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 10px;
+  border: 1px solid #b00020;
+  border-radius: 4px;
+  background: #fff;
+  color: #b00020;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.manage-photo-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.manage-photo-list-actions {
+  padding: 8px 10px;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.manage-photo-list-actions button {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 12px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+.manage-photo-list-actions button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

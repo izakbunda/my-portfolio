@@ -4,6 +4,7 @@ import Resume from "../Resume/Resume";
 import Body from "../Body/Body";
 import EasterEggs from "../EasterEggs/EasterEggs";
 import Chat from "../Chat/Chat";
+import Gallery from "../Gallery/Gallery";
 import "./Window.css";
 
 const Window = forwardRef(({ name, onClose, onMin, onFullscreen, isFullscreen, isMobile }, ref) => {
@@ -35,6 +36,8 @@ const Window = forwardRef(({ name, onClose, onMin, onFullscreen, isFullscreen, i
           <Chat />
         ) : name === "Easter Eggs" ? (
           <EasterEggs />
+        ) : name === "Photography" ? (
+          <Gallery />
         ) : (
           <Body name={name} />
         )}

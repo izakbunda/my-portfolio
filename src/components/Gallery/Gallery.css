@@ -1,0 +1,216 @@
+.gallery-root {
+  width: 100%;
+  height: 100%;
+}
+
+.gallery-loading,
+.gallery-empty {
+  padding: 2rem;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.gallery-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 1rem;
+}
+
+.gallery-album-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gallery-row-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.gallery-album-strip {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.gallery-album-card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  width: 280px;
+  flex-shrink: 0;
+  background: #fff;
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  border-right: 3px solid #000;
+  border-bottom: 3px solid #000;
+  padding: 8px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.gallery-album-cover {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  background: #eee;
+}
+
+.gallery-album-cover-empty {
+  border: 1px dashed #bbb;
+}
+
+.gallery-album-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.gallery-album-date {
+  font-size: 0.7rem;
+  color: #777;
+  text-align: left;
+}
+
+.gallery-album-header {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 1rem 1rem 0;
+}
+
+.gallery-back-btn {
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: #f1f1f1;
+  color: #000;
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  border-right: 3px solid #000;
+  border-bottom: 3px solid #000;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.gallery-album-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.gallery-album-title-date {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.gallery-photo-grid {
+  column-count: 2;
+  column-gap: 10px;
+  padding: 1rem;
+}
+
+.gallery-photo-tile {
+  display: block;
+  width: 100%;
+  break-inside: avoid;
+  margin-bottom: 10px;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.gallery-photo-tile img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: #eee;
+}
+
+.gallery-load-more {
+  display: block;
+  margin: 0 auto 1.5rem;
+  font-family: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #f1f1f1;
+  color: #000;
+  border-top: 1px solid #000;
+  border-left: 1px solid #000;
+  border-right: 3px solid #000;
+  border-bottom: 3px solid #000;
+  padding: 8px 20px;
+  cursor: pointer;
+}
+
+.gallery-lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+}
+
+.gallery-lightbox-image {
+  max-width: 82%;
+  max-height: 82%;
+  object-fit: contain;
+}
+
+.gallery-lightbox-close {
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 1.5rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+}
+
+.gallery-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2rem;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 8px 14px;
+}
+
+.gallery-lightbox-prev {
+  left: 4px;
+}
+
+.gallery-lightbox-next {
+  right: 4px;
+}
+
+.gallery-lightbox-caption {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #fff;
+  font-size: 0.8rem;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 6px 14px;
+  max-width: 80%;
+  text-align: center;
+}
+
+@media screen and (max-width: 500px) {
+  .gallery-photo-grid {
+    column-count: 1;
+  }
+}
