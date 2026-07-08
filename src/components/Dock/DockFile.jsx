@@ -6,6 +6,7 @@ const ICON_MAP = {
   "Resumé": "/icons/resume.png",
   "Projects": "/icons/projects.png",
   "Internships": "/icons/internships.png",
+  "Photography": "/icons/photography.png",
   "Github": "/icons/github.png",
   "Linkedin": "/icons/linkedin.png",
 };

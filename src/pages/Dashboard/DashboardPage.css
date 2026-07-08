@@ -1,0 +1,120 @@
+body.dashboard-mode,
+body.dashboard-mode html {
+  position: static;
+  overflow: auto;
+  user-select: auto;
+}
+
+.dashboard-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  background: #eeeeee;
+  padding: 48px 16px;
+}
+
+.dashboard-loading {
+  align-items: center;
+}
+
+.dashboard-login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 320px;
+  background: #fff;
+  border: 1px solid #999;
+  border-radius: 6px;
+  padding: 24px;
+  margin-top: 80px;
+}
+
+.dashboard-login-form h1 {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+.dashboard-login-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.dashboard-login-form input {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+.dashboard-login-form button {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+.dashboard-login-form button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.dashboard-login-error {
+  color: #b00020;
+  font-size: 13px;
+}
+
+.dashboard-shell {
+  width: 100%;
+  max-width: 960px;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #999;
+  margin-bottom: 24px;
+  font-size: 14px;
+}
+
+.dashboard-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.dashboard-tabs button {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 14px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.dashboard-tabs button.active {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}
+
+.dashboard-header button {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px 12px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}

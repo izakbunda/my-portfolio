@@ -1,0 +1,147 @@
+.upload-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-size: 14px;
+}
+
+.upload-album-picker {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.upload-album-picker label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.upload-album-picker select,
+.upload-album-picker input {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  min-width: 200px;
+}
+
+.upload-dropzone {
+  border: 2px dashed #999;
+  border-radius: 6px;
+  padding: 32px;
+  text-align: center;
+  color: #555;
+  cursor: pointer;
+  background: #fafafa;
+}
+
+.upload-dropzone.dragging {
+  border-color: #333;
+  background: #f0f0f0;
+  color: #121212;
+}
+
+.upload-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.upload-file-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 100px 90px 24px;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.upload-file-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.upload-file-caption {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}
+
+.upload-file-progress {
+  height: 6px;
+  background: #ddd;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.upload-file-progress-bar {
+  height: 100%;
+  background: #333;
+  transition: width 0.2s ease;
+}
+
+.upload-file-progress-bar.error {
+  background: #b00020;
+}
+
+.upload-file-progress-bar.done {
+  background: #1a7f37;
+}
+
+.upload-file-status {
+  font-size: 12px;
+  color: #555;
+}
+
+.upload-file-status.error {
+  color: #b00020;
+}
+
+.upload-file-status.done {
+  color: #1a7f37;
+}
+
+.upload-file-remove {
+  border: none;
+  background: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #555;
+}
+
+.upload-batch-error {
+  color: #b00020;
+  font-size: 13px;
+}
+
+.upload-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.upload-actions button {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 10px 16px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #333;
+  color: #fff;
+  cursor: pointer;
+}
+
+.upload-actions button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.upload-clear-done {
+  background: #fff !important;
+  color: #333 !important;
+}

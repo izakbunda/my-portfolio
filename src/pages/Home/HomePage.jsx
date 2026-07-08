@@ -5,6 +5,7 @@ import MenuBar from "../../components/MenuBar/MenuBar";
 import Dock from "../../components/Dock/Dock";
 import MobileBanner from "../../components/MobileBanner/MobileBanner";
 import WallpaperMenu from "../../components/WallpaperMenu/WallpaperMenu";
+import { hasPublishedAlbum } from "../../lib/gallery";
 import "./HomePage.css";
 
 const useIsMobile = () => {
@@ -214,8 +215,15 @@ function HomePage() {
   const [wallpaper, setWallpaper] = useState(() => localStorage.getItem("wallpaper") || null);
   const [contextMenu, setContextMenu] = useState(null);
   const [wallpaperLoading, setWallpaperLoading] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
   const fileInputRef = useRef(null);
   const mobileWindowRef = useRef(null);
+
+  useEffect(() => {
+    hasPublishedAlbum()
+      .then(setShowGallery)
+      .catch(() => setShowGallery(false));
+  }, []);
 
   useEffect(() => {
     if (wallpaper) {
@@ -260,15 +268,22 @@ function HomePage() {
   };
 
   const [windows, setWindows] = useState([
-    { id: Date.now() + 1, position: getInitialPosition(0), name: "Resumé" },
-    { id: Date.now(),     position: getInitialPosition(1), name: "Izak Bunda" },
+    { id: crypto.randomUUID(), position: getInitialPosition(0), name: "Resumé" },
+    { id: crypto.randomUUID(), position: getInitialPosition(1), name: "Izak Bunda" },
   ]);
   const [minimizedWindows, setMinimizedWindows] = useState([]);
   const [zMap, setZMap] = useState({});
   const zCounter = useRef(10);
   const cascadeIndex = useRef(0);
 
-  const files = ["Izak Bunda", "Resumé", "Projects", "Internships", "Izak AI"];
+  const files = [
+    "Izak Bunda",
+    "Resumé",
+    "Projects",
+    "Internships",
+    "Izak AI",
+    ...(showGallery ? ["Photography"] : []),
+  ];
 
   const addWindow = (name, initialSize, resizable = true) => {
     if (windows.some((w) => w.name === name)) return;
@@ -295,7 +310,7 @@ function HomePage() {
     const spawnY = Math.min(CASCADE_BASE_Y + finalOffset, Math.max(MENU_BAR_H, window.innerHeight - DOCK_H - winH));
 
     const newWindow = {
-      id: Date.now(),
+      id: crypto.randomUUID(),
       position: { x: spawnX, y: spawnY },
       name,
       initialSize,
@@ -347,6 +362,7 @@ function HomePage() {
     { name: "Projects", onClick: () => setActiveApp("Projects") },
     { name: "Internships", onClick: () => setActiveApp("Internships") },
     { name: "Izak AI", onClick: () => setActiveApp("Izak AI") },
+    ...(showGallery ? [{ name: "Photography", onClick: () => setActiveApp("Photography") }] : []),
     { name: "Github", link: "https://www.github.com/izakbunda" },
     { name: "Linkedin", link: "https://www.linkedin.com/in/izakbunda" },
   ];
@@ -413,6 +429,7 @@ function HomePage() {
   }
 
   const handleDesktopContextMenu = (e) => {
+    if (e.target !== e.currentTarget) return;
     e.preventDefault();
     setContextMenu({ x: e.clientX, y: e.clientY });
   };
