@@ -175,6 +175,7 @@ function AlbumRow({
   onRename,
   onMoveCategory,
   onDateChange,
+  onToggleFeatured,
   drag,
 }) {
   const [editingName, setEditingName] = useState(false);
@@ -252,6 +253,13 @@ function AlbumRow({
           title="Month/year taken"
         />
         <button
+          className={`manage-feature-btn${album.featured ? " active" : ""}`}
+          onClick={() => onToggleFeatured(album.id, !album.featured)}
+          title={album.featured ? "Featured" : "Not featured"}
+        >
+          {album.featured ? "★ Featured" : "☆ Feature"}
+        </button>
+        <button
           className={`manage-publish-album-btn${album.published ? " active" : ""}`}
           onClick={() => onTogglePublish(album.id, !album.published)}
         >
@@ -282,6 +290,7 @@ function CategoryGroup({
   onRenameAlbum,
   onMoveCategory,
   onDateChange,
+  onToggleFeatured,
   onAlbumsReordered,
 }) {
   const [editingName, setEditingName] = useState(false);
@@ -371,6 +380,7 @@ function CategoryGroup({
             onRename={onRenameAlbum}
             onMoveCategory={onMoveCategory}
             onDateChange={onDateChange}
+            onToggleFeatured={onToggleFeatured}
             drag={{ ...albumDrag, onDragEnd: handleAlbumDragEnd }}
           />
         ))
@@ -453,6 +463,11 @@ function ManagePanel() {
     setAlbums((prev) => prev.map((a) => (a.id === albumId ? { ...a, date_taken: dateTaken } : a)));
   };
 
+  const handleToggleFeatured = async (albumId, featured) => {
+    await updateAlbum(albumId, { featured });
+    setAlbums((prev) => prev.map((a) => (a.id === albumId ? { ...a, featured } : a)));
+  };
+
   const handleAlbumsReordered = (categoryId, reordered) => {
     const orderMap = new Map(reordered.map((a, i) => [a.id, i]));
     setAlbums((prev) =>
@@ -502,6 +517,7 @@ function ManagePanel() {
           onRenameAlbum={handleRenameAlbum}
           onMoveCategory={handleMoveCategory}
           onDateChange={handleDateChange}
+          onToggleFeatured={handleToggleFeatured}
           onAlbumsReordered={handleAlbumsReordered}
         />
       ))}
@@ -523,6 +539,7 @@ function ManagePanel() {
           onRenameAlbum={handleRenameAlbum}
           onMoveCategory={handleMoveCategory}
           onDateChange={handleDateChange}
+          onToggleFeatured={handleToggleFeatured}
           onAlbumsReordered={handleAlbumsReordered}
         />
       )}

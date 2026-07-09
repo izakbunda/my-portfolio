@@ -35,6 +35,10 @@ function AlbumRow({ title, albums, onSelect }) {
 }
 
 function AlbumRows({ categories, albums, onSelect }) {
+  const [activeFilter, setActiveFilter] = useState(() =>
+    albums.some((a) => a.featured) ? "featured" : "all"
+  );
+
   if (albums.length === 0) {
     return <div className="gallery-empty">No albums yet.</div>;
   }
@@ -43,20 +47,64 @@ function AlbumRows({ categories, albums, onSelect }) {
       .filter((a) => (a.category_id ?? null) === categoryId)
       .sort((a, b) => a.display_order - b.display_order);
 
+  // `title: null` means no heading shown in the row itself (the
+  // "Uncategorized" bucket is an internal label, not meant for visitors),
+  // but `filterLabel` still gives it a real name for the filter button.
   const rows = categories
-    .map((c) => ({ id: c.id, title: c.name, albums: byCategory(c.id) }))
+    .map((c) => ({ id: c.id, title: c.name, filterLabel: c.name, albums: byCategory(c.id) }))
     .filter((row) => row.albums.length > 0);
 
   const uncategorized = byCategory(null);
   if (uncategorized.length > 0) {
-    rows.push({ id: "uncategorized", title: null, albums: uncategorized });
+    rows.push({ id: "uncategorized", title: null, filterLabel: "Uncategorized", albums: uncategorized });
   }
 
+  // Featured is a curated, cross-cutting view rather than a real category:
+  // selecting it shows one flat grid of featured albums regardless of which
+  // category they belong to, instead of the usual per-category rows.
+  const featured = albums.filter((a) => a.featured).sort((a, b) => a.display_order - b.display_order);
+
+  const visibleRows =
+    activeFilter === "featured"
+      ? [{ id: "featured", title: null, albums: featured }]
+      : activeFilter === "all"
+      ? rows
+      : rows.filter((r) => r.id === activeFilter);
+
   return (
-    <div className="gallery-rows">
-      {rows.map((row) => (
-        <AlbumRow key={row.id} title={row.title} albums={row.albums} onSelect={onSelect} />
-      ))}
+    <div className="gallery-rows-wrap">
+      {(rows.length > 1 || featured.length > 0) && (
+        <div className="gallery-filter-bar">
+          <button
+            className={`gallery-filter-btn${activeFilter === "all" ? " active" : ""}`}
+            onClick={() => setActiveFilter("all")}
+          >
+            All
+          </button>
+          {featured.length > 0 && (
+            <button
+              className={`gallery-filter-btn${activeFilter === "featured" ? " active" : ""}`}
+              onClick={() => setActiveFilter("featured")}
+            >
+              Featured
+            </button>
+          )}
+          {rows.map((row) => (
+            <button
+              key={row.id}
+              className={`gallery-filter-btn${activeFilter === row.id ? " active" : ""}`}
+              onClick={() => setActiveFilter(row.id)}
+            >
+              {row.filterLabel}
+            </button>
+          ))}
+        </div>
+      )}
+      <div className="gallery-rows">
+        {visibleRows.map((row) => (
+          <AlbumRow key={row.id} title={row.title} albums={row.albums} onSelect={onSelect} />
+        ))}
+      </div>
     </div>
   );
 }
