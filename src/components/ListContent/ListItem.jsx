@@ -1,4 +1,5 @@
 import "./ListContent.css";
+import { trackEvent } from "../../lib/metrics";
 
 const ListItem = ({ item, index }) => (
   <div className="list-item-container">
@@ -26,7 +27,13 @@ const ListItem = ({ item, index }) => (
     <p className="list-item-info">{item.info}</p>
 
     {item.link && (
-      <a href={item.link} target="_blank" rel="noopener noreferrer" className="view-more-link">
+      <a
+        href={item.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="view-more-link"
+        onClick={() => trackEvent("link_click", item.name)}
+      >
         View more here
       </a>
     )}

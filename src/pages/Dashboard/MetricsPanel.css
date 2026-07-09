@@ -1,0 +1,76 @@
+.metrics-loading,
+.metrics-error {
+  font-size: 13px;
+  padding: 16px 0;
+}
+
+.metrics-error {
+  color: #b00020;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.metrics-card {
+  background: #fff;
+  border: 1px solid #999;
+  border-radius: 6px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.metrics-card-value {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.metrics-card-label {
+  font-size: 12px;
+  color: #555;
+}
+
+.metrics-section-title {
+  font-size: 14px;
+  margin: 24px 0 8px;
+}
+
+.metrics-empty {
+  font-size: 13px;
+  color: #555;
+}
+
+.metrics-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #999;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.metrics-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.metrics-table th,
+.metrics-table td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.metrics-table th {
+  font-weight: 600;
+  color: #333;
+  background: #f5f5f5;
+}
+
+.metrics-table tbody tr:last-child td {
+  border-bottom: none;
+}

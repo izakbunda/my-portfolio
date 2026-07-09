@@ -1,4 +1,5 @@
 import "./Profile.css";
+import { trackEvent } from "../../lib/metrics";
 
 const Profile = () => {
   const openChat = () => window.dispatchEvent(new CustomEvent("open-window", { detail: "Izak AI" }));
@@ -47,8 +48,22 @@ const Profile = () => {
         <div className="profile-section">
           <h3>Contact me</h3>
           <div className="contact-btns">
-            <a href="mailto:izakbunda@gmail.com" className="contact-btn">Email</a>
-            <a href="https://www.linkedin.com/in/izakbunda" target="_blank" rel="noopener noreferrer" className="contact-btn">LinkedIn</a>
+            <a
+              href="mailto:izakbunda@gmail.com"
+              className="contact-btn"
+              onClick={() => trackEvent("link_click", "Email")}
+            >
+              Email
+            </a>
+            <a
+              href="https://www.linkedin.com/in/izakbunda"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="contact-btn"
+              onClick={() => trackEvent("link_click", "LinkedIn")}
+            >
+              LinkedIn
+            </a>
           </div>
         </div>
       </div>

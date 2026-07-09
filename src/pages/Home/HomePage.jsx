@@ -5,6 +5,7 @@ import MenuBar from "../../components/MenuBar/MenuBar";
 import Dock from "../../components/Dock/Dock";
 import MobileBanner from "../../components/MobileBanner/MobileBanner";
 import WallpaperMenu from "../../components/WallpaperMenu/WallpaperMenu";
+import { startSession, trackEvent } from "../../lib/metrics";
 import "./HomePage.css";
 
 const useIsMobile = () => {
@@ -243,6 +244,10 @@ function HomePage() {
   const mobileWindowRef = useRef(null);
 
   useEffect(() => {
+    startSession();
+  }, []);
+
+  useEffect(() => {
     if (wallpaper) {
       document.body.style.backgroundImage = `url(${wallpaper})`;
       document.body.style.backgroundSize = "cover";
@@ -316,6 +321,8 @@ function HomePage() {
   const addWindow = (name, initialSize, resizable = true) => {
     if (windows.some((w) => w.name === name)) return;
 
+    trackEvent("view", name);
+
     const clickSound = new Audio("/click.mp3");
     clickSound.play();
 
@@ -370,8 +377,12 @@ function HomePage() {
 
   useEffect(() => {
     const handler = (e) => {
-      if (isMobile) setActiveApp(e.detail);
-      else addWindowRef.current(e.detail);
+      if (isMobile) {
+        trackEvent("view", e.detail);
+        setActiveApp(e.detail);
+      } else {
+        addWindowRef.current(e.detail);
+      }
     };
     window.addEventListener("open-window", handler);
     return () => window.removeEventListener("open-window", handler);
@@ -388,13 +399,18 @@ function HomePage() {
     setZMap((prev) => ({ ...prev, [id]: ++zCounter.current }));
   };
 
+  const openMobileApp = (name) => {
+    trackEvent("view", name);
+    setActiveApp(name);
+  };
+
   const mobileDock = [
-    { name: "Izak Bunda", onClick: () => setActiveApp("Izak Bunda") },
-    { name: "Resumé", onClick: () => setActiveApp("Resumé") },
-    { name: "Projects", onClick: () => setActiveApp("Projects") },
-    { name: "Internships", onClick: () => setActiveApp("Internships") },
-    { name: "Izak AI", onClick: () => setActiveApp("Izak AI") },
-    { name: "Photography", onClick: () => setActiveApp("Photography") },
+    { name: "Izak Bunda", onClick: () => openMobileApp("Izak Bunda") },
+    { name: "Resumé", onClick: () => openMobileApp("Resumé") },
+    { name: "Projects", onClick: () => openMobileApp("Projects") },
+    { name: "Internships", onClick: () => openMobileApp("Internships") },
+    { name: "Izak AI", onClick: () => openMobileApp("Izak AI") },
+    { name: "Photography", onClick: () => openMobileApp("Photography") },
     { name: "Github", link: "https://www.github.com/izakbunda" },
     { name: "Linkedin", link: "https://www.linkedin.com/in/izakbunda" },
   ];
