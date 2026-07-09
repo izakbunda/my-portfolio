@@ -1,5 +1,6 @@
 import React from "react";
 import "./Resume.css";
+import { trackEvent } from "../../lib/metrics";
 
 const Resume = () => {
   return (
@@ -10,6 +11,7 @@ const Resume = () => {
           className="download-link"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => trackEvent("resume_click", "resume")}
         >
           Download Resume
         </a>

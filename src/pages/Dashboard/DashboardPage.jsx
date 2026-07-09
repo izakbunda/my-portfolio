@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import UploadPanel from "./UploadPanel";
 import ManagePanel from "./ManagePanel";
+import MetricsPanel from "./MetricsPanel";
+import ChatMetricsPanel from "./ChatMetricsPanel";
 import "./DashboardPage.css";
 
 function LoginForm({ onLoggedIn }) {
@@ -104,12 +106,28 @@ function DashboardPage() {
             >
               Manage
             </button>
+            <button
+              className={tab === "metrics" ? "active" : ""}
+              onClick={() => setTab("metrics")}
+            >
+              Metrics
+            </button>
+            <button
+              className={tab === "chat" ? "active" : ""}
+              onClick={() => setTab("chat")}
+            >
+              Chat
+            </button>
           </div>
           <div className="dashboard-content">
             {tab === "upload" ? (
               <UploadPanel onUploaded={() => setRefreshKey((k) => k + 1)} />
-            ) : (
+            ) : tab === "manage" ? (
               <ManagePanel key={refreshKey} />
+            ) : tab === "metrics" ? (
+              <MetricsPanel />
+            ) : (
+              <ChatMetricsPanel />
             )}
           </div>
         </div>

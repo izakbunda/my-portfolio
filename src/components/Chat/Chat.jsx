@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import "./Chat.css";
+import { logChatMessage } from "../../lib/metrics";
 
 const AGENT_URL = import.meta.env.VITE_AGENT_URL ?? "http://localhost:8000";
 
@@ -62,8 +63,10 @@ const Chat = () => {
           } catch {}
         }
       }
+      logChatMessage(text, assistant, false);
     } catch {
       setMessages([...next, { role: "assistant", content: "Couldn't reach the server. Try again later." }]);
+      logChatMessage(text, null, true);
     } finally {
       setStreaming(false);
     }

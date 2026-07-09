@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./DockFile.css";
+import { trackEvent } from "../../lib/metrics";
 
 const ICON_MAP = {
   "Izak Bunda": "/icons/profile.png",
@@ -37,6 +38,7 @@ const DockFile = ({ name, onClick, link }) => {
   const handleClick = () => {
     const clickSound = new Audio("/click.mp3");
     clickSound.play();
+    if (link) trackEvent("link_click", name);
     onClick?.();
   };
 
