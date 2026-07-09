@@ -5,7 +5,6 @@ import MenuBar from "../../components/MenuBar/MenuBar";
 import Dock from "../../components/Dock/Dock";
 import MobileBanner from "../../components/MobileBanner/MobileBanner";
 import WallpaperMenu from "../../components/WallpaperMenu/WallpaperMenu";
-import { hasPublishedAlbum } from "../../lib/gallery";
 import "./HomePage.css";
 
 const useIsMobile = () => {
@@ -18,7 +17,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-function DraggableWindow({ id, position, name, initialSize, resizable = true, onRemove, onUpdatePosition, onSelect, onMinimize, zIndex, isMinimized, isMobile }) {
+function DraggableWindow({ id, position, name, initialSize, resizable = true, onRemove, onUpdatePosition, onUpdateSize, onSelect, onMinimize, zIndex, isMinimized, isMobile }) {
   const windowRef = useRef(null);
   const headerRef = useRef(null);
   const isClicked = useRef(false);
@@ -71,6 +70,7 @@ function DraggableWindow({ id, position, name, initialSize, resizable = true, on
         const edge = resizeEdge.current;
         resizeEdge.current = null;
         setSize({ ...sizeRef.current });
+        onUpdateSize(id, { ...sizeRef.current });
         if (edge && edge.includes('w')) {
           coords.current.lastX = windowEl.offsetLeft;
           onUpdatePosition(id, { x: windowEl.offsetLeft, y: windowEl.offsetTop });
@@ -144,7 +144,7 @@ function DraggableWindow({ id, position, name, initialSize, resizable = true, on
       document.removeEventListener("mousemove", onMouseMove);
       document.removeEventListener("touchmove", onMouseMove);
     };
-  }, [id, isMobile, onUpdatePosition, onSelect]);
+  }, [id, isMobile, onUpdatePosition, onUpdateSize, onSelect]);
 
   const onResizeMouseDown = (e, edge) => {
     e.stopPropagation();
@@ -208,6 +208,30 @@ const getInitialPosition = (index) => {
 const CASCADE_STEP = 30;
 const CASCADE_BASE_Y = 60;
 
+const WINDOWS_STORAGE_KEY = "desktop-windows";
+
+function loadSavedWindows() {
+  try {
+    const raw = localStorage.getItem(WINDOWS_STORAGE_KEY);
+    if (!raw) return null;
+    const saved = JSON.parse(raw);
+    if (!Array.isArray(saved) || saved.length === 0) return null;
+    const MENU_BAR_H = 30;
+    const DOCK_H = 72;
+    return saved.map((w) => ({
+      ...w,
+      id: crypto.randomUUID(),
+      // Re-clamp in case the viewport is smaller than it was last session.
+      position: {
+        x: Math.max(0, Math.min(w.position.x, window.innerWidth - 100)),
+        y: Math.max(MENU_BAR_H, Math.min(w.position.y, window.innerHeight - DOCK_H - 100)),
+      },
+    }));
+  } catch {
+    return null;
+  }
+}
+
 function HomePage() {
   const isMobile = useIsMobile();
   const [activeApp, setActiveApp] = useState("Izak Bunda");
@@ -215,15 +239,8 @@ function HomePage() {
   const [wallpaper, setWallpaper] = useState(() => localStorage.getItem("wallpaper") || null);
   const [contextMenu, setContextMenu] = useState(null);
   const [wallpaperLoading, setWallpaperLoading] = useState(false);
-  const [showGallery, setShowGallery] = useState(false);
   const fileInputRef = useRef(null);
   const mobileWindowRef = useRef(null);
-
-  useEffect(() => {
-    hasPublishedAlbum()
-      .then(setShowGallery)
-      .catch(() => setShowGallery(false));
-  }, []);
 
   useEffect(() => {
     if (wallpaper) {
@@ -267,23 +284,34 @@ function HomePage() {
     reader.readAsDataURL(file);
   };
 
-  const [windows, setWindows] = useState([
-    { id: crypto.randomUUID(), position: getInitialPosition(0), name: "Resumé" },
-    { id: crypto.randomUUID(), position: getInitialPosition(1), name: "Izak Bunda" },
-  ]);
+  const [windows, setWindows] = useState(
+    () =>
+      loadSavedWindows() ?? [
+        { id: crypto.randomUUID(), position: getInitialPosition(0), name: "Izak Bunda" },
+      ]
+  );
   const [minimizedWindows, setMinimizedWindows] = useState([]);
   const [zMap, setZMap] = useState({});
   const zCounter = useRef(10);
   const cascadeIndex = useRef(0);
 
-  const files = [
-    "Izak Bunda",
-    "Resumé",
-    "Projects",
-    "Internships",
-    "Izak AI",
-    ...(showGallery ? ["Photography"] : []),
-  ];
+  const files = ["Izak Bunda", "Resumé", "Projects", "Internships", "Izak AI", "Photography"];
+
+  // Persist open windows + positions so they're restored on the next visit.
+  useEffect(() => {
+    if (isMobile) return;
+    try {
+      const toSave = windows.map(({ name, position, initialSize, resizable }) => ({
+        name,
+        position,
+        initialSize,
+        resizable,
+      }));
+      localStorage.setItem(WINDOWS_STORAGE_KEY, JSON.stringify(toSave));
+    } catch {
+      // Ignore storage failures (e.g. private browsing quota) — non-critical.
+    }
+  }, [windows, isMobile]);
 
   const addWindow = (name, initialSize, resizable = true) => {
     if (windows.some((w) => w.name === name)) return;
@@ -329,6 +357,10 @@ function HomePage() {
     setWindows((prev) => prev.map((w) => w.id === id ? { ...w, position } : w));
   };
 
+  const updateWindowSize = (id, size) => {
+    setWindows((prev) => prev.map((w) => w.id === id ? { ...w, initialSize: size } : w));
+  };
+
   const selectWindow = (id) => {
     setZMap((prev) => ({ ...prev, [id]: ++zCounter.current }));
   };
@@ -362,7 +394,7 @@ function HomePage() {
     { name: "Projects", onClick: () => setActiveApp("Projects") },
     { name: "Internships", onClick: () => setActiveApp("Internships") },
     { name: "Izak AI", onClick: () => setActiveApp("Izak AI") },
-    ...(showGallery ? [{ name: "Photography", onClick: () => setActiveApp("Photography") }] : []),
+    { name: "Photography", onClick: () => setActiveApp("Photography") },
     { name: "Github", link: "https://www.github.com/izakbunda" },
     { name: "Linkedin", link: "https://www.linkedin.com/in/izakbunda" },
   ];
@@ -467,6 +499,7 @@ function HomePage() {
             resizable={w.resizable ?? true}
             onRemove={removeWindow}
             onUpdatePosition={updateWindowPosition}
+            onUpdateSize={updateWindowSize}
             onSelect={selectWindow}
             onMinimize={minimizeWindow}
             zIndex={zMap[w.id] ?? 1}

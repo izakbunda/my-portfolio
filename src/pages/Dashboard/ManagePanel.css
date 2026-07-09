@@ -225,6 +225,24 @@
   color: #333;
 }
 
+.manage-feature-btn {
+  font-family: inherit;
+  font-size: 12px;
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  color: #999;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.manage-feature-btn.active {
+  border-color: #b8860b;
+  color: #b8860b;
+}
+
 .manage-delete-btn {
   font-family: inherit;
   font-size: 12px;

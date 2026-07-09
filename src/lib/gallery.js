@@ -10,17 +10,6 @@ export async function fetchAlbums() {
   return data;
 }
 
-export async function hasPublishedAlbum() {
-  const { data, error } = await supabase
-    .from("albums")
-    .select("id")
-    .eq("published", true)
-    .eq("deleted", false)
-    .limit(1);
-  if (error) throw error;
-  return data.length > 0;
-}
-
 export async function getNextAlbumOrder(categoryId) {
   let query = supabase
     .from("albums")
