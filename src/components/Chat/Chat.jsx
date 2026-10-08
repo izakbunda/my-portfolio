@@ -2,6 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import "./Chat.css";
 import { logChatMessage } from "../../lib/metrics";
+import pingSound from "../../assets/ping.m4a";
+import { useProximity } from "../../lib/useProximity";
 
 const AGENT_URL = import.meta.env.VITE_AGENT_URL ?? "http://localhost:8000";
 
@@ -10,23 +12,31 @@ const STARTERS = [
   "How can I reach him?",
 ];
 
-const Chat = () => {
+const Chat = ({ onStreamingChange }) => {
   const [messages, setMessages] = useState([
     { role: "assistant", content: "Hey! Ask me anything about Izak." },
   ]);
   const [input, setInput] = useState("");
   const [streaming, setStreaming] = useState(false);
   const bottomRef = useRef(null);
+  const sendRef = useRef(null);
+  useProximity(sendRef);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    onStreamingChange?.(streaming);
+  }, [streaming, onStreamingChange]);
 
   const hasStarted = messages.some((m) => m.role === "user");
 
   const send = async (text) => {
     if (typeof text !== "string") text = input.trim();
     if (!text || streaming) return;
+
+    new Audio(pingSound).play().catch(() => {});
 
     const next = [...messages, { role: "user", content: text }];
     setMessages(next);
@@ -110,8 +120,8 @@ const Chat = () => {
           placeholder="Ask me anything about Izak…"
           disabled={streaming}
         />
-        <button className="chat-send" onClick={send} disabled={streaming}>
-          Send
+        <button className="chat-send ai-takeover" ref={sendRef} onClick={send} disabled={streaming || !input.trim()}>
+          <span>Send</span>
         </button>
       </div>
     </div>

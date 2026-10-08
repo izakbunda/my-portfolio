@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import Profile from "../Profile/Profile";
 import Resume from "../Resume/Resume";
 import Body from "../Body/Body";
@@ -6,8 +6,12 @@ import EasterEggs from "../EasterEggs/EasterEggs";
 import Chat from "../Chat/Chat";
 import Gallery from "../Gallery/Gallery";
 import "./Window.css";
+import "../AiGlow/AiGlow.css";
 
 const Window = forwardRef(({ name, onClose, onMin, onFullscreen, isFullscreen, isMobile }, ref) => {
+  const [aiThinking, setAiThinking] = useState(false);
+  const isAi = name === "Izak AI";
+
   const handleMinimize = () => {
     const clickSound = new Audio("/click.mp3");
     clickSound.play();
@@ -15,7 +19,7 @@ const Window = forwardRef(({ name, onClose, onMin, onFullscreen, isFullscreen, i
   };
 
   return (
-    <div className={`window-container${isFullscreen ? " window-fullscreen" : ""}`}>
+    <div className={`window-container${isFullscreen ? " window-fullscreen" : ""}${isAi ? " ai-glow-window" : ""}${isAi && aiThinking ? " ai-thinking" : ""}`}>
       <div className="header" ref={ref}>
         <div className="window-name">{name}</div>
         {!isMobile && (
@@ -33,7 +37,7 @@ const Window = forwardRef(({ name, onClose, onMin, onFullscreen, isFullscreen, i
         ) : name === "Resumé" ? (
           <Resume />
         ) : name === "Izak AI" ? (
-          <Chat />
+          <Chat onStreamingChange={setAiThinking} />
         ) : name === "Easter Eggs" ? (
           <EasterEggs />
         ) : name === "Photography" ? (

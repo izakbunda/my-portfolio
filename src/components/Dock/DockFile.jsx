@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./DockFile.css";
+import "../AiGlow/AiGlow.css";
+import { useProximitySound } from "../../lib/proximitySound";
+import hoverSound from "../../assets/hover.mp3";
 import { trackEvent } from "../../lib/metrics";
 
 const ICON_MAP = {
@@ -14,6 +17,8 @@ const ICON_MAP = {
 
 const DockFile = ({ name, onClick, link }) => {
   const [blinking, setBlinking] = useState(false);
+  const aiIconRef = useRef(null);
+  useProximitySound(aiIconRef, hoverSound, name === "Izak AI");
 
   useEffect(() => {
     if (name !== "Izak AI") return;
@@ -45,7 +50,13 @@ const DockFile = ({ name, onClick, link }) => {
   return (
     <div className="dockfile-container" onClick={handleClick}>
       <a target="_blank" rel="noopener noreferrer" href={link}>
-        <img src={src} className="icon" alt={name} style={name === "Github" ? { height: "34px" } : undefined} />
+        {name === "Izak AI" ? (
+          <span className="ai-glow-icon" ref={aiIconRef}>
+            <img src={src} className="icon" alt={name} />
+          </span>
+        ) : (
+          <img src={src} className="icon" alt={name} style={name === "Github" ? { height: "34px" } : undefined} />
+        )}
       </a>
       <p className="dockfile-label">{name}</p>
     </div>

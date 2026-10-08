@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import "./File.css";
+import "../AiGlow/AiGlow.css";
+import { useProximitySound } from "../../lib/proximitySound";
+import hoverSound from "../../assets/hover.mp3";
 
 const ICON_MAP = {
   "Izak Bunda": "/icons/profile.png",
@@ -11,6 +14,8 @@ const ICON_MAP = {
 
 const File = ({ name, style, onClick, isActive }) => {
   const [blinking, setBlinking] = useState(false);
+  const aiIconRef = useRef(null);
+  useProximitySound(aiIconRef, hoverSound, name === "Izak AI");
 
   useEffect(() => {
     if (name !== "Izak AI") return;
@@ -34,7 +39,13 @@ const File = ({ name, style, onClick, isActive }) => {
 
   return (
     <div className={`file-container${isActive ? " file-active" : ""}`} style={style} onClick={() => onClick(name)}>
-      <img src={src} className="desktop-icon" alt={name} />
+      {name === "Izak AI" ? (
+        <span className="ai-glow-icon" ref={aiIconRef}>
+          <img src={src} className="desktop-icon" alt={name} />
+        </span>
+      ) : (
+        <img src={src} className="desktop-icon" alt={name} />
+      )}
       <div className="filename">{name}</div>
     </div>
   );
