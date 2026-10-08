@@ -1,0 +1,142 @@
+.appearance-panel button {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 14px;
+  border: 1px solid #999;
+  border-radius: 4px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.appearance-panel button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.appearance-presets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.appearance-presets button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.appearance-presets button.active {
+  border-color: #333;
+  box-shadow: 0 0 0 1px #333;
+}
+
+.appearance-swatches {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.appearance-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.appearance-custom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.appearance-color-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.appearance-color-row input[type="color"] {
+  width: 36px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid #999;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.appearance-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 64px;
+  padding: 48px 16px;
+  background: #c9c9c9;
+  border-radius: 6px;
+  flex-wrap: wrap;
+}
+
+/* Gives the preview window its own stacking context, like DraggableWindow. */
+.appearance-preview-window-wrap {
+  position: relative;
+  z-index: 0;
+}
+
+.appearance-preview-window {
+  width: 260px;
+  height: 150px;
+  background: #fff;
+  border-top: 1px solid #fff;
+  border-left: 1px solid #fff;
+  border-right: 3px solid #fff;
+  border-bottom: 3px solid #fff;
+  font-size: 12px;
+}
+
+.appearance-preview-header {
+  text-align: center;
+  font-size: 11px;
+  padding: 2px 0;
+  border-bottom: 1px solid #000;
+  background: repeating-linear-gradient(0deg, grey, grey 1px, lightgrey 1px, lightgrey 4px);
+}
+
+.appearance-preview-body {
+  padding: 10px;
+}
+
+.ai-glow-preview-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.ai-glow-preview-icon img {
+  height: 54px;
+}
+
+.appearance-preview-hint {
+  font-size: 11px;
+  color: #333;
+}
+
+.appearance-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.appearance-panel .appearance-save {
+  background: #333;
+  color: #fff;
+  border-color: #333;
+}
+
+.appearance-status {
+  font-size: 13px;
+  padding: 12px 0;
+  color: #1b6e2a;
+}

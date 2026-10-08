@@ -4,6 +4,7 @@ import UploadPanel from "./UploadPanel";
 import ManagePanel from "./ManagePanel";
 import MetricsPanel from "./MetricsPanel";
 import ChatMetricsPanel from "./ChatMetricsPanel";
+import AppearancePanel from "./AppearancePanel";
 import "./DashboardPage.css";
 
 function LoginForm({ onLoggedIn }) {
@@ -118,6 +119,12 @@ function DashboardPage() {
             >
               Chat
             </button>
+            <button
+              className={tab === "appearance" ? "active" : ""}
+              onClick={() => setTab("appearance")}
+            >
+              Appearance
+            </button>
           </div>
           <div className="dashboard-content">
             {tab === "upload" ? (
@@ -126,8 +133,10 @@ function DashboardPage() {
               <ManagePanel key={refreshKey} />
             ) : tab === "metrics" ? (
               <MetricsPanel />
-            ) : (
+            ) : tab === "chat" ? (
               <ChatMetricsPanel />
+            ) : (
+              <AppearancePanel />
             )}
           </div>
         </div>
