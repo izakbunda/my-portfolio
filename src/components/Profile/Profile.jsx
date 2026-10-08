@@ -1,7 +1,15 @@
+import { useRef } from "react";
 import "./Profile.css";
+import "../AiGlow/AiGlow.css";
 import { trackEvent } from "../../lib/metrics";
+import { useProximity } from "../../lib/useProximity";
+import { useProximitySound } from "../../lib/proximitySound";
+import hoverSound from "../../assets/hover.mp3";
 
 const Profile = () => {
+  const chatBtnRef = useRef(null);
+  useProximity(chatBtnRef);
+  useProximitySound(chatBtnRef, hoverSound);
   const openChat = () => window.dispatchEvent(new CustomEvent("open-window", { detail: "Izak AI" }));
   const bio1 =
     "Hi, my name is Izak. I'm an AI software engineer at KPMG, where I architect and develop enterprise-ready AI solutions that empower teams to automate complex workflows, extract meaningful insights from data, and make more strategic decisions. My work centers on translating cutting-edge AI capabilities into scalable, high-impact products that transform and optimize day-to-day operations.";
@@ -25,8 +33,8 @@ const Profile = () => {
           </div>
         </div>
       </div>
-      <div className="chat-ai-btn-wrapper">
-        <button className="chat-ai-btn" onClick={openChat}>
+      <div className="chat-ai-btn-wrapper ai-glow-around">
+        <button className="chat-ai-btn ai-takeover" ref={chatBtnRef} onClick={openChat}>
           <span>Chat with Izak AI</span>
         </button>
       </div>

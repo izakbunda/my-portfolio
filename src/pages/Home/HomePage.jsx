@@ -6,6 +6,7 @@ import Dock from "../../components/Dock/Dock";
 import MobileBanner from "../../components/MobileBanner/MobileBanner";
 import WallpaperMenu from "../../components/WallpaperMenu/WallpaperMenu";
 import { startSession, trackEvent } from "../../lib/metrics";
+import { applyAiGlowColors, fetchAiGlow } from "../../lib/siteSettings";
 import "./HomePage.css";
 
 const useIsMobile = () => {
@@ -245,6 +246,10 @@ function HomePage() {
 
   useEffect(() => {
     startSession();
+  }, []);
+
+  useEffect(() => {
+    fetchAiGlow().then((glow) => applyAiGlowColors(glow.colors));
   }, []);
 
   useEffect(() => {

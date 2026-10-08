@@ -1,0 +1,363 @@
+@property --ai-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* Positions of the drifting "swells" along each edge. */
+@property --ai-wa {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 20%;
+}
+
+@property --ai-wb {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 60%;
+}
+
+@property --ai-wc {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 80%;
+}
+
+/* Registered so the band can transition smoothly into/out of thinking. */
+@property --ai-reach {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 30px;
+}
+
+@property --ai-base {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 8px;
+}
+
+@property --ai-in-reach {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 14px;
+}
+
+@property --ai-in-base {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 6px;
+}
+
+/* Fallback palette (Cool); overridden at runtime from site_settings. */
+:root {
+  --ai-glow-colors: #8D9FFF, #BC82F3, #5AC8FA, #C686FF, #7B9CFF, #8D9FFF;
+  /* Halftone dot grid the gradient is drawn through. */
+  --ai-dot: radial-gradient(circle, #000 0 1.1px, transparent 1.5px);
+  --ai-dot-grid: 4px 4px;
+}
+
+@keyframes ai-spin {
+  to {
+    --ai-angle: 360deg;
+  }
+}
+
+@keyframes ai-wave-a {
+  0%, 100% { --ai-wa: 12%; }
+  50% { --ai-wa: 72%; }
+}
+
+@keyframes ai-wave-b {
+  0%, 100% { --ai-wb: 78%; }
+  50% { --ai-wb: 22%; }
+}
+
+@keyframes ai-wave-c {
+  0%, 100% { --ai-wc: 35%; }
+  50% { --ai-wc: 90%; }
+}
+
+@keyframes ai-breathe {
+  0%, 100% { opacity: 0.85; }
+  50% { opacity: 1; }
+}
+
+/* Izak AI window: a dotted band around the frame. A thin base ring (--ai-base)
+   plus soft swells that drift along each edge and reach out to --ai-reach,
+   so the outer edge is wavy rather than uniform. No z-index here, so ::before
+   (z-index -1) paints behind the window but stays inside the
+   DraggableWindow wrapper's stacking context. */
+.ai-glow-window {
+  position: relative;
+  border-color: #ffffff;
+  --ai-reach: 36px;
+  --ai-base: 16px;
+  --ai-in-reach: 14px;
+  --ai-in-base: 6px;
+  transition: --ai-reach 0.6s ease, --ai-base 0.6s ease, --ai-in-reach 0.6s ease, --ai-in-base 0.6s ease;
+}
+
+/* Same dotted wavy glow around any other element (e.g. the "Chat with Izak
+   AI" button), at a smaller scale. isolation keeps the z-index -1 glow above
+   the surrounding window's white background. */
+.ai-glow-around {
+  position: relative;
+  isolation: isolate;
+  --ai-reach: 18px;
+  --ai-base: 7px;
+}
+
+.ai-glow-window.ai-thinking {
+  --ai-reach: 54px;
+  --ai-base: 24px;
+  --ai-in-reach: 22px;
+  --ai-in-base: 10px;
+}
+
+:is(.ai-glow-window, .ai-glow-around)::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--ai-reach) * -1);
+  z-index: -1;
+  background: conic-gradient(from var(--ai-angle), var(--ai-glow-colors));
+  -webkit-mask:
+    var(--ai-dot) var(--ai-reach) var(--ai-reach) / var(--ai-dot-grid),
+    linear-gradient(to right, transparent, #000 calc(var(--ai-reach) * 0.55), #000 calc(100% - var(--ai-reach) * 0.55), transparent),
+    linear-gradient(to bottom, transparent, #000 calc(var(--ai-reach) * 0.55), #000 calc(100% - var(--ai-reach) * 0.55), transparent),
+    radial-gradient(24% var(--ai-reach) at var(--ai-wa) var(--ai-reach), #000 30%, transparent),
+    radial-gradient(16% var(--ai-reach) at var(--ai-wc) var(--ai-reach), #000 20%, transparent),
+    radial-gradient(24% var(--ai-reach) at calc(100% - var(--ai-wa)) calc(100% - var(--ai-reach)), #000 30%, transparent),
+    radial-gradient(var(--ai-reach) 24% at calc(100% - var(--ai-reach)) var(--ai-wb), #000 30%, transparent),
+    radial-gradient(var(--ai-reach) 16% at var(--ai-reach) var(--ai-wc), #000 20%, transparent),
+    radial-gradient(var(--ai-reach) 24% at var(--ai-reach) calc(100% - var(--ai-wb)), #000 30%, transparent),
+    linear-gradient(to right, transparent calc(var(--ai-reach) - var(--ai-base)), #000 calc(var(--ai-reach) - var(--ai-base) * 0.4), #000 calc(100% - var(--ai-reach) + var(--ai-base) * 0.4), transparent calc(100% - var(--ai-reach) + var(--ai-base))),
+    linear-gradient(to bottom, transparent calc(var(--ai-reach) - var(--ai-base)), #000 calc(var(--ai-reach) - var(--ai-base) * 0.4), #000 calc(100% - var(--ai-reach) + var(--ai-base) * 0.4), transparent calc(100% - var(--ai-reach) + var(--ai-base)));
+  -webkit-mask-composite: source-in, source-in, source-in, source-over, source-over, source-over, source-over, source-over, source-over, source-in;
+  mask:
+    var(--ai-dot) var(--ai-reach) var(--ai-reach) / var(--ai-dot-grid),
+    linear-gradient(to right, transparent, #000 calc(var(--ai-reach) * 0.55), #000 calc(100% - var(--ai-reach) * 0.55), transparent),
+    linear-gradient(to bottom, transparent, #000 calc(var(--ai-reach) * 0.55), #000 calc(100% - var(--ai-reach) * 0.55), transparent),
+    radial-gradient(24% var(--ai-reach) at var(--ai-wa) var(--ai-reach), #000 30%, transparent),
+    radial-gradient(16% var(--ai-reach) at var(--ai-wc) var(--ai-reach), #000 20%, transparent),
+    radial-gradient(24% var(--ai-reach) at calc(100% - var(--ai-wa)) calc(100% - var(--ai-reach)), #000 30%, transparent),
+    radial-gradient(var(--ai-reach) 24% at calc(100% - var(--ai-reach)) var(--ai-wb), #000 30%, transparent),
+    radial-gradient(var(--ai-reach) 16% at var(--ai-reach) var(--ai-wc), #000 20%, transparent),
+    radial-gradient(var(--ai-reach) 24% at var(--ai-reach) calc(100% - var(--ai-wb)), #000 30%, transparent),
+    linear-gradient(to right, transparent calc(var(--ai-reach) - var(--ai-base)), #000 calc(var(--ai-reach) - var(--ai-base) * 0.4), #000 calc(100% - var(--ai-reach) + var(--ai-base) * 0.4), transparent calc(100% - var(--ai-reach) + var(--ai-base))),
+    linear-gradient(to bottom, transparent calc(var(--ai-reach) - var(--ai-base)), #000 calc(var(--ai-reach) - var(--ai-base) * 0.4), #000 calc(100% - var(--ai-reach) + var(--ai-base) * 0.4), transparent calc(100% - var(--ai-reach) + var(--ai-base)));
+  mask-composite: intersect, intersect, intersect, add, add, add, add, add, add, intersect;
+  animation:
+    ai-spin 6s linear infinite,
+    ai-wave-a 9s ease-in-out infinite,
+    ai-wave-b 11s ease-in-out infinite,
+    ai-wave-c 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.ai-glow-window.ai-thinking::before {
+  filter: saturate(1.4);
+  animation:
+    ai-spin 1.8s linear infinite,
+    ai-wave-a 3s ease-in-out infinite,
+    ai-wave-b 3.8s ease-in-out infinite,
+    ai-wave-c 2.4s ease-in-out infinite,
+    ai-breathe 1.4s ease-in-out infinite;
+}
+
+/* Inner bleed: the same wavy dots run a little way inside the (frameless)
+   window. Fullscreen and mobile have no room outside, so there the inner
+   bleed takes over the whole effect. */
+.ai-glow-window.window-fullscreen {
+  --ai-in-reach: 34px;
+  --ai-in-base: 12px;
+}
+
+.ai-glow-window.window-fullscreen.ai-thinking {
+  --ai-in-reach: 52px;
+  --ai-in-base: 18px;
+}
+
+.ai-glow-window.window-fullscreen::before {
+  display: none;
+}
+
+.ai-glow-window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: conic-gradient(from var(--ai-angle), var(--ai-glow-colors));
+  -webkit-mask:
+    var(--ai-dot) 0 0 / var(--ai-dot-grid),
+    radial-gradient(24% var(--ai-in-reach) at var(--ai-wa) 0%, #000 30%, transparent),
+    radial-gradient(16% var(--ai-in-reach) at var(--ai-wc) 0%, #000 20%, transparent),
+    radial-gradient(24% var(--ai-in-reach) at calc(100% - var(--ai-wa)) 100%, #000 30%, transparent),
+    radial-gradient(var(--ai-in-reach) 24% at 100% var(--ai-wb), #000 30%, transparent),
+    radial-gradient(var(--ai-in-reach) 16% at 0% var(--ai-wc), #000 20%, transparent),
+    radial-gradient(var(--ai-in-reach) 24% at 0% calc(100% - var(--ai-wb)), #000 30%, transparent),
+    linear-gradient(to right, #000, #000 calc(var(--ai-in-base) * 0.4), transparent var(--ai-in-base), transparent calc(100% - var(--ai-in-base)), #000 calc(100% - var(--ai-in-base) * 0.4), #000),
+    linear-gradient(to bottom, #000, #000 calc(var(--ai-in-base) * 0.4), transparent var(--ai-in-base), transparent calc(100% - var(--ai-in-base)), #000 calc(100% - var(--ai-in-base) * 0.4), #000);
+  -webkit-mask-composite: source-in, source-over, source-over, source-over, source-over, source-over, source-over, source-over;
+  mask:
+    var(--ai-dot) 0 0 / var(--ai-dot-grid),
+    radial-gradient(24% var(--ai-in-reach) at var(--ai-wa) 0%, #000 30%, transparent),
+    radial-gradient(16% var(--ai-in-reach) at var(--ai-wc) 0%, #000 20%, transparent),
+    radial-gradient(24% var(--ai-in-reach) at calc(100% - var(--ai-wa)) 100%, #000 30%, transparent),
+    radial-gradient(var(--ai-in-reach) 24% at 100% var(--ai-wb), #000 30%, transparent),
+    radial-gradient(var(--ai-in-reach) 16% at 0% var(--ai-wc), #000 20%, transparent),
+    radial-gradient(var(--ai-in-reach) 24% at 0% calc(100% - var(--ai-wb)), #000 30%, transparent),
+    linear-gradient(to right, #000, #000 calc(var(--ai-in-base) * 0.4), transparent var(--ai-in-base), transparent calc(100% - var(--ai-in-base)), #000 calc(100% - var(--ai-in-base) * 0.4), #000),
+    linear-gradient(to bottom, #000, #000 calc(var(--ai-in-base) * 0.4), transparent var(--ai-in-base), transparent calc(100% - var(--ai-in-base)), #000 calc(100% - var(--ai-in-base) * 0.4), #000);
+  mask-composite: intersect, add, add, add, add, add, add, add;
+  animation:
+    ai-spin 6s linear infinite,
+    ai-wave-a 9s ease-in-out infinite,
+    ai-wave-b 11s ease-in-out infinite,
+    ai-wave-c 7s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.ai-glow-window.ai-thinking::after {
+  filter: saturate(1.4);
+  animation:
+    ai-spin 1.8s linear infinite,
+    ai-wave-a 3s ease-in-out infinite,
+    ai-wave-b 3.8s ease-in-out infinite,
+    ai-wave-c 2.4s ease-in-out infinite,
+    ai-breathe 1.4s ease-in-out infinite;
+}
+
+/* Izak AI icons: a lumpy halo of dots at rest, bigger on hover, flare on press. */
+.ai-glow-icon {
+  position: relative;
+  display: inline-flex;
+  isolation: isolate;
+}
+
+.ai-glow-icon > img {
+  position: relative;
+  z-index: 1;
+}
+
+.ai-glow-icon::before {
+  content: "";
+  position: absolute;
+  inset: -24%;
+  z-index: 0;
+  background: conic-gradient(from var(--ai-angle), var(--ai-glow-colors));
+  -webkit-mask:
+    var(--ai-dot) center / 3.5px 3.5px,
+    radial-gradient(closest-side, #000 60%, transparent),
+    radial-gradient(38% 38% at var(--ai-wa) var(--ai-wb), #000 30%, transparent),
+    radial-gradient(34% 34% at var(--ai-wb) var(--ai-wc), #000 30%, transparent),
+    radial-gradient(closest-side, #000 45%, transparent 80%);
+  -webkit-mask-composite: source-in, source-in, source-over, source-over;
+  mask:
+    var(--ai-dot) center / 3.5px 3.5px,
+    radial-gradient(closest-side, #000 60%, transparent),
+    radial-gradient(38% 38% at var(--ai-wa) var(--ai-wb), #000 30%, transparent),
+    radial-gradient(34% 34% at var(--ai-wb) var(--ai-wc), #000 30%, transparent),
+    radial-gradient(closest-side, #000 45%, transparent 80%);
+  mask-composite: intersect, intersect, add, add;
+  opacity: 0.85;
+  animation:
+    ai-spin 8s linear infinite,
+    ai-wave-a 5s ease-in-out infinite,
+    ai-wave-b 6s ease-in-out infinite,
+    ai-wave-c 4s ease-in-out infinite;
+  pointer-events: none;
+  transition: transform 0.35s ease, opacity 0.35s ease, filter 0.35s ease;
+}
+
+.file-container:hover .ai-glow-icon::before,
+.dockfile-container:hover .ai-glow-icon::before,
+.ai-glow-preview-icon:hover .ai-glow-icon::before {
+  transform: scale(1.25);
+  opacity: 1;
+}
+
+.file-container:active .ai-glow-icon::before,
+.dockfile-container:active .ai-glow-icon::before,
+.ai-glow-preview-icon:active .ai-glow-icon::before {
+  transform: scale(1.45);
+  opacity: 1;
+  filter: brightness(1.15) saturate(1.5);
+}
+
+/* Gradient that takes over a black AI button (Send, "Chat with Izak AI") as
+   the cursor approaches: a circle centered on the cursor (--ai-mx/--ai-my)
+   whose size follows --ai-near (0 far away → 1 on the button), both set by
+   useProximity. The gradient's angle turns while its position wanders on a
+   different cycle, so the color movement never reads as a simple sweep.
+   Put the label in a <span> so it stays above the gradient. */
+@property --ai-hover-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+.ai-takeover {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.ai-takeover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(var(--ai-hover-angle), var(--ai-glow-colors));
+  background-size: 300% 300%;
+  -webkit-mask-image: radial-gradient(circle at var(--ai-mx, 50%) var(--ai-my, 50%), #000 calc(var(--ai-near, 0) * 110% - 10%), transparent calc(var(--ai-near, 0) * 110% + 15%));
+  mask-image: radial-gradient(circle at var(--ai-mx, 50%) var(--ai-my, 50%), #000 calc(var(--ai-near, 0) * 110% - 10%), transparent calc(var(--ai-near, 0) * 110% + 15%));
+  opacity: min(1, calc(var(--ai-near, 0) * 4));
+  animation:
+    ai-hover-turn 13s linear infinite,
+    ai-hover-wander 17s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.ai-takeover:disabled::after {
+  display: none;
+}
+
+.ai-takeover > span {
+  position: relative;
+  z-index: 2;
+}
+
+/* Touch devices have no proximity tracking: fill fully on tap. */
+@media (hover: none) {
+  .ai-takeover:hover::after {
+    --ai-near: 1;
+  }
+}
+
+@keyframes ai-hover-turn {
+  to {
+    --ai-hover-angle: 360deg;
+  }
+}
+
+@keyframes ai-hover-wander {
+  0%, 100% { background-position: 0% 20%; }
+  20% { background-position: 85% 0%; }
+  40% { background-position: 40% 100%; }
+  60% { background-position: 100% 65%; }
+  80% { background-position: 15% 80%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-glow-window,
+  .ai-glow-window::before,
+  .ai-glow-around::before,
+  .ai-glow-window.ai-thinking::before,
+  .ai-glow-window::after,
+  .ai-glow-window.ai-thinking::after,
+  .ai-glow-icon::before,
+  .ai-takeover::after {
+    animation: none;
+    transition: none;
+  }
+}
