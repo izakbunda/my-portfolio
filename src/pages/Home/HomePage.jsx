@@ -413,16 +413,17 @@ function HomePage() {
     return () => window.removeEventListener("open-window", handler);
   }, [isMobile]);
 
-  // Deep link on arrival (/?open=projects&item=libris). Declared after the
+  // Deep link on arrival (/projects/libris or /?open=projects&item=libris). Declared after the
   // listener above so it's registered by the time this dispatches.
   const deepLinkHandled = useRef(false);
   useEffect(() => {
     if (deepLinkHandled.current) return;
     deepLinkHandled.current = true;
     const target = parseDeepLink();
-    if (!target) return;
-    openTarget(target, "url");
-    window.history.replaceState(null, "", window.location.pathname);
+    if (target) openTarget(target, "url");
+    if (window.location.pathname !== "/" || window.location.search) {
+      window.history.replaceState(null, "", "/");
+    }
   }, []);
 
   // Let Izak AI know what's on screen.

@@ -1,6 +1,7 @@
 import { trackEvent } from "./metrics";
 
-// Deep links: ?open=<app>&item=<item>, e.g. /?open=projects&item=libris.
+// Deep links: /<app>[/<item>], e.g. /photography or /projects/libris.
+// The older query form (/?open=projects&item=libris) still works.
 // The same targets power Izak AI's link buttons (see Chat.jsx).
 
 export const APPS = {
@@ -31,18 +32,20 @@ export const itemSlug = (name) => slugify(name.split(/[:—(]/)[0]) || slugify(n
 
 export const matchesItem = (name, slug) => !!slug && (slug === itemSlug(name) || slug === slugify(name));
 
-export function parseDeepLink(search = window.location.search) {
+export function parseDeepLink({ pathname, search } = window.location) {
   const params = new URLSearchParams(search);
-  const app = params.get("open")?.toLowerCase();
+  let app = params.get("open");
+  let item = params.get("item");
+  if (!app) {
+    [app, item] = pathname.split("/").filter(Boolean).map(decodeURIComponent);
+  }
+  app = app?.toLowerCase();
   if (!app || !APPS[app]) return null;
-  const item = params.get("item")?.toLowerCase() || null;
-  return { app, item };
+  return { app, item: item?.toLowerCase() || null };
 }
 
 export function buildDeepLink({ app, item }) {
-  const params = new URLSearchParams({ open: app });
-  if (item) params.set("item", item);
-  return `${window.location.origin}/?${params}`;
+  return `${window.location.origin}/${app}${item ? `/${item}` : ""}`;
 }
 
 // Opens (or focuses) the target window via HomePage's "open-window" listener.

@@ -20,6 +20,9 @@ function App() {
               </Suspense>
             }
           />
+          {/* Deep links like /photography or /projects/libris land on the desktop,
+              which opens the target (see lib/deepLinks.js). */}
+          <Route path="*" element={<HomePage />} />
         </Routes>
       </BrowserRouter>
     </div>
