@@ -72,44 +72,50 @@ body.dashboard-mode html {
   font-size: 13px;
 }
 
-.dashboard-shell {
-  width: 100%;
-  max-width: 960px;
-}
+/* ---------- signed-in layout ---------- */
 
-.dashboard-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #999;
-  margin-bottom: 24px;
+.dashboard-app {
+  min-height: 100vh;
+  background: #eeeeee;
   font-size: 14px;
 }
 
-.dashboard-tabs {
+.dashboard-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-
-.dashboard-tabs button {
-  font-family: inherit;
-  font-size: 13px;
-  padding: 8px 14px;
-  border: 1px solid #999;
-  border-radius: 4px;
+  align-items: center;
+  gap: 16px;
+  height: 52px;
+  padding: 0 20px;
   background: #fff;
-  cursor: pointer;
+  border-bottom: 1px solid #ccc;
 }
 
-.dashboard-tabs button.active {
-  background: #333;
-  color: #fff;
-  border-color: #333;
+.dashboard-brand {
+  font-weight: 700;
+  font-size: 15px;
 }
 
-.dashboard-header button {
+.dashboard-account {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 13px;
+}
+
+.dashboard-email {
+  color: #666;
+}
+
+.dashboard-link {
+  color: inherit;
+}
+
+.dashboard-account button,
+.dashboard-menu-toggle {
   font-family: inherit;
   font-size: 13px;
   padding: 6px 12px;
@@ -117,4 +123,155 @@ body.dashboard-mode html {
   border-radius: 4px;
   background: #fff;
   cursor: pointer;
+}
+
+.dashboard-menu-toggle {
+  display: none;
+}
+
+.dashboard-body {
+  display: flex;
+  align-items: flex-start;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-nav {
+  position: sticky;
+  top: 52px;
+  flex: 0 0 210px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px 12px 28px 20px;
+  max-height: calc(100vh - 52px);
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.dashboard-nav-heading {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #888;
+  padding: 0 10px 6px;
+}
+
+.dashboard-nav-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 4px;
+  background: none;
+  color: #333;
+  cursor: pointer;
+}
+
+.dashboard-nav-item:hover {
+  background: #e2e2e2;
+}
+
+.dashboard-nav-item.active {
+  background: #333;
+  color: #fff;
+}
+
+.dashboard-nav-scrim {
+  display: none;
+}
+
+.dashboard-main {
+  flex: 1;
+  min-width: 0;
+  padding: 28px 24px 64px;
+}
+
+.dashboard-page-header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #ccc;
+}
+
+.dashboard-page-eyebrow {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.dashboard-page-header h1 {
+  font-size: 20px;
+  margin: 0 0 4px;
+}
+
+.dashboard-page-header p {
+  margin: 0;
+  color: #666;
+  font-size: 13px;
+}
+
+/* First section heading inside a page doesn't need extra top space. */
+.dashboard-main .metrics-section-title:first-child,
+.dashboard-main > div > .metrics-section-title:first-child,
+.dashboard-main > div > div:first-child > .metrics-section-title:first-child {
+  margin-top: 0;
+}
+
+/* ---------- small screens: nav becomes a drop-down menu ---------- */
+
+@media (max-width: 760px) {
+  .dashboard-topbar {
+    padding: 0 12px;
+    gap: 10px;
+  }
+
+  .dashboard-menu-toggle {
+    display: inline-flex;
+    gap: 6px;
+  }
+
+  .dashboard-brand,
+  .dashboard-email {
+    display: none;
+  }
+
+  .dashboard-nav {
+    position: fixed;
+    top: 52px;
+    left: 0;
+    right: 0;
+    z-index: 19;
+    max-height: calc(100vh - 52px);
+    padding: 16px;
+    background: #fff;
+    border-bottom: 1px solid #ccc;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    transform: translateY(-8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+
+  .dashboard-nav.open {
+    transform: none;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .dashboard-nav-scrim {
+    display: block;
+    position: fixed;
+    inset: 52px 0 0;
+    z-index: 18;
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .dashboard-main {
+    padding: 20px 16px 48px;
+  }
 }
