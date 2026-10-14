@@ -5,7 +5,7 @@ import { logChatMessage } from "../../lib/metrics";
 import pingSound from "../../assets/ping.m4a";
 import { useProximity } from "../../lib/useProximity";
 import { playSound } from "../../lib/sound";
-import { takePendingQuestion } from "../../lib/chatBus";
+import { newChat, takePendingQuestion } from "../../lib/chatBus";
 import { openTarget } from "../../lib/deepLinks";
 import { buildSiteContext } from "../../lib/siteContext";
 import { DEFAULT_CHAT_STARTERS, fetchChatStarters } from "../../lib/siteSettings";
@@ -153,7 +153,14 @@ const Chat = ({ onStreamingChange }) => {
   return (
     <div className="chat-container">
       <div className="chat-disclaimer">
-        ⚠ This is an AI and may make mistakes. For anything important, contact Izak directly at <a href="mailto:izakbunda@gmail.com">izakbunda@gmail.com</a>.
+        <span>
+          ⚠ This is an AI and may make mistakes. For anything important, contact Izak directly at <a href="mailto:izakbunda@gmail.com">izakbunda@gmail.com</a>.
+        </span>
+        {hasStarted && (
+          <button className="chat-clear" onClick={newChat} disabled={streaming} title="Clear this conversation">
+            ↺ New chat
+          </button>
+        )}
       </div>
       <div className="chat-messages">
         {messages.map((m, i) => (
