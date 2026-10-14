@@ -8,6 +8,18 @@
   color: #555;
 }
 
+.easter-eggs-section + .easter-eggs-section {
+  margin-top: 0.9rem;
+}
+
+.easter-eggs-heading {
+  margin: 0 0 0.45rem;
+  font-size: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #777;
+}
+
 .easter-eggs-list {
   list-style: none;
   margin: 0;

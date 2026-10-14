@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { isCoveredAt } from "./occlusion";
 
 // Plays a sound as the cursor approaches any registered element. One shared
 // <audio> serves every element, its volume follows the cursor's distance, and
@@ -55,6 +56,7 @@ function createController(src) {
   const distanceTo = (el, x, y) => {
     const r = el.getBoundingClientRect();
     if (!r.width && !r.height) return Infinity;
+    if (isCoveredAt(el, x, y)) return Infinity; // another window is on top here
     const dx = Math.max(r.left - x, 0, x - r.right);
     const dy = Math.max(r.top - y, 0, y - r.bottom);
     return Math.hypot(dx, dy);

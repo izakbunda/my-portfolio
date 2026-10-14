@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Window from "../../components/Window/Window";
-import File from "../../components/File/File";
+import DesktopIcons from "../../components/File/DesktopIcons";
+import { useDesktopIcons } from "../../lib/useDesktopIcons";
 import MenuBar from "../../components/MenuBar/MenuBar";
 import Dock from "../../components/Dock/Dock";
 import MobileBanner from "../../components/MobileBanner/MobileBanner";
@@ -375,6 +376,7 @@ function HomePage() {
   const cascadeIndex = useRef(0);
 
   const files = ["Izak Bunda", "Resumé", "Projects", "Internships", "Izak AI", "Photography"];
+  const desktopIcons = useDesktopIcons(files);
 
   // Persist open windows + positions so they're restored on the next visit.
   useEffect(() => {
@@ -646,12 +648,8 @@ function HomePage() {
           Applying wallpaper…
         </div>
       )}
-      <MenuBar onOpenEasterEggs={() => addWindow("Easter Eggs", { width: 380, height: 310 }, false)} />
-      <div className="files-container">
-        {files.map((file) => (
-          <File key={file} name={file} onClick={addWindow} />
-        ))}
-      </div>
+      <MenuBar onOpenEasterEggs={() => addWindow("Easter Eggs", { width: 420, height: 520 }, false)} />
+      <DesktopIcons names={files} icons={desktopIcons} onOpen={addWindow} />
       <Dock windows={windows.filter((w) => w.name !== "Easter Eggs")} onClick={restoreWindow} />
       <div className="window-layer">
         {windows.map((w) => (
@@ -688,6 +686,15 @@ function HomePage() {
           onResetWallpaper={() => {
             localStorage.removeItem("wallpaper");
             setWallpaper(null);
+            setContextMenu(null);
+          }}
+          snapToGrid={desktopIcons.grid}
+          onToggleGrid={() => {
+            desktopIcons.toggleGrid();
+            setContextMenu(null);
+          }}
+          onCleanUp={() => {
+            desktopIcons.cleanUp();
             setContextMenu(null);
           }}
         />
