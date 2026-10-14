@@ -6,6 +6,7 @@ import pingSound from "../../assets/ping.m4a";
 import { useProximity } from "../../lib/useProximity";
 import { openTarget } from "../../lib/deepLinks";
 import { buildSiteContext } from "../../lib/siteContext";
+import { DEFAULT_CHAT_STARTERS, fetchChatStarters } from "../../lib/siteSettings";
 
 const AGENT_URL = import.meta.env.VITE_AGENT_URL ?? "http://localhost:8000";
 // Mirrors MAX_MESSAGES in agent/app/main.py; older turns are dropped from the request.
@@ -25,14 +26,10 @@ function loadHistory() {
   }
 }
 
-const STARTERS = [
-  "What does Izak do?",
-  "How can I reach him?",
-];
-
 const Chat = ({ onStreamingChange }) => {
   const [messages, setMessages] = useState(loadHistory);
   const [input, setInput] = useState("");
+  const [starters, setStarters] = useState(null); // null until loaded, so saved ones don't flash in
   const [streaming, setStreaming] = useState(false);
   const bottomRef = useRef(null);
   const sendRef = useRef(null);
@@ -41,6 +38,12 @@ const Chat = ({ onStreamingChange }) => {
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  useEffect(() => {
+    fetchChatStarters()
+      .then(setStarters)
+      .catch(() => setStarters(DEFAULT_CHAT_STARTERS));
+  }, []);
 
   useEffect(() => {
     onStreamingChange?.(streaming);
@@ -150,9 +153,9 @@ const Chat = ({ onStreamingChange }) => {
         ))}
         <div ref={bottomRef} />
       </div>
-      {!hasStarted && (
+      {!hasStarted && starters && (
         <div className="chat-starters">
-          {STARTERS.map((s) => (
+          {starters.map((s) => (
             <button key={s} className="chat-starter-chip" onClick={() => send(s)} disabled={streaming}>
               {s}
             </button>

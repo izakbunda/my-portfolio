@@ -10,6 +10,14 @@ import {
   updateEntry,
   uploadFile,
 } from "../../lib/knowledge";
+import {
+  CHAT_STARTERS_MAX,
+  CHAT_STARTER_MAX_CHARS,
+  DEFAULT_CHAT_STARTERS,
+  fetchChatStarters,
+  sanitizeChatStarters,
+  saveChatStarters,
+} from "../../lib/siteSettings";
 import "./KnowledgePanel.css";
 
 const BRAINDUMP_KEY = "kb-braindump";
@@ -333,6 +341,91 @@ function Files() {
   );
 }
 
+// ---------- starter prompts ----------
+
+function StarterPrompts() {
+  const [saved, setSaved] = useState(null);
+  const [list, setList] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetchChatStarters()
+      .catch(() => DEFAULT_CHAT_STARTERS)
+      .then((starters) => {
+        setSaved(starters);
+        setList(starters);
+      });
+  }, []);
+
+  if (!list) return null;
+
+  const dirty = JSON.stringify(sanitizeChatStarters(list)) !== JSON.stringify(saved);
+  const update = (next) => {
+    setList(next);
+    setStatus("");
+    setError("");
+  };
+  const move = (i, delta) => {
+    const next = [...list];
+    [next[i], next[i + delta]] = [next[i + delta], next[i]];
+    update(next);
+  };
+
+  const save = async () => {
+    const clean = sanitizeChatStarters(list);
+    if (!clean.length) return setError("Keep at least one prompt (or reset to defaults).");
+    setBusy(true);
+    try {
+      await saveChatStarters(clean);
+      setSaved(clean);
+      setList(clean);
+      setStatus("Saved. Visitors see these next time they open Izak AI.");
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div>
+      <h2 className="metrics-section-title">Starter prompts</h2>
+      <div className="kb-card">
+        <span className="kb-status">Chips shown in Izak AI before a visitor asks anything.</span>
+        {list.map((s, i) => (
+          <div key={i} className="kb-starter-row">
+            <input
+              className="kb-title-input"
+              value={s}
+              maxLength={CHAT_STARTER_MAX_CHARS}
+              onChange={(e) => update(list.map((x, j) => (j === i ? e.target.value : x)))}
+              placeholder="e.g. What's his best project?"
+            />
+            <button onClick={() => move(i, -1)} disabled={i === 0} aria-label="Move up">↑</button>
+            <button onClick={() => move(i, 1)} disabled={i === list.length - 1} aria-label="Move down">↓</button>
+            <button onClick={() => update(list.filter((_, j) => j !== i))} aria-label="Remove">✕</button>
+          </div>
+        ))}
+        <div className="kb-card-footer">
+          <button onClick={() => update([...list, ""])} disabled={list.length >= CHAT_STARTERS_MAX}>
+            + Add prompt
+          </button>
+          <button onClick={() => update([...DEFAULT_CHAT_STARTERS])}>Reset to defaults</button>
+          <span className={`kb-status${dirty ? " kb-status-dirty" : ""}`}>
+            {status || (dirty ? "Unsaved changes" : "")}
+          </span>
+          <button className="kb-primary" onClick={save} disabled={busy || !dirty}>
+            {busy ? "Saving…" : "Save"}
+          </button>
+        </div>
+        {error && <div className="metrics-error">{error}</div>}
+      </div>
+    </div>
+  );
+}
+
 // ---------- panel ----------
 
 let newId = 0;
@@ -408,6 +501,8 @@ function KnowledgePanel() {
       <datalist id="kb-categories">
         {categories.map((c) => <option key={c} value={c} />)}
       </datalist>
+      <StarterPrompts />
+
       <Braindump onAdd={addFromDraft} onMerge={mergeInto} />
 
       <div className="kb-section-head">
