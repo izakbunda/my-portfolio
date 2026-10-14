@@ -237,3 +237,21 @@
     margin: 0 1em;
   }
 }
+
+/* Deep link / chat link target */
+.list-item-highlight {
+  scroll-margin-top: 12px;
+  animation: list-item-flash 2.4s ease-out;
+  border-radius: 6px;
+}
+
+@keyframes list-item-flash {
+  0%, 35% {
+    background: rgba(188, 130, 243, 0.18);
+    box-shadow: 0 0 0 2px rgba(141, 159, 255, 0.55);
+  }
+  100% {
+    background: transparent;
+    box-shadow: 0 0 0 2px transparent;
+  }
+}

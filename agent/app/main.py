@@ -1,15 +1,18 @@
+import asyncio
 import json
 import logging
 import re
 from typing import Literal
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from app.agent import agent
+from app.admin import router as admin_router
+from app.agent import build_agent, with_prefetched_context
+from app.site import SiteContext
 
 logger = logging.getLogger("izak-ai")
 limiter = Limiter(key_func=get_remote_address)
@@ -56,9 +59,11 @@ ALLOWED_ORIGINS = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_methods=["POST", "GET", "OPTIONS"],
+    allow_methods=["POST", "GET", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+app.include_router(admin_router)
 
 
 class Message(BaseModel):
@@ -70,6 +75,9 @@ class Message(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: list[Message] = Field(min_length=1, max_length=MAX_MESSAGES)
+    # What the visitor's browser reports about the site (open windows, live
+    # catalog). Untrusted; see app/site.py.
+    site_context: SiteContext | None = None
 
 
 @app.post("/chat")
@@ -82,11 +90,21 @@ async def chat(request: Request, req: ChatRequest):
         if _JAILBREAK_PATTERNS.search(last_user_text):
             return StreamingResponse(_canned_stream(_JAILBREAK_REPLY), media_type="text/event-stream")
 
+    if req.site_context and req.site_context.too_large():
+        raise HTTPException(422, "site_context too large")
+
+    links: list[dict] = []
+    agent = build_agent(req.site_context, links)
+
     async def event_stream():
         assistant_buffer = ""
+        sent_links = 0
         try:
+            messages = await asyncio.to_thread(
+                with_prefetched_context, [m.model_dump() for m in req.messages]
+            )
             async for event in agent.astream_events(
-                {"messages": [m.model_dump() for m in req.messages]},
+                {"messages": messages},
                 version="v2",
             ):
                 kind = event["event"]
@@ -95,10 +113,15 @@ async def chat(request: Request, req: ChatRequest):
                     if chunk.content:
                         assistant_buffer += chunk.content
                         yield f"data: {json.dumps({'type': 'text', 'content': chunk.content})}\n\n"
+                elif kind == "on_tool_end" and event["name"] == "suggest_links":
+                    if len(links) > sent_links:
+                        yield f"data: {json.dumps({'type': 'links', 'links': links[sent_links:]})}\n\n"
+                        sent_links = len(links)
                 elif kind == "on_tool_start":
                     if assistant_buffer:
                         yield f"data: {json.dumps({'type': 'text', 'content': '\n\n'})}\n\n"
-                    yield f"data: {json.dumps({'type': 'tool_start', 'name': event['name']})}\n\n"
+                    if event["name"] != "suggest_links":
+                        yield f"data: {json.dumps({'type': 'tool_start', 'name': event['name']})}\n\n"
         except Exception:
             logger.exception("chat stream failed")
             yield f"data: {json.dumps({'type': 'error'})}\n\n"

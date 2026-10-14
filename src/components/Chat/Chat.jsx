@@ -4,22 +4,32 @@ import "./Chat.css";
 import { logChatMessage } from "../../lib/metrics";
 import pingSound from "../../assets/ping.m4a";
 import { useProximity } from "../../lib/useProximity";
+import { openTarget } from "../../lib/deepLinks";
+import { buildSiteContext } from "../../lib/siteContext";
+import { DEFAULT_CHAT_STARTERS, fetchChatStarters } from "../../lib/siteSettings";
 
 const AGENT_URL = import.meta.env.VITE_AGENT_URL ?? "http://localhost:8000";
 // Mirrors MAX_MESSAGES in agent/app/main.py; older turns are dropped from the request.
 const MAX_HISTORY = 30;
 const ERROR_REPLY = "Couldn't reach the server. Try again later.";
+const HISTORY_KEY = "izak-ai-chat";
+const GREETING = { role: "assistant", content: "Hey! Ask me anything about Izak." };
 
-const STARTERS = [
-  "What does Izak do?",
-  "How can I reach him?",
-];
+// The conversation survives the window closing (and, on mobile, switching apps
+// after tapping a link button) for the rest of the browser session.
+function loadHistory() {
+  try {
+    const saved = JSON.parse(sessionStorage.getItem(HISTORY_KEY));
+    return Array.isArray(saved) && saved.length ? saved : [GREETING];
+  } catch {
+    return [GREETING];
+  }
+}
 
 const Chat = ({ onStreamingChange }) => {
-  const [messages, setMessages] = useState([
-    { role: "assistant", content: "Hey! Ask me anything about Izak." },
-  ]);
+  const [messages, setMessages] = useState(loadHistory);
   const [input, setInput] = useState("");
+  const [starters, setStarters] = useState(null); // null until loaded, so saved ones don't flash in
   const [streaming, setStreaming] = useState(false);
   const bottomRef = useRef(null);
   const sendRef = useRef(null);
@@ -30,8 +40,21 @@ const Chat = ({ onStreamingChange }) => {
   }, [messages]);
 
   useEffect(() => {
+    fetchChatStarters()
+      .then(setStarters)
+      .catch(() => setStarters(DEFAULT_CHAT_STARTERS));
+  }, []);
+
+  useEffect(() => {
     onStreamingChange?.(streaming);
   }, [streaming, onStreamingChange]);
+
+  useEffect(() => {
+    if (streaming) return;
+    try {
+      sessionStorage.setItem(HISTORY_KEY, JSON.stringify(messages));
+    } catch {}
+  }, [messages, streaming]);
 
   const hasStarted = messages.some((m) => m.role === "user");
 
@@ -50,7 +73,10 @@ const Chat = ({ onStreamingChange }) => {
       const res = await fetch(`${AGENT_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next.slice(-MAX_HISTORY) }),
+        body: JSON.stringify({
+          messages: next.slice(-MAX_HISTORY).map(({ role, content }) => ({ role, content })),
+          site_context: await buildSiteContext(),
+        }),
       });
 
       if (!res.ok) throw new Error(`Server error ${res.status}`);
@@ -58,6 +84,7 @@ const Chat = ({ onStreamingChange }) => {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let assistant = "";
+      let links = [];
       let buffer = "";
       let failed = false;
       setMessages([...next, { role: "assistant", content: "" }]);
@@ -77,7 +104,10 @@ const Chat = ({ onStreamingChange }) => {
             const evt = JSON.parse(payload);
             if (evt.type === "text") {
               assistant += evt.content;
-              setMessages([...next, { role: "assistant", content: assistant }]);
+              setMessages([...next, { role: "assistant", content: assistant, links }]);
+            } else if (evt.type === "links") {
+              links = [...links, ...evt.links].slice(0, 3);
+              setMessages([...next, { role: "assistant", content: assistant, links }]);
             } else if (evt.type === "error") {
               failed = true;
             }
@@ -110,13 +140,22 @@ const Chat = ({ onStreamingChange }) => {
                 <ReactMarkdown>{m.content}</ReactMarkdown>
               </div>
             )}
+            {m.links?.length > 0 && (
+              <div className="chat-links">
+                {m.links.map((l) => (
+                  <button key={`${l.app}/${l.item}`} className="chat-link-btn" onClick={() => openTarget(l)}>
+                    {l.label} <span aria-hidden="true">↗</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ))}
         <div ref={bottomRef} />
       </div>
-      {!hasStarted && (
+      {!hasStarted && starters && (
         <div className="chat-starters">
-          {STARTERS.map((s) => (
+          {starters.map((s) => (
             <button key={s} className="chat-starter-chip" onClick={() => send(s)} disabled={streaming}>
               {s}
             </button>

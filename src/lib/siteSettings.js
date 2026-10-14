@@ -44,3 +44,45 @@ export async function saveAiGlow({ preset, colors }) {
 export function applyAiGlowColors(colors) {
   document.documentElement.style.setProperty("--ai-glow-colors", glowGradientStops(colors));
 }
+
+// ---------- Izak AI starter prompts ----------
+
+export const DEFAULT_CHAT_STARTERS = [
+  "What does Izak do?",
+  "Tell me about this site",
+  "What's his best project?",
+  "What's he looking for next?",
+  "What does he write about?",
+  "How can I reach him?",
+];
+
+export const CHAT_STARTERS_MAX = 8;
+export const CHAT_STARTER_MAX_CHARS = 80;
+
+export function sanitizeChatStarters(starters) {
+  if (!Array.isArray(starters)) return [];
+  const seen = new Set();
+  return starters
+    .filter((s) => typeof s === "string")
+    .map((s) => s.trim().slice(0, CHAT_STARTER_MAX_CHARS))
+    .filter((s) => s && !seen.has(s.toLowerCase()) && seen.add(s.toLowerCase()))
+    .slice(0, CHAT_STARTERS_MAX);
+}
+
+// Falls back to the defaults when nothing is saved (or all saved prompts were removed).
+export async function fetchChatStarters() {
+  const { data, error } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", "chat_starters")
+    .maybeSingle();
+  const saved = error ? [] : sanitizeChatStarters(data?.value?.starters);
+  return saved.length ? saved : DEFAULT_CHAT_STARTERS;
+}
+
+export async function saveChatStarters(starters) {
+  const { error } = await supabase
+    .from("site_settings")
+    .upsert({ key: "chat_starters", value: { starters: sanitizeChatStarters(starters) }, updated_at: new Date().toISOString() });
+  if (error) throw error;
+}

@@ -7,6 +7,9 @@ const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 let sessionStartedAt = null;
+// Resolves once the sessions row exists. Events and chat messages reference it
+// (foreign key), so they wait for it; deep links log events right on page load.
+let sessionReady = Promise.resolve();
 
 function getSessionId() {
   let id = sessionStorage.getItem(SESSION_ID_KEY);
@@ -67,7 +70,7 @@ export async function startSession() {
   const id = getSessionId();
   const { country, region } = getGeoFromCookie();
 
-  const { error } = await supabase.from("sessions").insert({
+  const insert = supabase.from("sessions").insert({
     id,
     country,
     region,
@@ -75,6 +78,8 @@ export async function startSession() {
     device_type: getDeviceType(),
     entry_path: window.location.pathname,
   });
+  sessionReady = insert.then(() => {}, () => {});
+  const { error } = await insert;
   // Session row may already exist (e.g. re-mount in dev/StrictMode) — that's fine.
   if (error && error.code !== "23505") {
     console.error("metrics: failed to start session", error);
@@ -89,6 +94,7 @@ export async function startSession() {
 }
 
 export async function trackEvent(eventType, label) {
+  await sessionReady;
   const { error } = await supabase.from("events").insert({
     session_id: getSessionId(),
     event_type: eventType,
@@ -98,6 +104,7 @@ export async function trackEvent(eventType, label) {
 }
 
 export async function logChatMessage(question, response, isError = false) {
+  await sessionReady;
   const { error } = await supabase.from("chat_messages").insert({
     session_id: getSessionId(),
     question,
