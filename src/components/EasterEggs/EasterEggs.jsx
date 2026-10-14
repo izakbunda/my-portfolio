@@ -1,27 +1,60 @@
 import "./EasterEggs.css";
 
-const eggs = [
-  { emoji: "🖼️", label: "Change the wallpaper", desc: "Right-click on the desktop background." },
-  { emoji: "↔️", label: "Resize windows", desc: "Drag the edges or corners of any other window (not this one)." },
-  { emoji: "✋", label: "Move windows", desc: "Drag any window by its title bar." },
-  { emoji: "🟡", label: "Minimize", desc: "Click the yellow dot to send a window to the dock." },
-  { emoji: "🟢", label: "Fullscreen", desc: "Click the green dot to maximize a window." },
-  { emoji: "🔊", label: "Click sound", desc: "Every window you open plays a click." },
+const sections = [
+  {
+    title: "Desktop",
+    eggs: [
+      { emoji: "🗂️", label: "Rearrange the desktop", desc: "Drag the app icons anywhere. They stay where you leave them." },
+      { emoji: "📐", label: "Snap to grid", desc: "Right-click the desktop to snap icons to a grid, or Clean Up to line them back up." },
+      { emoji: "🖼️", label: "Change the wallpaper", desc: "Right-click the desktop background." },
+    ],
+  },
+  {
+    title: "Windows",
+    eggs: [
+      { emoji: "✋", label: "Move & resize", desc: "Drag a title bar to move a window, or its edges and corners to resize (not this one)." },
+      { emoji: "🟡", label: "Minimize & maximize", desc: "Yellow sends a window to the dock; green maximizes it." },
+      { emoji: "💾", label: "Your desk is remembered", desc: "Open windows, sizes and positions come back on your next visit." },
+      { emoji: "🔊", label: "Click sound", desc: "Every window you open plays a click." },
+    ],
+  },
+  {
+    title: "Izak AI",
+    eggs: [
+      { emoji: "😉", label: "It blinks", desc: "Watch the Izak AI icon for a few seconds." },
+      { emoji: "✨", label: "Get close", desc: "Move your cursor near the Izak AI icon or the Chat with Izak AI button. It hums, and the glow follows you." },
+      { emoji: "🌈", label: "It glows while it thinks", desc: "The chat window lights up while it writes an answer." },
+      { emoji: "🪄", label: "It can open things", desc: "Ask about a project, an internship or the photos, then tap the buttons under its reply." },
+      { emoji: "👀", label: "It sees your desk", desc: "Ask it what window you're looking at." },
+    ],
+  },
+  {
+    title: "Photos & links",
+    eggs: [
+      { emoji: "⌨️", label: "Flip through photos", desc: "Open a photo, then use ← and → (Esc closes it)." },
+      { emoji: "🔗", label: "Every window has a link", desc: "The address bar follows the window in front. Share izakbunda.vercel.app/projects/libris and it opens right there." },
+    ],
+  },
 ];
 
 const EasterEggs = () => (
   <div className="easter-eggs">
     <p className="easter-eggs-intro">Hidden features you might have missed:</p>
-    <ul className="easter-eggs-list">
-      {eggs.map(({ emoji, label, desc }) => (
-        <li key={label} className="easter-egg-item">
-          <span className="easter-egg-emoji">{emoji}</span>
-          <span>
-            <strong>{label}</strong> — {desc}
-          </span>
-        </li>
-      ))}
-    </ul>
+    {sections.map(({ title, eggs }) => (
+      <section key={title} className="easter-eggs-section">
+        <h3 className="easter-eggs-heading">{title}</h3>
+        <ul className="easter-eggs-list">
+          {eggs.map(({ emoji, label, desc }) => (
+            <li key={label} className="easter-egg-item">
+              <span className="easter-egg-emoji">{emoji}</span>
+              <span>
+                <strong>{label}</strong>: {desc}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
   </div>
 );
 

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Window from "../../components/Window/Window";
-import File from "../../components/File/File";
+import DesktopIcons from "../../components/File/DesktopIcons";
+import { useDesktopIcons } from "../../lib/useDesktopIcons";
 import MenuBar from "../../components/MenuBar/MenuBar";
 import Dock from "../../components/Dock/Dock";
 import MobileBanner from "../../components/MobileBanner/MobileBanner";
@@ -266,9 +267,10 @@ const DESKTOP_URL_KEY = "desktop-url";
 function loadSavedWindows() {
   try {
     const raw = localStorage.getItem(WINDOWS_STORAGE_KEY);
-    if (!raw) return null;
+    if (!raw) return null; // first visit
     const saved = JSON.parse(raw);
-    if (!Array.isArray(saved) || saved.length === 0) return null;
+    if (!Array.isArray(saved)) return null;
+    // An empty list is a returning visitor who closed everything: keep it empty.
     const MENU_BAR_H = 30;
     const DOCK_H = 72;
     return saved.map((w) => ({
@@ -369,28 +371,33 @@ function HomePage() {
         ? []
         : [{ id: crypto.randomUUID(), position: getInitialPosition(0), name: "Izak Bunda" }])
   );
-  const [minimizedWindows, setMinimizedWindows] = useState([]);
+  // Windows that were minimized last visit come back minimized (in the dock).
+  const [minimizedWindows, setMinimizedWindows] = useState(() =>
+    windows.filter((w) => w.minimized).map((w) => w.id)
+  );
   const [zMap, setZMap] = useState({});
   const zCounter = useRef(10);
   const cascadeIndex = useRef(0);
 
   const files = ["Izak Bunda", "Resumé", "Projects", "Internships", "Izak AI", "Photography"];
+  const desktopIcons = useDesktopIcons(files);
 
   // Persist open windows + positions so they're restored on the next visit.
   useEffect(() => {
     if (isMobile) return;
     try {
-      const toSave = windows.map(({ name, position, initialSize, resizable }) => ({
+      const toSave = windows.map(({ id, name, position, initialSize, resizable }) => ({
         name,
         position,
         initialSize,
         resizable,
+        minimized: minimizedWindows.includes(id),
       }));
       localStorage.setItem(WINDOWS_STORAGE_KEY, JSON.stringify(toSave));
     } catch {
       // Ignore storage failures (e.g. private browsing quota) — non-critical.
     }
-  }, [windows, isMobile]);
+  }, [windows, minimizedWindows, isMobile]);
 
   // Options (deep links / chat links):
   // - focus ({ item, n }) asks the window to scroll to / open a specific item;
@@ -646,12 +653,8 @@ function HomePage() {
           Applying wallpaper…
         </div>
       )}
-      <MenuBar onOpenEasterEggs={() => addWindow("Easter Eggs", { width: 380, height: 310 }, false)} />
-      <div className="files-container">
-        {files.map((file) => (
-          <File key={file} name={file} onClick={addWindow} />
-        ))}
-      </div>
+      <MenuBar onOpenEasterEggs={() => addWindow("Easter Eggs", { width: 420, height: 520 }, false)} />
+      <DesktopIcons names={files} icons={desktopIcons} onOpen={addWindow} />
       <Dock windows={windows.filter((w) => w.name !== "Easter Eggs")} onClick={restoreWindow} />
       <div className="window-layer">
         {windows.map((w) => (
@@ -688,6 +691,15 @@ function HomePage() {
           onResetWallpaper={() => {
             localStorage.removeItem("wallpaper");
             setWallpaper(null);
+            setContextMenu(null);
+          }}
+          snapToGrid={desktopIcons.grid}
+          onToggleGrid={() => {
+            desktopIcons.toggleGrid();
+            setContextMenu(null);
+          }}
+          onCleanUp={() => {
+            desktopIcons.cleanUp();
             setContextMenu(null);
           }}
         />

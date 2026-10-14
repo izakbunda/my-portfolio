@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { isCoveredAt } from "./occlusion";
 
 // Writes the cursor's closeness to an element as CSS variables on it, eased
 // over time so styles can respond smoothly as the cursor approaches:
@@ -36,7 +37,8 @@ export function useProximity(ref, { radius = 160, fadeMs = 260 } = {}) {
       if (!r.width && !r.height) return;
       const dx = Math.max(r.left - e.clientX, 0, e.clientX - r.right);
       const dy = Math.max(r.top - e.clientY, 0, e.clientY - r.bottom);
-      const closeness = Math.max(0, 1 - Math.hypot(dx, dy) / radius);
+      const covered = isCoveredAt(el, e.clientX, e.clientY);
+      const closeness = covered ? 0 : Math.max(0, 1 - Math.hypot(dx, dy) / radius);
       el.style.setProperty("--ai-mx", `${e.clientX - r.left}px`);
       el.style.setProperty("--ai-my", `${e.clientY - r.top}px`);
       setTarget(closeness * closeness * (3 - 2 * closeness));

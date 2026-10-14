@@ -1,12 +1,33 @@
-.files-container {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  justify-content: flex-start;
-  padding: 15px 15px;
+/* Draggable desktop icons (DesktopIcons.jsx). The layer itself ignores the
+   mouse so right-clicks on empty desktop still reach the desktop menu. */
+.desktop-icons {
   position: absolute;
-  top: 30px;
-  left: 0;
+  inset: 0;
+  pointer-events: none;
+}
+
+.desktop-icon-slot {
+  position: absolute;
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.desktop-icon-slot img {
+  -webkit-user-drag: none;
+}
+
+.desktop-icon-slot.dragging {
+  z-index: 1;
+  opacity: 0.75;
+  cursor: grabbing;
+}
+
+.desktop-icon-slot.dragging .filename {
+  background-color: #0057d8;
+  color: white;
+  padding: 1px 4px;
 }
 
 .file-container {
