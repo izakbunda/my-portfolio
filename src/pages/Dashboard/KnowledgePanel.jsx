@@ -434,6 +434,7 @@ function KnowledgePanel() {
   const [entries, setEntries] = useState(null);
   const [error, setError] = useState("");
   const [qaFilter, setQaFilter] = useState("All");
+  const [section, setSection] = useState("qa");
   const [prefills, setPrefills] = useState({}); // entry id -> {title, body, category, v}
   const cardRefs = useRef({});
 
@@ -496,42 +497,74 @@ function KnowledgePanel() {
     );
   };
 
+  const sections = [
+    { id: "qa", label: `Q&A (${qa.length})` },
+    { id: "docs", label: `Documents (${docs.length})` },
+    { id: "files", label: "Files" },
+    { id: "starters", label: "Starter prompts" },
+  ];
+
+  // Inactive sections stay mounted (just hidden) so unsaved edits and
+  // braindump drafts survive switching between them.
   return (
     <div className="knowledge-panel">
       <datalist id="kb-categories">
         {categories.map((c) => <option key={c} value={c} />)}
       </datalist>
-      <StarterPrompts />
 
-      <Braindump onAdd={addFromDraft} onMerge={mergeInto} />
-
-      <div className="kb-section-head">
-        <h2 className="metrics-section-title">Q&amp;A ({qa.length})</h2>
-        <button onClick={() => addBlank("qa")}>+ Add Q&amp;A</button>
-      </div>
-      <div className="kb-filter-bar">
-        {qaCategories.map((c) => (
-          <button key={c} className={qaFilter === c ? "active" : ""} onClick={() => setQaFilter(c)}>
-            {c}
+      <div className="kb-sections" role="tablist">
+        {sections.map((sec) => (
+          <button
+            key={sec.id}
+            role="tab"
+            aria-selected={section === sec.id}
+            className={section === sec.id ? "active" : ""}
+            onClick={() => setSection(sec.id)}
+          >
+            {sec.label}
           </button>
         ))}
       </div>
-      {visibleQa.map(card)}
 
-      <div className="kb-section-head">
-        <h2 className="metrics-section-title">Documents ({docs.length})</h2>
-        <button onClick={() => addBlank("doc")}>+ Add document</button>
-      </div>
-      {Object.entries(docGroups).map(([group, items]) => (
-        <details key={group} className="kb-doc-group" open={items.some((d) => !d.created_at || prefills[d.id])}>
-          <summary>
-            {group} <span className="kb-status">({items.length})</span>
-          </summary>
-          {items.map(card)}
-        </details>
-      ))}
+      <section hidden={section !== "qa"}>
+        <Braindump onAdd={addFromDraft} onMerge={mergeInto} />
 
-      <Files />
+        <div className="kb-section-head">
+          <h2 className="metrics-section-title">Q&amp;A ({qa.length})</h2>
+          <button onClick={() => addBlank("qa")}>+ Add Q&amp;A</button>
+        </div>
+        <div className="kb-filter-bar">
+          {qaCategories.map((c) => (
+            <button key={c} className={qaFilter === c ? "active" : ""} onClick={() => setQaFilter(c)}>
+              {c}
+            </button>
+          ))}
+        </div>
+        {visibleQa.map(card)}
+      </section>
+
+      <section hidden={section !== "docs"}>
+        <div className="kb-section-head">
+          <h2 className="metrics-section-title">Documents ({docs.length})</h2>
+          <button onClick={() => addBlank("doc")}>+ Add document</button>
+        </div>
+        {Object.entries(docGroups).map(([group, items]) => (
+          <details key={group} className="kb-doc-group" open={items.some((d) => !d.created_at || prefills[d.id])}>
+            <summary>
+              {group} <span className="kb-status">({items.length})</span>
+            </summary>
+            {items.map(card)}
+          </details>
+        ))}
+      </section>
+
+      <section hidden={section !== "files"}>
+        <Files />
+      </section>
+
+      <section hidden={section !== "starters"}>
+        <StarterPrompts />
+      </section>
     </div>
   );
 }
