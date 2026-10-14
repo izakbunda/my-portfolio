@@ -1,0 +1,64 @@
+.about-portfolio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-size: 0.6rem;
+  width: 100%;
+}
+
+.about-portfolio-logo {
+  width: 40px;
+  margin: 4px 0 8px;
+}
+
+.about-portfolio h2 {
+  font-size: 0.8rem;
+  margin: 0 0 2px;
+}
+
+.about-portfolio-version {
+  color: #666;
+  margin: 0 0 12px;
+}
+
+.about-portfolio-specs {
+  margin: 0 0 14px;
+  width: 100%;
+}
+
+.about-portfolio-specs div {
+  display: flex;
+  gap: 8px;
+  padding: 3px 0;
+}
+
+.about-portfolio-specs dt {
+  width: 64px;
+  flex-shrink: 0;
+  text-align: right;
+  font-weight: bold;
+}
+
+.about-portfolio-specs dd {
+  margin: 0;
+  text-align: left;
+}
+
+.about-portfolio-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.about-portfolio-actions a,
+.about-portfolio-actions button {
+  font-family: inherit;
+  font-size: 0.6rem;
+  padding: 4px 10px;
+  border: 1px solid #000;
+  box-shadow: 2px 2px 0 #000;
+  background: #fff;
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}

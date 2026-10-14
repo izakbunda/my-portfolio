@@ -76,3 +76,250 @@
     display: none;
   }
 }
+
+/* ---------- desktop menu bar ---------- */
+
+.menubar .left-menu {
+  margin-left: 6px;
+  height: 100%;
+}
+
+.menubar-menu {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.menubar-title {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 9px;
+  cursor: default;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.menubar-title.open,
+.menubar-title:active {
+  background: #000;
+  color: #fff;
+}
+
+.menubar-apple .menu-logo {
+  padding: 0;
+  margin: 0;
+  height: 18px;
+}
+
+.menubar-apple.open .menu-logo {
+  filter: invert(1);
+}
+
+.menubar-appname {
+  font-weight: bold;
+}
+
+.menubar-status {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin-right: 8px;
+}
+
+.menubar-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 190px;
+  max-height: calc(100vh - 60px);
+  overflow-y: auto;
+  background: #fff;
+  border: solid #000;
+  border-width: 1px 2px 2px 1px;
+  padding: 3px 0;
+  z-index: 30000;
+}
+
+.menubar-dropdown-right {
+  left: auto;
+  right: 0;
+}
+
+.menubar-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 14px 4px 6px;
+  cursor: default;
+  white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+}
+
+.menubar-item:hover {
+  background: #000;
+  color: #fff;
+}
+
+.menubar-item.disabled {
+  color: #aaa;
+}
+
+.menubar-item.disabled:hover {
+  background: none;
+  color: #aaa;
+}
+
+.menubar-check {
+  width: 14px;
+  flex-shrink: 0;
+}
+
+.menubar-label {
+  flex: 1;
+}
+
+.menubar-shortcut {
+  margin-left: 24px;
+  color: #777;
+}
+
+.menubar-item:hover .menubar-shortcut {
+  color: #ccc;
+}
+
+.menubar-divider {
+  height: 1px;
+  background: #ccc;
+  margin: 3px 6px;
+}
+
+.menubar-heading {
+  padding: 4px 14px 2px 20px;
+  color: #888;
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.menubar-ask {
+  padding: 4px 8px;
+}
+
+.menubar-ask input {
+  width: 220px;
+  font-family: inherit;
+  font-size: 0.6rem;
+  padding: 4px 6px;
+  border: 1px solid #000;
+  outline: none;
+}
+
+.menubar-contact-label {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.menubar-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #aaa;
+  flex-shrink: 0;
+}
+
+.menubar-dot.available {
+  background: #2fbf4a;
+  box-shadow: 0 0 0 2px rgba(47, 191, 74, 0.25);
+}
+
+.menubar-clock {
+  min-width: 200px;
+  padding: 8px 12px;
+}
+
+.menubar-clock-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 2px 0;
+}
+
+.menubar-clock-note {
+  margin-top: 6px;
+  color: #777;
+  font-size: 0.55rem;
+}
+
+@media (max-width: 900px) {
+  .menubar-contact-label {
+    display: none;
+  }
+}
+
+/* ---------- Spotlight (⌘K) ---------- */
+
+.spotlight-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 30500;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 14vh;
+  background: rgba(0, 0, 0, 0.08);
+  font-family: "pixChicago", monospace;
+}
+
+.spotlight {
+  width: min(560px, calc(100vw - 32px));
+  background: #fff;
+  border: solid #000;
+  border-width: 1px 3px 3px 1px;
+}
+
+.spotlight-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #000;
+}
+
+.spotlight-input input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.85rem;
+}
+
+.spotlight-results {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding: 4px 0;
+  font-size: 0.65rem;
+}
+
+.spotlight-group {
+  padding: 6px 12px 2px;
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+}
+
+.spotlight-row {
+  padding: 5px 12px 5px 22px;
+  cursor: default;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spotlight-row.active {
+  background: #000;
+  color: #fff;
+}

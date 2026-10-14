@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import {
+  DEFAULT_CONTACT_STATUS,
+  fetchContactStatus,
+  saveContactStatus,
   AI_GLOW_MAX_COLORS,
   AI_GLOW_MIN_COLORS,
   AI_GLOW_PRESETS,
@@ -23,6 +26,68 @@ function Swatches({ colors }) {
         <span key={i} className="appearance-swatch" style={{ background: c }} />
       ))}
     </span>
+  );
+}
+
+// Menu bar "Open to chat" status (StatusItems.jsx on the site).
+function ContactStatusEditor() {
+  const [status, setStatus] = useState(null);
+  const [saved, setSaved] = useState(null);
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    fetchContactStatus()
+      .catch(() => DEFAULT_CONTACT_STATUS)
+      .then((s) => {
+        setStatus(s);
+        setSaved(s);
+      });
+  }, []);
+
+  if (!status) return null;
+  const dirty = JSON.stringify(status) !== JSON.stringify(saved);
+  const update = (patch) => {
+    setStatus({ ...status, ...patch });
+    setMessage("");
+    setError("");
+  };
+
+  const save = async () => {
+    try {
+      await saveContactStatus(status);
+      setSaved(status);
+      setMessage("Saved. Visitors see it next time they load the site.");
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
+  return (
+    <>
+      <h2 className="metrics-section-title">Menu bar status</h2>
+      <div className="appearance-status-editor">
+        <label className="appearance-status-toggle">
+          <input type="checkbox" checked={status.available} onChange={(e) => update({ available: e.target.checked })} />
+          Available (green dot)
+        </label>
+        <label>
+          Label
+          <input value={status.label} maxLength={40} onChange={(e) => update({ label: e.target.value })} placeholder="Open to chat" />
+        </label>
+        <label>
+          "Book a call" link (optional)
+          <input value={status.calendarUrl} onChange={(e) => update({ calendarUrl: e.target.value })} placeholder="https://cal.com/…" />
+        </label>
+        <div className="appearance-actions">
+          <button className="appearance-save" onClick={save} disabled={!dirty}>
+            Save
+          </button>
+        </div>
+        {message && <div className="appearance-status">{message}</div>}
+        {error && <div className="metrics-error">{error}</div>}
+      </div>
+    </>
   );
 }
 
@@ -134,6 +199,8 @@ function AppearancePanel() {
       </div>
       {status && <div className="appearance-status">{status}</div>}
       {error && <div className="metrics-error">{error}</div>}
+
+      <ContactStatusEditor />
     </div>
   );
 }

@@ -10,9 +10,19 @@ const sections = [
     ],
   },
   {
+    title: "Menu bar",
+    eggs: [
+      { emoji: "🔍", label: "Spotlight", desc: "Press ⌘K (Ctrl+K) to find any project, album or app, or to ask Izak AI." },
+      { emoji: "🍎", label: "It follows the app", desc: "The menu bar changes with the window in front. Try Browse in Projects or Albums in Photography." },
+      { emoji: "🔗", label: "Share any window", desc: "File > Share Link copies a link straight to what you're looking at." },
+      { emoji: "🕐", label: "Izak's time", desc: "Click the clock to see what time it is for Izak in Denver." },
+    ],
+  },
+  {
     title: "Windows",
     eggs: [
       { emoji: "✋", label: "Move & resize", desc: "Drag a title bar to move a window, or its edges and corners to resize (not this one)." },
+      { emoji: "🪟", label: "Tile side by side", desc: "Window > Tile Side by Side puts your two front windows next to each other." },
       { emoji: "🟡", label: "Minimize & maximize", desc: "Yellow sends a window to the dock; green maximizes it." },
       { emoji: "💾", label: "Your desk is remembered", desc: "Open windows, sizes and positions come back on your next visit." },
       { emoji: "🔊", label: "Click sound", desc: "Every window you open plays a click." },

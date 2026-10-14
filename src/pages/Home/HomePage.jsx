@@ -9,6 +9,7 @@ import WallpaperMenu from "../../components/WallpaperMenu/WallpaperMenu";
 import { startSession, trackEvent } from "../../lib/metrics";
 import { APPS, openTarget, parseDeepLink, pathFor } from "../../lib/deepLinks";
 import { setDesktopState } from "../../lib/desktopState";
+import { playSound } from "../../lib/sound";
 import { applyAiGlowColors, fetchAiGlow } from "../../lib/siteSettings";
 import "./HomePage.css";
 
@@ -55,16 +56,18 @@ function DraggableWindow({ id, position, name, focus, expand, initialSize, resiz
   const sizeRef = useRef(size);
   sizeRef.current = size;
 
-  // `expand` is a nonce set when a deep link targets this window: wait for the
-  // window to paint where it is, then animate it out to the expanded rect.
+  // `expand` asks this window to animate to a new rect: a nonce (fill the
+  // desktop, e.g. a deep link) or { n, rect } (e.g. Window > Tile Side by Side).
+  // Wait for the window to paint where it is, then animate.
+  const expandKey = expand?.n ?? expand;
   useEffect(() => {
-    if (!expand || isMobile) return;
+    if (!expandKey || isMobile) return;
     const el = windowRef.current;
     if (!el) return;
     let inner;
     const outer = requestAnimationFrame(() => {
       inner = requestAnimationFrame(() => {
-        const rect = expandedRect();
+        const rect = expand?.rect ?? expandedRect();
         el.classList.add("window-expanding");
         coords.current.lastX = rect.x;
         coords.current.lastY = rect.y;
@@ -81,7 +84,7 @@ function DraggableWindow({ id, position, name, focus, expand, initialSize, resiz
     };
     // Only a new expand request should re-run this.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [expand]);
+  }, [expandKey]);
 
   const toggleFullscreen = () => {
     setIsFullscreen((prev) => {
@@ -246,6 +249,12 @@ function DraggableWindow({ id, position, name, focus, expand, initialSize, resiz
 
 
 const APPS_BY_NAME = new Set(Object.values(APPS));
+// Small, fixed-size system windows (no dock icon).
+const UTILITY_WINDOW_SIZES = {
+  "Easter Eggs": { width: 420, height: 520 },
+  "About This Portfolio": { width: 380, height: 360 },
+};
+const UTILITY_WINDOWS = new Set(Object.keys(UTILITY_WINDOW_SIZES));
 
 const STAGGER = 55;
 const getInitialPosition = (index) => {
@@ -405,6 +414,10 @@ function HomePage() {
   // - raise brings an already-open window to the front.
   // - expand animates the window out to fill the desktop (links visitors arrive on).
   const addWindow = (name, initialSize, resizable = true, { focus = null, raise = false, expand = false } = {}) => {
+    if (UTILITY_WINDOW_SIZES[name] && !initialSize) {
+      initialSize = UTILITY_WINDOW_SIZES[name];
+      resizable = false;
+    }
     const expandNonce = expand ? Date.now() : null;
     const existing = windows.find((w) => w.name === name);
     if (existing) {
@@ -412,7 +425,7 @@ function HomePage() {
         setWindows((prev) =>
           prev.map((w) =>
             w.id === existing.id
-              ? { ...w, ...(focus && { focus, item: focus.item }), ...(expandNonce && { expand: expandNonce }) }
+              ? { ...w, ...(focus && { focus, item: focus.item ?? w.item }), ...(expandNonce && { expand: expandNonce }) }
               : w
           )
         );
@@ -423,8 +436,7 @@ function HomePage() {
 
     trackEvent("view", name);
 
-    const clickSound = new Audio("/click.mp3");
-    clickSound.play();
+    playSound("/click.mp3");
 
     const cascadeBaseX = window.innerWidth * 0.15;
     const maxX = window.innerWidth * 0.5;
@@ -487,8 +499,8 @@ function HomePage() {
     // detail is a window name, or { name, item } from openTarget (deep links / chat links).
     const handler = (e) => {
       const fromTarget = typeof e.detail !== "string";
-      const { name, item, expand } = fromTarget ? e.detail : { name: e.detail, item: null, expand: false };
-      const focus = item ? { item, n: Date.now() } : null;
+      const { name, item, filter, expand } = fromTarget ? e.detail : { name: e.detail, item: null, expand: false };
+      const focus = item || filter ? { item: item || null, filter: filter || null, n: Date.now() } : null;
       if (isMobile) {
         trackEvent("view", name);
         setActiveApp(name);
@@ -513,6 +525,15 @@ function HomePage() {
     if (arrival.target) openTarget(arrival.target, arrival.isReload ? "refresh" : "url");
   }, [arrival]);
 
+  // Visible windows, front-most first: highest z wins, and on a tie the later
+  // window is drawn on top.
+  const stacked = windows
+    .map((w, i) => ({ w, z: zMap[w.id] ?? 1, i }))
+    .filter(({ w }) => !minimizedWindows.includes(w.id))
+    .sort((a, b) => b.z - a.z || b.i - a.i)
+    .map(({ w }) => w);
+  const frontWindow = stacked[0] ?? null;
+
   // Keep the URL on whatever window is in front (and tell Izak AI what's on
   // screen). replaceState, so window switches don't fill the back button.
   useEffect(() => {
@@ -521,11 +542,8 @@ function HomePage() {
       setDesktopState({ open: activeApp ? [activeApp] : [], focused: activeApp });
       path = pathFor(activeApp, mobileItem);
     } else {
-      const visible = windows.filter((w) => !minimizedWindows.includes(w.id));
-      // Highest z wins; on a tie the later window is drawn on top.
-      const front = visible
-        .map((w, i) => ({ w, z: zMap[w.id] ?? 1, i }))
-        .sort((a, b) => b.z - a.z || b.i - a.i)[0]?.w;
+      const visible = stacked;
+      const front = frontWindow;
       const apps = visible.filter((w) => APPS_BY_NAME.has(w.name));
       setDesktopState({ open: apps.map((w) => w.name), focused: front && APPS_BY_NAME.has(front.name) ? front.name : null });
       path = front ? pathFor(front.name, front.item) : "/";
@@ -538,6 +556,8 @@ function HomePage() {
     try {
       sessionStorage.setItem(DESKTOP_URL_KEY, path);
     } catch {}
+    // stacked/frontWindow derive from windows, minimizedWindows and zMap.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMobile, activeApp, mobileItem, windows, minimizedWindows, zMap]);
 
   const minimizeWindow = (id) => {
@@ -549,6 +569,95 @@ function HomePage() {
   const restoreWindow = (id) => {
     setMinimizedWindows((prev) => prev.filter((wId) => wId !== id));
     setZMap((prev) => ({ ...prev, [id]: ++zCounter.current }));
+  };
+
+  // ---------- menu bar actions ----------
+
+  const [toast, setToast] = useState(null);
+  const toastTimer = useRef(null);
+  const showToast = (text) => {
+    setToast(text);
+    clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(null), 1800);
+  };
+
+  const moveWindowTo = (id, rect) =>
+    setWindows((prev) => prev.map((w) => (w.id === id ? { ...w, expand: { n: Date.now() + Math.random(), rect } } : w)));
+
+  const [restarting, setRestarting] = useState(false);
+
+  const desktop = {
+    activeApp: frontWindow?.name ?? null,
+    windows: windows.map((w) => ({
+      id: w.id,
+      name: w.name,
+      minimized: minimizedWindows.includes(w.id),
+      front: w.id === frontWindow?.id,
+    })),
+    icons: desktopIcons,
+    toast: showToast,
+    // Open (or raise) an app, optionally at an item or a category filter.
+    openApp: (name, { item = null, filter = null } = {}) => {
+      if (item || filter) trackEvent("menu_link", `${name}${item ? `/${item}` : ""}${filter ? ` [${filter}]` : ""}`);
+      const focus = item || filter ? { item, filter, n: Date.now() } : null;
+      addWindow(name, undefined, true, { focus, raise: true });
+    },
+    openEasterEggs: () => addWindow("Easter Eggs", undefined, false, { raise: true }),
+    openAbout: () => addWindow("About This Portfolio", undefined, false, { raise: true }),
+    focusWindow: (id) => restoreWindow(id),
+    closeWindow: (id) => removeWindow(id),
+    minimizeWindow: (id) => minimizeWindow(id),
+    expandWindow: (id) => {
+      restoreWindow(id);
+      moveWindowTo(id, null);
+    },
+    // Front two windows side by side, filling the desktop.
+    tileWindows: () => {
+      const [a, b] = stacked;
+      if (!a || !b) return;
+      const area = expandedRect();
+      const gap = 12;
+      const half = Math.floor((area.width - gap) / 2);
+      moveWindowTo(a.id, { x: area.x, y: area.y, width: half, height: area.height });
+      moveWindowTo(b.id, { x: area.x + half + gap, y: area.y, width: half, height: area.height });
+    },
+    bringAllToFront: () => {
+      setMinimizedWindows([]);
+      setZMap((prev) => {
+        const next = { ...prev };
+        for (const w of windows) next[w.id] = ++zCounter.current;
+        return next;
+      });
+    },
+    // Copies the link to the front-most app window (utility windows like About
+    // have no link of their own).
+    shareLink: async () => {
+      const target = stacked.find((w) => APPS_BY_NAME.has(w.name));
+      const url = `${window.location.origin}${target ? pathFor(target.name, target.item) : "/"}`;
+      try {
+        await navigator.clipboard.writeText(url);
+        showToast(`Link copied: ${url.replace(/^https?:\/\//, "")}`);
+      } catch {
+        showToast(`Copy this link: ${url}`);
+      }
+      trackEvent("share_link", url);
+    },
+    changeWallpaper: () => fileInputRef.current?.click(),
+    resetWallpaper: () => {
+      localStorage.removeItem("wallpaper");
+      setWallpaper(null);
+    },
+    // Back to a fresh desk: profile window, icons in their column.
+    restart: () => {
+      setRestarting(true);
+      setTimeout(() => {
+        setMinimizedWindows([]);
+        setZMap({});
+        setWindows([{ id: crypto.randomUUID(), position: getInitialPosition(0), name: "Izak Bunda" }]);
+        desktopIcons.cleanUp();
+      }, 450);
+      setTimeout(() => setRestarting(false), 1300);
+    },
   };
 
   const openMobileApp = (name) => {
@@ -653,9 +762,15 @@ function HomePage() {
           Applying wallpaper…
         </div>
       )}
-      <MenuBar onOpenEasterEggs={() => addWindow("Easter Eggs", { width: 420, height: 520 }, false)} />
+      <MenuBar desktop={desktop} />
+      {toast && <div className="desktop-toast">{toast}</div>}
+      {restarting && (
+        <div className="desktop-restart">
+          <img src="/logo.png" alt="" />
+        </div>
+      )}
       <DesktopIcons names={files} icons={desktopIcons} onOpen={addWindow} />
-      <Dock windows={windows.filter((w) => w.name !== "Easter Eggs")} onClick={restoreWindow} />
+      <Dock windows={windows.filter((w) => !UTILITY_WINDOWS.has(w.name))} onClick={restoreWindow} />
       <div className="window-layer">
         {windows.map((w) => (
           <DraggableWindow

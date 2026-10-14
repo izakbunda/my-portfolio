@@ -86,3 +86,34 @@ export async function saveChatStarters(starters) {
     .upsert({ key: "chat_starters", value: { starters: sanitizeChatStarters(starters) }, updated_at: new Date().toISOString() });
   if (error) throw error;
 }
+
+// ---------- menu bar contact status ----------
+
+export const DEFAULT_CONTACT_STATUS = { available: true, label: "Open to chat", calendarUrl: "" };
+
+export function sanitizeContactStatus(value) {
+  const label = typeof value?.label === "string" ? value.label.trim().slice(0, 40) : "";
+  const url = typeof value?.calendarUrl === "string" ? value.calendarUrl.trim() : "";
+  return {
+    available: value?.available !== false,
+    label: label || DEFAULT_CONTACT_STATUS.label,
+    calendarUrl: /^https:\/\//i.test(url) ? url.slice(0, 300) : "",
+  };
+}
+
+export async function fetchContactStatus() {
+  const { data, error } = await supabase
+    .from("site_settings")
+    .select("value")
+    .eq("key", "contact_status")
+    .maybeSingle();
+  if (error || !data?.value) return DEFAULT_CONTACT_STATUS;
+  return sanitizeContactStatus(data.value);
+}
+
+export async function saveContactStatus(status) {
+  const { error } = await supabase
+    .from("site_settings")
+    .upsert({ key: "contact_status", value: sanitizeContactStatus(status), updated_at: new Date().toISOString() });
+  if (error) throw error;
+}
