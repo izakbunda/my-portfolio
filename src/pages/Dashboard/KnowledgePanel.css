@@ -194,3 +194,13 @@
 .kb-file-name {
   font-weight: 600;
 }
+
+.kb-starter-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.kb-starter-row .kb-title-input {
+  font-weight: normal;
+}
