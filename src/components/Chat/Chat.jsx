@@ -6,6 +6,9 @@ import pingSound from "../../assets/ping.m4a";
 import { useProximity } from "../../lib/useProximity";
 
 const AGENT_URL = import.meta.env.VITE_AGENT_URL ?? "http://localhost:8000";
+// Mirrors MAX_MESSAGES in agent/app/main.py; older turns are dropped from the request.
+const MAX_HISTORY = 30;
+const ERROR_REPLY = "Couldn't reach the server. Try again later.";
 
 const STARTERS = [
   "What does Izak do?",
@@ -47,7 +50,7 @@ const Chat = ({ onStreamingChange }) => {
       const res = await fetch(`${AGENT_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next.slice(-MAX_HISTORY) }),
       });
 
       if (!res.ok) throw new Error(`Server error ${res.status}`);
@@ -55,12 +58,18 @@ const Chat = ({ onStreamingChange }) => {
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let assistant = "";
+      let buffer = "";
+      let failed = false;
       setMessages([...next, { role: "assistant", content: "" }]);
 
       while (true) {
         const { value, done } = await reader.read();
         if (done) break;
-        for (const line of decoder.decode(value).split("\n")) {
+        // An SSE line can be split across reads; keep the trailing partial line.
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
+        for (const line of lines) {
           if (!line.startsWith("data: ")) continue;
           const payload = line.slice(6);
           if (payload === "[DONE]") continue;
@@ -69,13 +78,16 @@ const Chat = ({ onStreamingChange }) => {
             if (evt.type === "text") {
               assistant += evt.content;
               setMessages([...next, { role: "assistant", content: assistant }]);
+            } else if (evt.type === "error") {
+              failed = true;
             }
           } catch {}
         }
       }
+      if (failed) throw new Error("Agent stream failed");
       logChatMessage(text, assistant, false);
     } catch {
-      setMessages([...next, { role: "assistant", content: "Couldn't reach the server. Try again later." }]);
+      setMessages([...next, { role: "assistant", content: ERROR_REPLY }]);
       logChatMessage(text, null, true);
     } finally {
       setStreaming(false);

@@ -1,0 +1,61 @@
+# Retrieval golden set for Izak AI.
+#
+# Each case: a visitor question and one or more `expect` substrings. A retrieved
+# chunk counts as a hit if its content contains ANY of the expect strings
+# (case-insensitive). Keep expect strings to distinctive phrases from the answer
+# body so the set stays valid when chunking or headings change.
+
+- question: What does Izak do?
+  expect: ["builds production-grade AI systems for enterprise clients"]
+- question: what does izak do
+  expect: ["builds production-grade AI systems for enterprise clients"]
+- question: What's his job?
+  expect: ["builds production-grade AI systems for enterprise clients", "currently a Software Engineer at KPMG"]
+- question: Where does Izak work?
+  expect: ["builds production-grade AI systems for enterprise clients", "currently a Software Engineer at KPMG", "KPMG — Software Engineer"]
+- question: What is he working on right now?
+  expect: ["continuing to develop and scale the KPMG agent builder platform"]
+- question: Where is Izak based?
+  expect: ["Denver, Colorado. Mountain Time"]
+- question: Is he open to new roles?
+  expect: ["genuinely open to hearing about interesting work", "not actively on the market"]
+- question: What kind of team does he want to work on?
+  expect: ["company stage matters less to him than team culture"]
+- question: What's Izak's tech stack?
+  expect: ["Daily and strong:", "Daily / strong:"]
+- question: Does he know React?
+  expect: ["Daily and strong:", "Daily / strong:"]
+- question: What is he most proud of shipping?
+  expect: ["Two things stand out"]
+- question: Has he worked with RAG or LangGraph?
+  expect: ["Has Izak worked with RAG", "RAG pipeline design"]
+- question: Tell me about Libris
+  expect: ["Libris"]
+- question: What did he do at Hunter Industries?
+  expect: ["Irrigation My Design"]
+- question: What did he do at the UCLA Volunteer Center?
+  expect: ["Izak wore two hats across his three years here"]
+- question: Where did he go to school?
+  expect: ["B.S. in Computer Science"]
+- question: What was his GPA?
+  expect: ["3.63 / 4.0"]
+- question: How can I contact Izak?
+  expect: ["Email (izakbunda@gmail.com) and LinkedIn"]
+- question: Is he open to a coffee chat?
+  expect: ["Reach out via email or LinkedIn with a line about what you want to talk about"]
+- question: What does he write about on Substack?
+  expect: ["Izak publishes two formats"]
+- question: What does he do for fun?
+  expect: ["rock climbing and bouldering"]
+- question: Who is his favorite author?
+  expect: ["Joan Didion"]
+- question: What does he think about AI right now?
+  expect: ["genuinely excited, not performatively so"]
+- question: How does Izak work with others?
+  expect: ["hands-on and approaches problems with genuine enthusiasm"]
+- question: Why did he get into software engineering?
+  expect: ["maximize the reach of his work"]
+- question: What's his salary expectation?
+  expect: ["Not something Izak shares publicly"]
+- question: What did he build at Hussle?
+  expect: ["Hussle was an early-stage LA-based startup"]

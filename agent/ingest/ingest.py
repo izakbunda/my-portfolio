@@ -8,9 +8,10 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent.parent / ".env")
 
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings
 from supabase import create_client
+
+from app.chunking import chunk_markdown
 
 SOURCES_DIR = Path(__file__).parent / "sources"
 
@@ -18,7 +19,6 @@ SOURCES_DIR = Path(__file__).parent / "sources"
 def main():
     supabase = create_client(os.environ["SUPABASE_URL"], os.environ["SUPABASE_SERVICE_KEY"])
     embedder = OpenAIEmbeddings(model="text-embedding-3-small", api_key=os.environ["OPENAI_API_KEY"])
-    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 
     # Clear existing rows so re-ingestion is idempotent
     supabase.table("documents").delete().neq("id", 0).execute()
@@ -31,10 +31,10 @@ def main():
             print(f"Skipping {path.name} — placeholder or empty")
             continue
         source = path.stem
-        chunks = splitter.split_text(text)
-        vectors = embedder.embed_documents(chunks)
+        chunks = chunk_markdown(text)
+        vectors = embedder.embed_documents([c.embed_text for c in chunks])
         for chunk, vec in zip(chunks, vectors):
-            all_rows.append({"content": chunk, "embedding": vec, "source": source})
+            all_rows.append({"content": chunk.content, "embedding": vec, "source": source})
 
     if not all_rows:
         print("No rows to insert. Fill in the source markdown files first.")
