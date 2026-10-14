@@ -4,6 +4,8 @@ import "./Chat.css";
 import { logChatMessage } from "../../lib/metrics";
 import pingSound from "../../assets/ping.m4a";
 import { useProximity } from "../../lib/useProximity";
+import { playSound } from "../../lib/sound";
+import { newChat, takePendingQuestion } from "../../lib/chatBus";
 import { openTarget } from "../../lib/deepLinks";
 import { buildSiteContext } from "../../lib/siteContext";
 import { DEFAULT_CHAT_STARTERS, fetchChatStarters } from "../../lib/siteSettings";
@@ -62,7 +64,7 @@ const Chat = ({ onStreamingChange }) => {
     if (typeof text !== "string") text = input.trim();
     if (!text || streaming) return;
 
-    new Audio(pingSound).play().catch(() => {});
+    playSound(pingSound);
 
     const next = [...messages, { role: "user", content: text }];
     setMessages(next);
@@ -124,10 +126,41 @@ const Chat = ({ onStreamingChange }) => {
     }
   };
 
+  // Questions asked from the menu bar / Spotlight / app menus (lib/chatBus).
+  const sendLatest = useRef(send);
+  sendLatest.current = send;
+  useEffect(() => {
+    const consume = () => {
+      if (streaming) return; // picked up once this answer finishes
+      const question = takePendingQuestion();
+      if (question) sendLatest.current(question);
+    };
+    consume();
+    window.addEventListener("izak-ai:ask", consume);
+    return () => window.removeEventListener("izak-ai:ask", consume);
+  }, [streaming]);
+
+  useEffect(() => {
+    const reset = () => {
+      if (streaming) return;
+      setMessages([GREETING]);
+      setInput("");
+    };
+    window.addEventListener("izak-ai:new-chat", reset);
+    return () => window.removeEventListener("izak-ai:new-chat", reset);
+  }, [streaming]);
+
   return (
     <div className="chat-container">
       <div className="chat-disclaimer">
-        ⚠ This is an AI and may make mistakes. For anything important, contact Izak directly at <a href="mailto:izakbunda@gmail.com">izakbunda@gmail.com</a>.
+        <span>
+          ⚠ This is an AI and may make mistakes. For anything important, contact Izak directly at <a href="mailto:izakbunda@gmail.com">izakbunda@gmail.com</a>.
+        </span>
+        {hasStarted && (
+          <button className="chat-clear" onClick={newChat} disabled={streaming} title="Clear this conversation">
+            ↺ New chat
+          </button>
+        )}
       </div>
       <div className="chat-messages">
         {messages.map((m, i) => (

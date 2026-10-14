@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import "./DockFile.css";
 import "../AiGlow/AiGlow.css";
 import { useProximitySound } from "../../lib/proximitySound";
+import { playSound } from "../../lib/sound";
 import hoverSound from "../../assets/hover.mp3";
 import { trackEvent } from "../../lib/metrics";
 
@@ -41,8 +42,7 @@ const DockFile = ({ name, onClick, link }) => {
     : (ICON_MAP[name] ?? "/file.png");
 
   const handleClick = () => {
-    const clickSound = new Audio("/click.mp3");
-    clickSound.play();
+    playSound("/click.mp3");
     if (link) trackEvent("link_click", name);
     onClick?.();
   };

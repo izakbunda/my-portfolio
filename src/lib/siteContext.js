@@ -20,7 +20,9 @@ const projects = experience.projects.map(toItem);
 const internships = experience.internships.map(toItem);
 
 let albumsPromise = null;
-const loadAlbums = () => {
+// Published albums as { slug, name, date }, fetched once and shared (chat
+// site context, the Photography menu, Spotlight).
+export const loadAlbums = () => {
   albumsPromise ??= fetchAlbums()
     .then((albums) => albums.map((a) => ({ slug: itemSlug(a.name), name: a.name, date: a.date_taken || null })))
     .catch(() => {

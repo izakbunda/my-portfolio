@@ -5,6 +5,8 @@ import Body from "../Body/Body";
 import EasterEggs from "../EasterEggs/EasterEggs";
 import Chat from "../Chat/Chat";
 import Gallery from "../Gallery/Gallery";
+import AboutPortfolio from "../AboutPortfolio/AboutPortfolio";
+import { playSound } from "../../lib/sound";
 import "./Window.css";
 import "../AiGlow/AiGlow.css";
 
@@ -13,8 +15,7 @@ const Window = forwardRef(({ name, focus, onItemChange, onClose, onMin, onFullsc
   const isAi = name === "Izak AI";
 
   const handleMinimize = () => {
-    const clickSound = new Audio("/click.mp3");
-    clickSound.play();
+    playSound("/click.mp3");
     onMin();
   };
 
@@ -40,6 +41,8 @@ const Window = forwardRef(({ name, focus, onItemChange, onClose, onMin, onFullsc
           <Chat onStreamingChange={setAiThinking} />
         ) : name === "Easter Eggs" ? (
           <EasterEggs />
+        ) : name === "About This Portfolio" ? (
+          <AboutPortfolio />
         ) : name === "Photography" ? (
           <Gallery focus={focus} onItemChange={onItemChange} />
         ) : (

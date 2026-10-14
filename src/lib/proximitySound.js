@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { isCoveredAt } from "./occlusion";
+import { isMuted, onMuteChange } from "./sound";
 
 // Plays a sound as the cursor approaches any registered element. One shared
 // <audio> serves every element, its volume follows the cursor's distance, and
@@ -89,7 +90,11 @@ function createController(src) {
     }
   };
 
+  // Muting from the menu bar silences the hum right away.
+  onMuteChange((m) => m && setTarget(0));
+
   const onMove = (e) => {
+    if (isMuted()) return setTarget(0);
     let nearest = Infinity;
     for (const el of elements) nearest = Math.min(nearest, distanceTo(el, e.clientX, e.clientY));
     const closeness = Math.max(0, 1 - nearest / RADIUS);

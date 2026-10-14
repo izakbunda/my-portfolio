@@ -140,3 +140,31 @@
   padding: 12px 0;
   color: #1b6e2a;
 }
+
+.appearance-status-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 420px;
+}
+
+.appearance-status-editor label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.appearance-status-editor label.appearance-status-toggle {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.appearance-status-editor input:not([type="checkbox"]) {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid #999;
+  border-radius: 4px;
+}

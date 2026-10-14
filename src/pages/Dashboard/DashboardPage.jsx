@@ -73,7 +73,7 @@ const NAV = [
     items: [
       { id: "knowledge", label: "Knowledge base", description: "What Izak AI knows: starter prompts, Q&A, documents and files." },
       { id: "chat", label: "Chat logs", description: "Conversations visitors have had with Izak AI." },
-      { id: "appearance", label: "Appearance", description: "The glow colors around the Izak AI window." },
+      { id: "appearance", label: "Appearance", description: "The Izak AI glow colors and the menu bar's contact status." },
     ],
   },
   {

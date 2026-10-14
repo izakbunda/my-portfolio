@@ -8,6 +8,11 @@ const ListContent = ({ data, focus }) => {
   const [highlighted, setHighlighted] = useState(null);
   const itemRefs = useRef({});
 
+  // Menu bar category filter (e.g. Projects > AI/ML).
+  useEffect(() => {
+    if (focus?.filter) setActiveFilter(focus.filter);
+  }, [focus?.n, focus?.filter]);
+
   // Deep link / chat link: show everything, scroll to the item, flash it.
   useEffect(() => {
     if (!focus?.item) return;
