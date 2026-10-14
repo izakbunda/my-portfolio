@@ -7,6 +7,7 @@ import {
   photoUrl,
   thumbUrl,
 } from "../../lib/gallery";
+import { matchesItem } from "../../lib/deepLinks";
 import "./Gallery.css";
 
 const PAGE_SIZE = 30;
@@ -206,7 +207,7 @@ function Lightbox({ photos, index, onClose, onNav }) {
   );
 }
 
-function Gallery() {
+function Gallery({ focus }) {
   const [albums, setAlbums] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -233,6 +234,17 @@ function Gallery() {
       setPhotosLoading(false);
     });
   };
+
+  // Deep link / chat link straight into an album, once albums have loaded.
+  const appliedFocus = useRef(null);
+  useEffect(() => {
+    if (loading || !focus?.item || appliedFocus.current === focus.n) return;
+    appliedFocus.current = focus.n;
+    const album = albums.find((a) => matchesItem(a.name, focus.item));
+    if (album) handleSelectAlbum(album);
+    // handleSelectAlbum is recreated every render; focus.n gates re-runs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading, focus?.n, focus?.item, albums]);
 
   const handleBack = () => {
     setSelectedAlbum(null);
