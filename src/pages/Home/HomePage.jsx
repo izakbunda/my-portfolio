@@ -267,9 +267,10 @@ const DESKTOP_URL_KEY = "desktop-url";
 function loadSavedWindows() {
   try {
     const raw = localStorage.getItem(WINDOWS_STORAGE_KEY);
-    if (!raw) return null;
+    if (!raw) return null; // first visit
     const saved = JSON.parse(raw);
-    if (!Array.isArray(saved) || saved.length === 0) return null;
+    if (!Array.isArray(saved)) return null;
+    // An empty list is a returning visitor who closed everything: keep it empty.
     const MENU_BAR_H = 30;
     const DOCK_H = 72;
     return saved.map((w) => ({
@@ -370,7 +371,10 @@ function HomePage() {
         ? []
         : [{ id: crypto.randomUUID(), position: getInitialPosition(0), name: "Izak Bunda" }])
   );
-  const [minimizedWindows, setMinimizedWindows] = useState([]);
+  // Windows that were minimized last visit come back minimized (in the dock).
+  const [minimizedWindows, setMinimizedWindows] = useState(() =>
+    windows.filter((w) => w.minimized).map((w) => w.id)
+  );
   const [zMap, setZMap] = useState({});
   const zCounter = useRef(10);
   const cascadeIndex = useRef(0);
@@ -382,17 +386,18 @@ function HomePage() {
   useEffect(() => {
     if (isMobile) return;
     try {
-      const toSave = windows.map(({ name, position, initialSize, resizable }) => ({
+      const toSave = windows.map(({ id, name, position, initialSize, resizable }) => ({
         name,
         position,
         initialSize,
         resizable,
+        minimized: minimizedWindows.includes(id),
       }));
       localStorage.setItem(WINDOWS_STORAGE_KEY, JSON.stringify(toSave));
     } catch {
       // Ignore storage failures (e.g. private browsing quota) — non-critical.
     }
-  }, [windows, isMobile]);
+  }, [windows, minimizedWindows, isMobile]);
 
   // Options (deep links / chat links):
   // - focus ({ item, n }) asks the window to scroll to / open a specific item;
