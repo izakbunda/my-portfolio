@@ -5,6 +5,7 @@ import ManagePanel from "./ManagePanel";
 import MetricsPanel from "./MetricsPanel";
 import ChatMetricsPanel from "./ChatMetricsPanel";
 import AppearancePanel from "./AppearancePanel";
+import KnowledgePanel from "./KnowledgePanel";
 import "./DashboardPage.css";
 
 function LoginForm({ onLoggedIn }) {
@@ -120,6 +121,12 @@ function DashboardPage() {
               Chat
             </button>
             <button
+              className={tab === "knowledge" ? "active" : ""}
+              onClick={() => setTab("knowledge")}
+            >
+              Knowledge
+            </button>
+            <button
               className={tab === "appearance" ? "active" : ""}
               onClick={() => setTab("appearance")}
             >
@@ -135,6 +142,8 @@ function DashboardPage() {
               <MetricsPanel />
             ) : tab === "chat" ? (
               <ChatMetricsPanel />
+            ) : tab === "knowledge" ? (
+              <KnowledgePanel />
             ) : (
               <AppearancePanel />
             )}

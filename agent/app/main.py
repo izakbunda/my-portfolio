@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import re
@@ -9,7 +10,8 @@ from pydantic import BaseModel, Field
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from app.agent import agent
+from app.admin import router as admin_router
+from app.agent import agent, with_prefetched_context
 
 logger = logging.getLogger("izak-ai")
 limiter = Limiter(key_func=get_remote_address)
@@ -56,9 +58,11 @@ ALLOWED_ORIGINS = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=ALLOWED_ORIGINS,
-    allow_methods=["POST", "GET", "OPTIONS"],
+    allow_methods=["POST", "GET", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+app.include_router(admin_router)
 
 
 class Message(BaseModel):
@@ -85,8 +89,11 @@ async def chat(request: Request, req: ChatRequest):
     async def event_stream():
         assistant_buffer = ""
         try:
+            messages = await asyncio.to_thread(
+                with_prefetched_context, [m.model_dump() for m in req.messages]
+            )
             async for event in agent.astream_events(
-                {"messages": [m.model_dump() for m in req.messages]},
+                {"messages": messages},
                 version="v2",
             ):
                 kind = event["event"]
