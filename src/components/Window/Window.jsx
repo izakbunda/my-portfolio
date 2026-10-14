@@ -8,7 +8,7 @@ import Gallery from "../Gallery/Gallery";
 import "./Window.css";
 import "../AiGlow/AiGlow.css";
 
-const Window = forwardRef(({ name, focus, onClose, onMin, onFullscreen, isFullscreen, isMobile }, ref) => {
+const Window = forwardRef(({ name, focus, onItemChange, onClose, onMin, onFullscreen, isFullscreen, isMobile }, ref) => {
   const [aiThinking, setAiThinking] = useState(false);
   const isAi = name === "Izak AI";
 
@@ -41,7 +41,7 @@ const Window = forwardRef(({ name, focus, onClose, onMin, onFullscreen, isFullsc
         ) : name === "Easter Eggs" ? (
           <EasterEggs />
         ) : name === "Photography" ? (
-          <Gallery focus={focus} />
+          <Gallery focus={focus} onItemChange={onItemChange} />
         ) : (
           <Body name={name} focus={focus} />
         )}

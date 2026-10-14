@@ -48,12 +48,23 @@ export function buildDeepLink({ app, item }) {
   return `${window.location.origin}/${app}${item ? `/${item}` : ""}`;
 }
 
+// The URL for what's in front: /<app>[/<item>]. The profile window (and
+// anything that isn't an app, or nothing at all) is the home page, "/".
+export function pathFor(windowName, item) {
+  const app = appSlug(windowName);
+  if (!app || app === "izak-bunda") return "/";
+  return `/${app}${item ? `/${item}` : ""}`;
+}
+
 // Opens (or focuses) the target window via HomePage's "open-window" listener.
-// Links visitors arrive on (source "url") also expand the window to fill the desktop.
+// source: "url" (a link the visitor arrived on: expands the window), "refresh"
+// (reloading the site's own URL: just bring it back to front), or "chat".
 export function openTarget({ app, item }, source = "chat") {
   const name = APPS[app];
   if (!name) return;
-  trackEvent(source === "url" ? "deeplink" : "chat_link", item ? `${app}/${item}` : app);
+  if (source !== "refresh") {
+    trackEvent(source === "url" ? "deeplink" : "chat_link", item ? `${app}/${item}` : app);
+  }
   window.dispatchEvent(
     new CustomEvent("open-window", { detail: { name, item: item || null, expand: source === "url" } })
   );

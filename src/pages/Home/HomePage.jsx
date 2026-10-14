@@ -6,7 +6,7 @@ import Dock from "../../components/Dock/Dock";
 import MobileBanner from "../../components/MobileBanner/MobileBanner";
 import WallpaperMenu from "../../components/WallpaperMenu/WallpaperMenu";
 import { startSession, trackEvent } from "../../lib/metrics";
-import { APPS, openTarget, parseDeepLink } from "../../lib/deepLinks";
+import { APPS, openTarget, parseDeepLink, pathFor } from "../../lib/deepLinks";
 import { setDesktopState } from "../../lib/desktopState";
 import { applyAiGlowColors, fetchAiGlow } from "../../lib/siteSettings";
 import "./HomePage.css";
@@ -36,7 +36,7 @@ function expandedRect() {
   };
 }
 
-function DraggableWindow({ id, position, name, focus, expand, initialSize, resizable = true, onRemove, onUpdatePosition, onUpdateSize, onSelect, onMinimize, zIndex, isMinimized, isMobile }) {
+function DraggableWindow({ id, position, name, focus, expand, initialSize, resizable = true, onRemove, onUpdatePosition, onUpdateSize, onUpdateItem, onSelect, onMinimize, zIndex, isMinimized, isMobile }) {
   const windowRef = useRef(null);
   const headerRef = useRef(null);
   const isClicked = useRef(false);
@@ -232,6 +232,7 @@ function DraggableWindow({ id, position, name, focus, expand, initialSize, resiz
         ref={headerRef}
         name={name}
         focus={focus}
+        onItemChange={(item) => onUpdateItem(id, item)}
         onClose={() => onRemove(id)}
         onMin={() => onMinimize(id)}
         onFullscreen={toggleFullscreen}
@@ -259,6 +260,8 @@ const CASCADE_STEP = 30;
 const CASCADE_BASE_Y = 60;
 
 const WINDOWS_STORAGE_KEY = "desktop-windows";
+// Last URL this tab showed, to tell a reload apart from arriving on a link.
+const DESKTOP_URL_KEY = "desktop-url";
 
 function loadSavedWindows() {
   try {
@@ -286,6 +289,7 @@ function HomePage() {
   const isMobile = useIsMobile();
   const [activeApp, setActiveApp] = useState("Izak Bunda");
   const [mobileFocus, setMobileFocus] = useState(null);
+  const [mobileItem, setMobileItem] = useState(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [wallpaper, setWallpaper] = useState(() => localStorage.getItem("wallpaper") || null);
   const [contextMenu, setContextMenu] = useState(null);
@@ -343,12 +347,25 @@ function HomePage() {
     reader.readAsDataURL(file);
   };
 
+  // Read once, before the URL starts following the front window: the deep
+  // link (if any) and whether this is a reload of the site's own URL.
+  const [arrival] = useState(() => {
+    let lastUrl = null;
+    try {
+      lastUrl = sessionStorage.getItem(DESKTOP_URL_KEY);
+    } catch {}
+    return {
+      target: parseDeepLink(),
+      isReload: lastUrl === window.location.pathname + window.location.search,
+    };
+  });
+
   const [windows, setWindows] = useState(
     () =>
       // First visit opens the profile, unless the visitor arrived on a deep link:
       // then the linked window opens on its own.
       loadSavedWindows() ??
-      (parseDeepLink()
+      (arrival.target
         ? []
         : [{ id: crypto.randomUUID(), position: getInitialPosition(0), name: "Izak Bunda" }])
   );
@@ -387,7 +404,9 @@ function HomePage() {
       if (focus || expandNonce) {
         setWindows((prev) =>
           prev.map((w) =>
-            w.id === existing.id ? { ...w, ...(focus && { focus }), ...(expandNonce && { expand: expandNonce }) } : w
+            w.id === existing.id
+              ? { ...w, ...(focus && { focus, item: focus.item }), ...(expandNonce && { expand: expandNonce }) }
+              : w
           )
         );
       }
@@ -425,6 +444,7 @@ function HomePage() {
       initialSize,
       resizable,
       focus,
+      item: focus?.item ?? null,
       expand: expandNonce,
     };
     setWindows((prev) => [...prev, newWindow]);
@@ -438,6 +458,11 @@ function HomePage() {
 
   const updateWindowPosition = (id, position) => {
     setWindows((prev) => prev.map((w) => w.id === id ? { ...w, position } : w));
+  };
+
+  // The item a window is showing (a project, an album), for the URL.
+  const updateWindowItem = (id, item) => {
+    setWindows((prev) => prev.map((w) => (w.id === id && w.item !== item ? { ...w, item } : w)));
   };
 
   const updateWindowSize = (id, size) => {
@@ -461,6 +486,7 @@ function HomePage() {
         trackEvent("view", name);
         setActiveApp(name);
         setMobileFocus(focus);
+        setMobileItem(item || null);
       } else {
         addWindowRef.current(name, undefined, true, { focus, raise: fromTarget, expand });
       }
@@ -471,27 +497,41 @@ function HomePage() {
 
   // Deep link on arrival (/projects/libris or /?open=projects&item=libris). Declared after the
   // listener above so it's registered by the time this dispatches.
+  // A reload of the site's own URL only brings that window back to front; a
+  // link the visitor arrived on also expands it.
   const deepLinkHandled = useRef(false);
   useEffect(() => {
     if (deepLinkHandled.current) return;
     deepLinkHandled.current = true;
-    const target = parseDeepLink();
-    if (target) openTarget(target, "url");
-    if (window.location.pathname !== "/" || window.location.search) {
-      window.history.replaceState(null, "", "/");
-    }
-  }, []);
+    if (arrival.target) openTarget(arrival.target, arrival.isReload ? "refresh" : "url");
+  }, [arrival]);
 
-  // Let Izak AI know what's on screen.
+  // Keep the URL on whatever window is in front (and tell Izak AI what's on
+  // screen). replaceState, so window switches don't fill the back button.
   useEffect(() => {
+    let path;
     if (isMobile) {
       setDesktopState({ open: activeApp ? [activeApp] : [], focused: activeApp });
-      return;
+      path = pathFor(activeApp, mobileItem);
+    } else {
+      const visible = windows.filter((w) => !minimizedWindows.includes(w.id));
+      // Highest z wins; on a tie the later window is drawn on top.
+      const front = visible
+        .map((w, i) => ({ w, z: zMap[w.id] ?? 1, i }))
+        .sort((a, b) => b.z - a.z || b.i - a.i)[0]?.w;
+      const apps = visible.filter((w) => APPS_BY_NAME.has(w.name));
+      setDesktopState({ open: apps.map((w) => w.name), focused: front && APPS_BY_NAME.has(front.name) ? front.name : null });
+      path = front ? pathFor(front.name, front.item) : "/";
     }
-    const visible = windows.filter((w) => !minimizedWindows.includes(w.id) && APPS_BY_NAME.has(w.name));
-    const front = [...visible].sort((a, b) => (zMap[b.id] ?? 1) - (zMap[a.id] ?? 1))[0];
-    setDesktopState({ open: visible.map((w) => w.name), focused: front?.name ?? null });
-  }, [isMobile, activeApp, windows, minimizedWindows, zMap]);
+    // Wait for the arrival link to be handled before overwriting it.
+    if (!deepLinkHandled.current) return;
+    if (window.location.pathname + window.location.search !== path) {
+      window.history.replaceState(null, "", path);
+    }
+    try {
+      sessionStorage.setItem(DESKTOP_URL_KEY, path);
+    } catch {}
+  }, [isMobile, activeApp, mobileItem, windows, minimizedWindows, zMap]);
 
   const minimizeWindow = (id) => {
     if (!minimizedWindows.includes(id)) {
@@ -508,6 +548,7 @@ function HomePage() {
     trackEvent("view", name);
     setActiveApp(name);
     setMobileFocus(null);
+    setMobileItem(null);
   };
 
   const mobileDock = [
@@ -570,6 +611,7 @@ function HomePage() {
               ref={mobileWindowRef}
               name={activeApp}
               focus={mobileFocus}
+              onItemChange={setMobileItem}
               onClose={() => {}}
               onMin={() => {}}
               onFullscreen={() => {}}
@@ -619,6 +661,7 @@ function HomePage() {
             name={w.name}
             focus={w.focus}
             expand={w.expand}
+            onUpdateItem={updateWindowItem}
             position={w.position}
             initialSize={w.initialSize}
             resizable={w.resizable ?? true}
