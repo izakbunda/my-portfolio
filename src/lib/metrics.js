@@ -30,35 +30,24 @@ function getDeviceType() {
     : "desktop";
 }
 
-// Sends a PATCH straight to the Supabase REST endpoint (bypassing the JS
-// client) so we can pass `keepalive: true`, which is what lets this survive
-// page unload — the supabase-js client doesn't expose that fetch option.
-function patchSessionKeepalive(id, body) {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return;
-  fetch(`${SUPABASE_URL}/rest/v1/sessions?id=eq.${id}`, {
-    method: "PATCH",
+// Calls the record_session_heartbeat RPC straight through the Supabase REST
+// endpoint (bypassing the JS client) so we can pass `keepalive: true`, which
+// is what lets this survive page unload — the supabase-js client doesn't
+// expose that fetch option. A plain PATCH on sessions can't work: RLS hides
+// session rows from anon, so the update would match nothing. The RPC computes
+// ended_at/duration_seconds server-side from the row's created_at.
+function sendHeartbeat() {
+  if (!sessionStartedAt || !SUPABASE_URL || !SUPABASE_ANON_KEY) return;
+  fetch(`${SUPABASE_URL}/rest/v1/rpc/record_session_heartbeat`, {
+    method: "POST",
     keepalive: true,
     headers: {
       "Content-Type": "application/json",
       apikey: SUPABASE_ANON_KEY,
       Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-      Prefer: "return=minimum",
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({ p_session_id: getSessionId() }),
   }).catch(() => {});
-}
-
-function currentDurationSeconds() {
-  if (!sessionStartedAt) return 0;
-  return Math.round((Date.now() - sessionStartedAt) / 1000);
-}
-
-function sendHeartbeat() {
-  const id = getSessionId();
-  patchSessionKeepalive(id, {
-    ended_at: new Date().toISOString(),
-    duration_seconds: currentDurationSeconds(),
-  });
 }
 
 export async function startSession() {
