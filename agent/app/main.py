@@ -1,15 +1,21 @@
 import json
+import logging
 import re
+from typing import Literal
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from app.agent import agent
 
+logger = logging.getLogger("izak-ai")
 limiter = Limiter(key_func=get_remote_address)
+
+MAX_MESSAGES = 30
+MAX_MESSAGE_CHARS = 4000
 
 # Patterns that indicate prompt injection / jailbreak attempts.
 # Checked against the latest user message before hitting the LLM.
@@ -56,12 +62,14 @@ app.add_middleware(
 
 
 class Message(BaseModel):
-    role: str
-    content: str
+    # Only user/assistant turns come from the client; a "system" role here would
+    # let a visitor override the real system prompt.
+    role: Literal["user", "assistant"]
+    content: str = Field(max_length=MAX_MESSAGE_CHARS)
 
 
 class ChatRequest(BaseModel):
-    messages: list[Message]
+    messages: list[Message] = Field(min_length=1, max_length=MAX_MESSAGES)
 
 
 @app.post("/chat")
@@ -76,20 +84,24 @@ async def chat(request: Request, req: ChatRequest):
 
     async def event_stream():
         assistant_buffer = ""
-        async for event in agent.astream_events(
-            {"messages": [m.model_dump() for m in req.messages]},
-            version="v2",
-        ):
-            kind = event["event"]
-            if kind == "on_chat_model_stream":
-                chunk = event["data"]["chunk"]
-                if chunk.content:
-                    assistant_buffer += chunk.content
-                    yield f"data: {json.dumps({'type': 'text', 'content': chunk.content})}\n\n"
-            elif kind == "on_tool_start":
-                if assistant_buffer:
-                    yield f"data: {json.dumps({'type': 'text', 'content': '\n\n'})}\n\n"
-                yield f"data: {json.dumps({'type': 'tool_start', 'name': event['name']})}\n\n"
+        try:
+            async for event in agent.astream_events(
+                {"messages": [m.model_dump() for m in req.messages]},
+                version="v2",
+            ):
+                kind = event["event"]
+                if kind == "on_chat_model_stream":
+                    chunk = event["data"]["chunk"]
+                    if chunk.content:
+                        assistant_buffer += chunk.content
+                        yield f"data: {json.dumps({'type': 'text', 'content': chunk.content})}\n\n"
+                elif kind == "on_tool_start":
+                    if assistant_buffer:
+                        yield f"data: {json.dumps({'type': 'text', 'content': '\n\n'})}\n\n"
+                    yield f"data: {json.dumps({'type': 'tool_start', 'name': event['name']})}\n\n"
+        except Exception:
+            logger.exception("chat stream failed")
+            yield f"data: {json.dumps({'type': 'error'})}\n\n"
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
