@@ -6,6 +6,8 @@ import Dock from "../../components/Dock/Dock";
 import MobileBanner from "../../components/MobileBanner/MobileBanner";
 import WallpaperMenu from "../../components/WallpaperMenu/WallpaperMenu";
 import { startSession, trackEvent } from "../../lib/metrics";
+import { APPS, openTarget, parseDeepLink } from "../../lib/deepLinks";
+import { setDesktopState } from "../../lib/desktopState";
 import { applyAiGlowColors, fetchAiGlow } from "../../lib/siteSettings";
 import "./HomePage.css";
 
@@ -19,7 +21,7 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-function DraggableWindow({ id, position, name, initialSize, resizable = true, onRemove, onUpdatePosition, onUpdateSize, onSelect, onMinimize, zIndex, isMinimized, isMobile }) {
+function DraggableWindow({ id, position, name, focus, initialSize, resizable = true, onRemove, onUpdatePosition, onUpdateSize, onSelect, onMinimize, zIndex, isMinimized, isMobile }) {
   const windowRef = useRef(null);
   const headerRef = useRef(null);
   const isClicked = useRef(false);
@@ -186,6 +188,7 @@ function DraggableWindow({ id, position, name, initialSize, resizable = true, on
       <Window
         ref={headerRef}
         name={name}
+        focus={focus}
         onClose={() => onRemove(id)}
         onMin={() => onMinimize(id)}
         onFullscreen={toggleFullscreen}
@@ -196,6 +199,8 @@ function DraggableWindow({ id, position, name, initialSize, resizable = true, on
   );
 }
 
+
+const APPS_BY_NAME = new Set(Object.values(APPS));
 
 const STAGGER = 55;
 const getInitialPosition = (index) => {
@@ -237,6 +242,7 @@ function loadSavedWindows() {
 function HomePage() {
   const isMobile = useIsMobile();
   const [activeApp, setActiveApp] = useState("Izak Bunda");
+  const [mobileFocus, setMobileFocus] = useState(null);
   const [bannerDismissed, setBannerDismissed] = useState(false);
   const [wallpaper, setWallpaper] = useState(() => localStorage.getItem("wallpaper") || null);
   const [contextMenu, setContextMenu] = useState(null);
@@ -323,8 +329,16 @@ function HomePage() {
     }
   }, [windows, isMobile]);
 
-  const addWindow = (name, initialSize, resizable = true) => {
-    if (windows.some((w) => w.name === name)) return;
+  // `focus` ({ item, n }) asks the window to scroll to / open a specific item;
+  // `n` changes on every request so repeating the same target still fires.
+  // `raise` brings an already-open window to the front (deep links, chat links).
+  const addWindow = (name, initialSize, resizable = true, focus = null, raise = false) => {
+    const existing = windows.find((w) => w.name === name);
+    if (existing) {
+      if (focus) setWindows((prev) => prev.map((w) => (w.id === existing.id ? { ...w, focus } : w)));
+      if (focus || raise) restoreWindow(existing.id);
+      return;
+    }
 
     trackEvent("view", name);
 
@@ -355,6 +369,7 @@ function HomePage() {
       name,
       initialSize,
       resizable,
+      focus,
     };
     setWindows((prev) => [...prev, newWindow]);
     setZMap((prev) => ({ ...prev, [newWindow.id]: ++zCounter.current }));
@@ -381,17 +396,45 @@ function HomePage() {
   useEffect(() => { addWindowRef.current = addWindow; });
 
   useEffect(() => {
+    // detail is a window name, or { name, item } from openTarget (deep links / chat links).
     const handler = (e) => {
+      const fromTarget = typeof e.detail !== "string";
+      const { name, item } = fromTarget ? e.detail : { name: e.detail, item: null };
+      const focus = item ? { item, n: Date.now() } : null;
       if (isMobile) {
-        trackEvent("view", e.detail);
-        setActiveApp(e.detail);
+        trackEvent("view", name);
+        setActiveApp(name);
+        setMobileFocus(focus);
       } else {
-        addWindowRef.current(e.detail);
+        addWindowRef.current(name, undefined, true, focus, fromTarget);
       }
     };
     window.addEventListener("open-window", handler);
     return () => window.removeEventListener("open-window", handler);
   }, [isMobile]);
+
+  // Deep link on arrival (/?open=projects&item=libris). Declared after the
+  // listener above so it's registered by the time this dispatches.
+  const deepLinkHandled = useRef(false);
+  useEffect(() => {
+    if (deepLinkHandled.current) return;
+    deepLinkHandled.current = true;
+    const target = parseDeepLink();
+    if (!target) return;
+    openTarget(target, "url");
+    window.history.replaceState(null, "", window.location.pathname);
+  }, []);
+
+  // Let Izak AI know what's on screen.
+  useEffect(() => {
+    if (isMobile) {
+      setDesktopState({ open: activeApp ? [activeApp] : [], focused: activeApp });
+      return;
+    }
+    const visible = windows.filter((w) => !minimizedWindows.includes(w.id) && APPS_BY_NAME.has(w.name));
+    const front = [...visible].sort((a, b) => (zMap[b.id] ?? 1) - (zMap[a.id] ?? 1))[0];
+    setDesktopState({ open: visible.map((w) => w.name), focused: front?.name ?? null });
+  }, [isMobile, activeApp, windows, minimizedWindows, zMap]);
 
   const minimizeWindow = (id) => {
     if (!minimizedWindows.includes(id)) {
@@ -407,6 +450,7 @@ function HomePage() {
   const openMobileApp = (name) => {
     trackEvent("view", name);
     setActiveApp(name);
+    setMobileFocus(null);
   };
 
   const mobileDock = [
@@ -468,6 +512,7 @@ function HomePage() {
             <Window
               ref={mobileWindowRef}
               name={activeApp}
+              focus={mobileFocus}
               onClose={() => {}}
               onMin={() => {}}
               onFullscreen={() => {}}
@@ -515,6 +560,7 @@ function HomePage() {
             key={w.id}
             id={w.id}
             name={w.name}
+            focus={w.focus}
             position={w.position}
             initialSize={w.initialSize}
             resizable={w.resizable ?? true}
