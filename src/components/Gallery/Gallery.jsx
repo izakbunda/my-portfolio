@@ -7,7 +7,7 @@ import {
   photoUrl,
   thumbUrl,
 } from "../../lib/gallery";
-import { matchesItem } from "../../lib/deepLinks";
+import { itemSlug, matchesItem } from "../../lib/deepLinks";
 import "./Gallery.css";
 
 const PAGE_SIZE = 30;
@@ -207,7 +207,7 @@ function Lightbox({ photos, index, onClose, onNav }) {
   );
 }
 
-function Gallery({ focus }) {
+function Gallery({ focus, onItemChange }) {
   const [albums, setAlbums] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -227,6 +227,7 @@ function Gallery({ focus }) {
 
   const handleSelectAlbum = (album) => {
     setSelectedAlbum(album);
+    onItemChange?.(itemSlug(album.name));
     setVisibleCount(PAGE_SIZE);
     setPhotosLoading(true);
     fetchPhotos(album.id).then((data) => {
@@ -248,6 +249,7 @@ function Gallery({ focus }) {
 
   const handleBack = () => {
     setSelectedAlbum(null);
+    onItemChange?.(null);
     setPhotos([]);
     setLightboxIndex(null);
   };
