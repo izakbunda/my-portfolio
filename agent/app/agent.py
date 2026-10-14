@@ -1,7 +1,6 @@
-from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
+from app.llm import deepseek
 from app.retriever import retrieve_context
-from app.config import DEEPSEEK_API_KEY
 
 SYSTEM_PROMPT = """You are a focused assistant embedded on Izak Bunda's personal portfolio website. \
 Your only job is to answer questions about Izak — his background, education, work history, \
@@ -19,8 +18,10 @@ Questions about Izak:
 - What he is looking for professionally
 - His interests, personality, how he works
 
-Always call retrieve_context before answering anything specific. Do not guess or invent details. \
-If the retrieved context does not cover the question, say so plainly: \
+Each visitor message arrives with knowledge base results already retrieved for it. \
+Answer from those results. If they don't cover the question (for example a vague follow-up \
+like "tell me more"), call retrieve_context with a specific search query before answering. \
+Do not guess or invent details. If the knowledge base does not cover the question, say so plainly: \
 "I don't have that info — your best bet is to reach out to Izak directly."
 
 ## What you do NOT answer
@@ -62,15 +63,24 @@ When you need to retrieve context, do it silently — do not narrate it. \
 Do not say things like "Let me look that up" or "One moment" before calling the tool. \
 Just call the tool and then respond with the answer."""
 
-llm = ChatOpenAI(
-    model="deepseek-chat",
-    base_url="https://api.deepseek.com",
-    api_key=DEEPSEEK_API_KEY,
-    temperature=0.3,
-)
+def with_prefetched_context(messages: list[dict]) -> list[dict]:
+    """Search the knowledge base for the latest visitor message and insert the
+    results just before it. The model sometimes skipped calling the tool and
+    answered "I don't have that info" for things the KB covers; prefetching
+    makes retrieval deterministic. The tool stays available for follow-ups."""
+    last = next((i for i in range(len(messages) - 1, -1, -1) if messages[i]["role"] == "user"), None)
+    if last is None:
+        return messages
+    context = retrieve_context.invoke(messages[last]["content"])
+    note = {
+        "role": "system",
+        "content": f"Knowledge base results for the visitor's next message (retrieved automatically):\n\n{context}",
+    }
+    return messages[:last] + [note] + messages[last:]
+
 
 agent = create_react_agent(
-    model=llm,
+    model=deepseek(temperature=0.3),
     tools=[retrieve_context],
     prompt=SYSTEM_PROMPT,
 )
