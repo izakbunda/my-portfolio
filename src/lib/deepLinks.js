@@ -49,9 +49,12 @@ export function buildDeepLink({ app, item }) {
 }
 
 // Opens (or focuses) the target window via HomePage's "open-window" listener.
+// Links visitors arrive on (source "url") also expand the window to fill the desktop.
 export function openTarget({ app, item }, source = "chat") {
   const name = APPS[app];
   if (!name) return;
   trackEvent(source === "url" ? "deeplink" : "chat_link", item ? `${app}/${item}` : app);
-  window.dispatchEvent(new CustomEvent("open-window", { detail: { name, item: item || null } }));
+  window.dispatchEvent(
+    new CustomEvent("open-window", { detail: { name, item: item || null, expand: source === "url" } })
+  );
 }

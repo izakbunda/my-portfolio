@@ -113,3 +113,18 @@
 .mobile-content.keyboard-open {
   bottom: 0;
 }
+
+/* Deep-linked window growing out to fill the desktop (HomePage expandedRect). */
+.window-expanding {
+  transition:
+    left 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
+    top 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
+    width 0.55s cubic-bezier(0.2, 0.8, 0.2, 1),
+    height 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .window-expanding {
+    transition: none;
+  }
+}

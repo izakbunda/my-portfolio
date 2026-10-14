@@ -21,7 +21,22 @@ const useIsMobile = () => {
   return isMobile;
 };
 
-function DraggableWindow({ id, position, name, focus, initialSize, resizable = true, onRemove, onUpdatePosition, onUpdateSize, onSelect, onMinimize, zIndex, isMinimized, isMobile }) {
+// The "expanded" rect: fills the desktop between the menu bar and the dock,
+// leaving a margin on every side (not true fullscreen).
+const EXPAND_MARGIN = 24;
+function expandedRect() {
+  const MENU_BAR_H = 30;
+  const DOCK_H = 72;
+  const y = MENU_BAR_H + EXPAND_MARGIN / 2;
+  return {
+    x: EXPAND_MARGIN,
+    y,
+    width: Math.max(560, window.innerWidth - EXPAND_MARGIN * 2),
+    height: Math.max(320, window.innerHeight - y - DOCK_H - EXPAND_MARGIN / 2),
+  };
+}
+
+function DraggableWindow({ id, position, name, focus, expand, initialSize, resizable = true, onRemove, onUpdatePosition, onUpdateSize, onSelect, onMinimize, zIndex, isMinimized, isMobile }) {
   const windowRef = useRef(null);
   const headerRef = useRef(null);
   const isClicked = useRef(false);
@@ -38,6 +53,34 @@ function DraggableWindow({ id, position, name, focus, initialSize, resizable = t
   });
   const sizeRef = useRef(size);
   sizeRef.current = size;
+
+  // `expand` is a nonce set when a deep link targets this window: wait for the
+  // window to paint where it is, then animate it out to the expanded rect.
+  useEffect(() => {
+    if (!expand || isMobile) return;
+    const el = windowRef.current;
+    if (!el) return;
+    let inner;
+    const outer = requestAnimationFrame(() => {
+      inner = requestAnimationFrame(() => {
+        const rect = expandedRect();
+        el.classList.add("window-expanding");
+        coords.current.lastX = rect.x;
+        coords.current.lastY = rect.y;
+        setSize({ width: rect.width, height: rect.height });
+        onUpdatePosition(id, { x: rect.x, y: rect.y });
+        onUpdateSize(id, { width: rect.width, height: rect.height });
+      });
+    });
+    const done = setTimeout(() => el.classList.remove("window-expanding"), 800);
+    return () => {
+      cancelAnimationFrame(outer);
+      cancelAnimationFrame(inner);
+      clearTimeout(done);
+    };
+    // Only a new expand request should re-run this.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [expand]);
 
   const toggleFullscreen = () => {
     setIsFullscreen((prev) => {
@@ -302,9 +345,12 @@ function HomePage() {
 
   const [windows, setWindows] = useState(
     () =>
-      loadSavedWindows() ?? [
-        { id: crypto.randomUUID(), position: getInitialPosition(0), name: "Izak Bunda" },
-      ]
+      // First visit opens the profile, unless the visitor arrived on a deep link:
+      // then the linked window opens on its own.
+      loadSavedWindows() ??
+      (parseDeepLink()
+        ? []
+        : [{ id: crypto.randomUUID(), position: getInitialPosition(0), name: "Izak Bunda" }])
   );
   const [minimizedWindows, setMinimizedWindows] = useState([]);
   const [zMap, setZMap] = useState({});
@@ -329,14 +375,23 @@ function HomePage() {
     }
   }, [windows, isMobile]);
 
-  // `focus` ({ item, n }) asks the window to scroll to / open a specific item;
-  // `n` changes on every request so repeating the same target still fires.
-  // `raise` brings an already-open window to the front (deep links, chat links).
-  const addWindow = (name, initialSize, resizable = true, focus = null, raise = false) => {
+  // Options (deep links / chat links):
+  // - focus ({ item, n }) asks the window to scroll to / open a specific item;
+  //   `n` changes on every request so repeating the same target still fires.
+  // - raise brings an already-open window to the front.
+  // - expand animates the window out to fill the desktop (links visitors arrive on).
+  const addWindow = (name, initialSize, resizable = true, { focus = null, raise = false, expand = false } = {}) => {
+    const expandNonce = expand ? Date.now() : null;
     const existing = windows.find((w) => w.name === name);
     if (existing) {
-      if (focus) setWindows((prev) => prev.map((w) => (w.id === existing.id ? { ...w, focus } : w)));
-      if (focus || raise) restoreWindow(existing.id);
+      if (focus || expandNonce) {
+        setWindows((prev) =>
+          prev.map((w) =>
+            w.id === existing.id ? { ...w, ...(focus && { focus }), ...(expandNonce && { expand: expandNonce }) } : w
+          )
+        );
+      }
+      if (focus || raise || expand) restoreWindow(existing.id);
       return;
     }
 
@@ -370,6 +425,7 @@ function HomePage() {
       initialSize,
       resizable,
       focus,
+      expand: expandNonce,
     };
     setWindows((prev) => [...prev, newWindow]);
     setZMap((prev) => ({ ...prev, [newWindow.id]: ++zCounter.current }));
@@ -399,14 +455,14 @@ function HomePage() {
     // detail is a window name, or { name, item } from openTarget (deep links / chat links).
     const handler = (e) => {
       const fromTarget = typeof e.detail !== "string";
-      const { name, item } = fromTarget ? e.detail : { name: e.detail, item: null };
+      const { name, item, expand } = fromTarget ? e.detail : { name: e.detail, item: null, expand: false };
       const focus = item ? { item, n: Date.now() } : null;
       if (isMobile) {
         trackEvent("view", name);
         setActiveApp(name);
         setMobileFocus(focus);
       } else {
-        addWindowRef.current(name, undefined, true, focus, fromTarget);
+        addWindowRef.current(name, undefined, true, { focus, raise: fromTarget, expand });
       }
     };
     window.addEventListener("open-window", handler);
@@ -562,6 +618,7 @@ function HomePage() {
             id={w.id}
             name={w.name}
             focus={w.focus}
+            expand={w.expand}
             position={w.position}
             initialSize={w.initialSize}
             resizable={w.resizable ?? true}
